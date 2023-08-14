@@ -1,0 +1,27 @@
+spring:
+
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+#    url: jdbc:mysql://localhost:3306/chalkak?serverTimezone=UTC&charsetEncoding=UTF-8
+    url: jdbc:h2:mem:chalkak;DB_CLOSE_DELAY=-1
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.h2.Driver
+#    username: root
+#    password: 1q2w3e4r!@
+    username: sa
+    password:
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database: h2
+
+  # swagger
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
