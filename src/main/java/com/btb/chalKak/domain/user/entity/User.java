@@ -40,6 +40,7 @@ public class User extends BaseTimeEntity {
     private double weight;
 
     private boolean privacy;
+
     private String gender; // TODO: 2023-08-16 enum 필요
 
     private String status; // TODO: 2023-08-16 enum 필요
@@ -49,10 +50,4 @@ public class User extends BaseTimeEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-
-
-
-
-
-
 }
