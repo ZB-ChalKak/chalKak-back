@@ -1,12 +1,14 @@
 package com.btb.chalKak.global.oauth2.type;
 
-import com.btb.chalKak.domain.user.entity.User;
+import com.btb.chalKak.domain.member.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.btb.chalKak.domain.member.type.MemberRole.USER;
 
 @Getter
 @ToString
@@ -82,12 +84,11 @@ public class OauthDto {
 //                .build();
 //    }
 
-    public User toEntity() {
-        return User.builder()
+    public Member toEntity() {
+        return Member.builder()
                 .nickname(name)
-                .gender(gender)
                 .email(email)
-                .roles(List.of("USER"))
+                .role(USER)
                 .build();
     }
 }

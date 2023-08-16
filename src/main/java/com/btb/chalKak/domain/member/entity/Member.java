@@ -73,4 +73,11 @@ public class Member extends BaseTimeEntity {
             inverseJoinColumns = @JoinColumn(name = "static_tag_id")
     )
     private List<StaticTag> staticTags;
+
+    public Member update(String name, String profileImageUrl) {
+        this.nickname = name;
+        this.profileImg = profileImageUrl;
+
+        return this;
+    }
 }

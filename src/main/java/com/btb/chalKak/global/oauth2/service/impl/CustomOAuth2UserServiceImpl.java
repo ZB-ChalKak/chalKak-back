@@ -1,7 +1,6 @@
 package com.btb.chalKak.global.oauth2.service.impl;
 
 import com.btb.chalKak.domain.member.entity.Member;
-import com.btb.chalKak.domain.user.entity.User;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.global.oauth2.service.CustomOAuth2UserService;
 import com.btb.chalKak.global.oauth2.type.OAuth2CustomUser;
@@ -50,7 +49,7 @@ public class CustomOAuth2UserServiceImpl implements CustomOAuth2UserService {
 
     private Member saveOrUpdate(OauthDto authAttributes) {
         Member member = MemberRepository.findByEmail(authAttributes.getEmail())
-                .map(entity -> entity.update(authAttributes.getName(), authAttributes.getProfileImageUrl()))
+                .map(members -> members.update(authAttributes.getName(), authAttributes.getProfileImageUrl()))
                 .orElse(authAttributes.toEntity());
 
         return MemberRepository.save(member);
