@@ -4,6 +4,9 @@ spring:
     console:
       enabled: true
 
+  profiles:
+    include: oauth
+
   datasource:
 #    url: jdbc:mysql://localhost:3306/chalkak?serverTimezone=UTC&charsetEncoding=UTF-8
     url: jdbc:h2:mem:chalkak;DB_CLOSE_DELAY=-1
@@ -25,3 +28,5 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+
