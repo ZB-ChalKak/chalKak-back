@@ -54,6 +54,7 @@ public class SecurityConfig {
             .and()
                 .oauth2Login()
                 .userInfoEndpoint()
+
                 .userService(customOAuth2UserService) // 소셜 로그인 성공 시 후속 조치를 진행할 UserService 구현체
             ;
 

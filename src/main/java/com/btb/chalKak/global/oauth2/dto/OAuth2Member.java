@@ -1,4 +1,4 @@
-package com.btb.chalKak.global.oauth2.type;
+package com.btb.chalKak.global.oauth2.dto;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-public class OAuth2CustomUser implements OAuth2User, Serializable {
+public class OAuth2Member implements OAuth2User, Serializable {
 
     private String registrationId;
     private Map<String, Object> attributes;
