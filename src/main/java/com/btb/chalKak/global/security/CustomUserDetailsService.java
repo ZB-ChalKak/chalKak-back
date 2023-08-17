@@ -19,10 +19,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String userPK) throws UsernameNotFoundException {
-        Member member = memberRepository.findById(Long.parseLong(userPK))
-                .orElseThrow(RuntimeException::new);    // TODO : CustomException 구현 + Exception 메서드 단위로 따로 빼기?
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = getMember(email);
 
         return new CustomUserDetails(member);
+    }
+
+    private Member getMember(String email) {
+        Member member = memberRepository.findById(Long.parseLong(email))
+                .orElseThrow(() -> new UsernameNotFoundException("회원 정보를 불러오는데 실패했습니다."));
+
+        return member;
     }
 }
