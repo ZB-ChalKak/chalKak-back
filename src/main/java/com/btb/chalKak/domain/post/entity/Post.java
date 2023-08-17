@@ -1,5 +1,5 @@
 package com.btb.chalKak.domain.post.entity;
-import com.btb.chalKak.domain.user.entity.User;
+import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.global.entity.BaseTimeEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class Post extends BaseTimeEntity {
     private String status; // TODO: 2023-08-16 enum 필요
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
 
 }
