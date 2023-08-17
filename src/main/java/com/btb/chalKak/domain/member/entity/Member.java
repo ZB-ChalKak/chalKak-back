@@ -57,9 +57,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "privacy_weight")
     private boolean privacyWeight;
 
+    @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
