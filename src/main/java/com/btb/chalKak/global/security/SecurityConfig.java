@@ -1,5 +1,6 @@
 package com.btb.chalKak.global.security;
 
+import com.btb.chalKak.global.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +47,17 @@ public class SecurityConfig {
                 .antMatchers("/**")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+            .and()
+                .logout()
+                .logoutSuccessUrl("/") // 로그 아웃 성공 시 / 주소로 이동
+            .and()
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService) // 소셜 로그인 성공 시 후속 조치를 진행할 UserService 구현체
+            ;
+
+
 
         return http.build();
     }
