@@ -1,9 +1,13 @@
-package com.btb.chalKak.domain.staticTag.entity;
+package com.btb.chalKak.domain.styleTag.entity;
 
 import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.post.entity.Post;
+import com.btb.chalKak.domain.styleTag.type.StyleCategory;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,23 +23,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "static_tag")
-public class StaticTag {
+@Table(name = "style_tag")
+public class StyleTag {
 
     @Id
-    @Column(name ="static_tag_id", nullable = false)
+    @Column(name ="style_tag_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String category;
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StyleCategory category;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "keyword", nullable = false, unique = true)
     private String keyword;
 
+    @Column(name = "count")
     private Long count;
 
-    @ManyToMany(mappedBy = "staticTags")
+    @ManyToMany(mappedBy = "styleTags")
     private List<Member> members;
+
+    @ManyToMany(mappedBy = "styleTags")
+    private List<Post> posts;
 
 }
