@@ -8,27 +8,49 @@ VALUES
 ;
 
 -- 정적 태그 데이터 삽입
-INSERT INTO static_tag (category, keyword, count)
+INSERT INTO style_tag (category, keyword, count)
 VALUES
-    ('Style', '아메카지', 0),
-    ('Style', '원마일웨어', 0),
-    ('Style', '미니멀', 0),
-    ('Style', '댄디', 0),
-    ('Style', '비즈니스캐주얼', 0),
-    ('Style', '빈티지', 0),
-    ('Style', '스트릿', 0),
-    ('Style', '스포티', 0),
+    ('STYLE', '아메카지', 2),
+    ('STYLE', '원마일웨어', 1),
+    ('STYLE', '미니멀', 0),
+    ('STYLE', '댄디', 1),
+    ('STYLE', '비즈니스캐주얼', 0),
+    ('STYLE', '빈티지', 0),
+    ('STYLE', '스트릿', 0),
+    ('STYLE', '스포티', 0),
     ('TPO', '데이트', 0),
-    ('TPO', '하객', 0),
+    ('TPO', '하객', 1),
     ('TPO', '여행', 0),
     ('TPO', '출근', 0)
 ;
 
 -- 조인 테이블 데이터 삽입
-INSERT INTO MEMBER_STATIC_TAG (member_id, static_tag_id)
+INSERT INTO member_style_tag (member_id, style_tag_id)
 VALUES
     (1, 1),
     (1, 4),
     (1, 10),
     (2, 2)
 ;
+
+-- 해시 태그 정보 삽입
+INSERT INTO hash_tag (keyword, count)
+VALUES ('휴가', 1),
+       ('여름', 0),
+       ('뷰티', 0),
+       ('커피', 0),
+       ('패션', 0)
+;
+
+-- 포스트 정보 삽입
+INSERT INTO post (content, hit_count, like_count, status, member_id)
+VALUES ('첫 번째 포스트 내용', 0, 0, 'PUBLIC', 1)
+;
+
+-- 포스트와 스타일 태그 조인 테이블 삽입
+INSERT INTO post_style_tag (post_id, style_tag_id)
+VALUES (1, 1);
+
+-- 포스트와 해시 태그 조인 테이블 삽입
+INSERT INTO post_hash_tag (post_id, hash_tag_id)
+VALUES (1, 1);
