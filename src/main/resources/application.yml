@@ -4,6 +4,12 @@ spring:
     console:
       enabled: true
 
+  sql:
+    init:
+      schema-locations: classpath*:table/h2/schema.sql
+      data-locations: classpath*:table/h2/data.sql
+      mode: always
+
   profiles:
     include: oauth
 
@@ -20,7 +26,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     database: h2
 
@@ -28,5 +34,3 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-
