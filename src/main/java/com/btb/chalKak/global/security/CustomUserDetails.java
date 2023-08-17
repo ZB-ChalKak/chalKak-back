@@ -1,17 +1,19 @@
 package com.btb.chalKak.global.security;
 
-import com.btb.chalKak.domain.member.entity.Member;
-import java.util.Collection;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
+import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
 
-import lombok.Builder;
+import com.btb.chalKak.domain.member.entity.Member;
+import java.util.ArrayList;
+import java.util.Collection;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
-
-@Builder
+@Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -36,21 +38,26 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        // 사용자 계정 만료(탈퇴) 여부 반환
+        return member.getStatus() != WITHDRAWAL;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        // 사용자 계정 잠금 여부 반환
+        return member.getStatus() != BLOCKED;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
+        // 사용자 인증 정보 만료 여부 반환
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        // 사용자 계정 활성화 여부 반환
+        return member.getStatus() == ACTIVE;
     }
+
 }
