@@ -10,6 +10,7 @@ import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.post.service.PostService;
+import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Long savePost(SavePostRequest request) {
+    public Post savePost(SavePostRequest request) {
         // 1. 회원 조회
         Member member = getMemberById(request.getMemberId());
 
@@ -49,15 +50,40 @@ public class PostServiceImpl implements PostService {
         hashTagRepository.saveAll(hashTags);
 
         // 4. 게시글 저장
-        Post post = postRepository.save(Post.builder()
+        return postRepository.save(Post.builder()
                 .content(request.getContent())
                 .status(PUBLIC)
                 .writer(member)
                 .styleTags(styleTags)
                 .hashTags(hashTags)
                 .build());
+    }
+
+    @Override
+    public Post loadPostDetails(Long postId) {
+        // 1. 게시글 조회
+        Post post = getPostById(postId);
         
-        return post.getId();
+        // 2. 게시글 상태 조회
+        validatePublicStatus(post.getStatus());
+        
+        // 3. 댓글 조회
+        // TODO https://w1661913672-14q788704.slack.com/archives/C05NLUPCH17/p1692381588140449)
+
+        // 4. 좋아요 조회
+
+        return post;
+    }
+
+    private static void validatePublicStatus(PostStatus status) {
+        if (status != PUBLIC) {
+            throw new RuntimeException("CustomPostException");
+        }
+    }
+
+    private Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("CustomPostException"));
     }
 
     private Member getMemberById(Long memberId) {
