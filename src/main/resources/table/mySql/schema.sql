@@ -13,9 +13,8 @@ CREATE TABLE style_tag
     style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     category     VARCHAR(20)         NOT NULL COMMENT '카테고리',
     keyword      VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드',
-    count        BIGINT COMMENT '카운트',
-    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
+    created_at   TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '생성일',
+    updated_at   TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '수정일'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 동적 태그 (해시 태그)
@@ -23,9 +22,8 @@ CREATE TABLE hash_tag
 (
     hash_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     keyword     VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드',
-    count       BIGINT COMMENT '카운트',
-    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
+    created_at  TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '생성일',
+    updated_at  TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '수정일'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 멤버 정보
@@ -62,12 +60,12 @@ CREATE TABLE post
 (
     post_id    BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     content    TEXT COMMENT '내용',
-    hit_count  BIGINT COMMENT '조회수',
-    like_count BIGINT COMMENT '좋아요 수',
+    hit_count  BIGINT               DEFAULT 0 COMMENT '조회수',
+    like_count BIGINT               DEFAULT 0 COMMENT '좋아요 수',
     status     VARCHAR(20) NOT NULL COMMENT '상태',
     member_id  BIGINT COMMENT '멤버 ID',
-    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP   NOT NULL DEFAULT NOW() COMMENT '생성일',
+    updated_at TIMESTAMP   NOT NULL DEFAULT NOW() COMMENT '수정일',
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

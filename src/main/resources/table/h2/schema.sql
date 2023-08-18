@@ -13,7 +13,6 @@ CREATE TABLE style_tag
     style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     category     VARCHAR(20)         NOT NULL,
     keyword      VARCHAR(100) UNIQUE NOT NULL,
-    count        BIGINT,
     created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
 );
@@ -23,7 +22,6 @@ CREATE TABLE hash_tag
 (
     hash_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     keyword     VARCHAR(100) UNIQUE NOT NULL,
-    count       BIGINT,
     created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
 );
@@ -62,8 +60,8 @@ CREATE TABLE post
 (
     post_id    BIGINT PRIMARY KEY AUTO_INCREMENT,
     content    TEXT,
-    hit_count  BIGINT,
-    like_count BIGINT,
+    hit_count  BIGINT DEFAULT 0,
+    like_count BIGINT DEFAULT 0,
     status     VARCHAR(20) NOT NULL,
     member_id  BIGINT,
     created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),

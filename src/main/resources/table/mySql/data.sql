@@ -8,20 +8,20 @@ VALUES
 ;
 
 -- 정적 태그 데이터 삽입
-INSERT INTO style_tag (category, keyword, count)
+INSERT INTO style_tag (category, keyword)
 VALUES
-    ('STYLE', '아메카지', 2),
-    ('STYLE', '원마일웨어', 1),
-    ('STYLE', '미니멀', 0),
-    ('STYLE', '댄디', 1),
-    ('STYLE', '비즈니스캐주얼', 0),
-    ('STYLE', '빈티지', 0),
-    ('STYLE', '스트릿', 0),
-    ('STYLE', '스포티', 0),
-    ('TPO', '데이트', 0),
-    ('TPO', '하객', 1),
-    ('TPO', '여행', 0),
-    ('TPO', '출근', 0)
+    ('STYLE', '아메카지'),
+    ('STYLE', '원마일웨어'),
+    ('STYLE', '미니멀'),
+    ('STYLE', '댄디'),
+    ('STYLE', '비즈니스캐주얼'),
+    ('STYLE', '빈티지'),
+    ('STYLE', '스트릿'),
+    ('STYLE', '스포티'),
+    ('TPO', '데이트'),
+    ('TPO', '하객'),
+    ('TPO', '여행'),
+    ('TPO', '출근')
 ;
 
 -- 조인 테이블 데이터 삽입
@@ -34,12 +34,12 @@ VALUES
 ;
 
 -- 해시 태그 정보 삽입
-INSERT INTO hash_tag (keyword, count)
-VALUES ('휴가', 1),
-       ('여름', 0),
-       ('뷰티', 0),
-       ('커피', 0),
-       ('패션', 0)
+INSERT INTO hash_tag (keyword)
+VALUES ('휴가'),
+       ('여름'),
+       ('뷰티'),
+       ('커피'),
+       ('패션')
 ;
 
 -- 포스트 정보 삽입
