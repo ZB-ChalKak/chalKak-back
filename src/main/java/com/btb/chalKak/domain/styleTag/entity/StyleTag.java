@@ -38,9 +38,6 @@ public class StyleTag {
     @Column(name = "keyword", nullable = false, unique = true)
     private String keyword;
 
-    @Column(name = "count")
-    private Long count;
-
     @ManyToMany(mappedBy = "styleTags")
     private List<Member> members;
 
