@@ -30,7 +30,7 @@ public class JwtTokenProvider {
 
     private final CustomUserDetailsService userDetailsService;
 
-    @Value("{spring.jwt.secret")
+    @Value("${spring.jwt.secret}")
     private String secretKey;
     private Key key;
 
