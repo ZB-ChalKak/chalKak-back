@@ -3,7 +3,7 @@ package com.btb.chalKak.domain.member.entity;
 import com.btb.chalKak.domain.member.type.Gender;
 import com.btb.chalKak.domain.member.type.MemberRole;
 import com.btb.chalKak.domain.member.type.MemberStatus;
-import com.btb.chalKak.domain.staticTag.entity.StaticTag;
+import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.global.entity.BaseTimeEntity;
 import java.util.List;
 import javax.persistence.Column;
@@ -61,20 +61,21 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     @ManyToMany
     @JoinTable(
-            name = "member_static_tag",
+            name = "member_style_tag",
             joinColumns = @JoinColumn(name = "member_id"),
-            inverseJoinColumns = @JoinColumn(name = "static_tag_id")
+            inverseJoinColumns = @JoinColumn(name = "style_tag_id")
     )
-    private List<StaticTag> staticTags;
+    private List<StyleTag> styleTags;
 
     public Member update(String name, String profileImageUrl) {
         this.nickname = name;

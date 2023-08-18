@@ -1,14 +1,31 @@
 -- 테스트를 위한 DDL 작성
-DROP TABLE IF EXISTS static_tag;
+DROP TABLE IF EXISTS style_tag;
+DROP TABLE IF EXISTS hash_tag;
 DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS member_style_tag;
+DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS post_style_tag;
+DROP TABLE IF EXISTS post_hash_tag;
 
 -- 정적 태그 (스타일 태그)
-CREATE TABLE static_tag
+CREATE TABLE style_tag
 (
-    static_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
-    category      VARCHAR(20)         NOT NULL COMMENT '카테고리',
-    keyword       VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드',
-    count         BIGINT COMMENT '카운트'
+    style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
+    category     VARCHAR(20)         NOT NULL COMMENT '카테고리',
+    keyword      VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드',
+    count        BIGINT COMMENT '카운트',
+    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 동적 태그 (해시 태그)
+CREATE TABLE hash_tag
+(
+    hash_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
+    keyword     VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드',
+    count       BIGINT COMMENT '카운트',
+    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 멤버 정보
@@ -31,11 +48,45 @@ CREATE TABLE member
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 멤버와 정적 태그 조인 테이블
-CREATE TABLE member_static_tag
+CREATE TABLE member_style_tag
 (
-    member_id     BIGINT NOT NULL,
-    static_tag_id BIGINT NOT NULL,
-    PRIMARY KEY (member_id, static_tag_id),
+    member_id    BIGINT NOT NULL,
+    style_tag_id BIGINT NOT NULL,
+    PRIMARY KEY (member_id, style_tag_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id),
-    FOREIGN KEY (static_tag_id) REFERENCES static_tag (static_tag_id)
+    FOREIGN KEY (style_tag_id) REFERENCES style_tag (style_tag_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 포스트 정보
+CREATE TABLE post
+(
+    post_id    BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
+    content    TEXT COMMENT '내용',
+    hit_count  BIGINT COMMENT '조회수',
+    like_count BIGINT COMMENT '좋아요 수',
+    status     VARCHAR(20) NOT NULL COMMENT '상태',
+    member_id  BIGINT COMMENT '멤버 ID',
+    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (member_id) REFERENCES member (member_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 포스트와 스타일 태그 조인 테이블
+CREATE TABLE post_style_tag
+(
+    post_id      BIGINT NOT NULL,
+    style_tag_id BIGINT NOT NULL,
+    PRIMARY KEY (post_id, style_tag_id),
+    FOREIGN KEY (post_id) REFERENCES post (post_id),
+    FOREIGN KEY (style_tag_id) REFERENCES style_tag (style_tag_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 포스트와 해시 태그 조인 테이블
+CREATE TABLE post_hash_tag
+(
+    post_id     BIGINT NOT NULL,
+    hash_tag_id BIGINT NOT NULL,
+    PRIMARY KEY (post_id, hash_tag_id),
+    FOREIGN KEY (post_id) REFERENCES post (post_id),
+    FOREIGN KEY (hash_tag_id) REFERENCES hash_tag (hash_tag_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

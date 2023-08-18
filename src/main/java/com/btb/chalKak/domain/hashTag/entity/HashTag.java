@@ -1,6 +1,6 @@
-package com.btb.chalKak.domain.staticTag.entity;
+package com.btb.chalKak.domain.hashTag.entity;
 
-import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.post.entity.Post;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,23 +19,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "static_tag")
-public class StaticTag {
+@Table(name = "hash_tag")
+public class HashTag {
 
     @Id
-    @Column(name ="static_tag_id", nullable = false)
+    @Column(name ="hash_tag_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String category;
-
-    @Column(nullable = false, unique = true)
+    @Column(name = "keyword", nullable = false, unique = true)
     private String keyword;
 
+    @Column(name = "count")
     private Long count;
 
-    @ManyToMany(mappedBy = "staticTags")
-    private List<Member> members;
-
+    @ManyToMany(mappedBy = "hashTags")
+    private List<Post> posts;
 }
