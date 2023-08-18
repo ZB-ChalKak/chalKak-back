@@ -2,9 +2,12 @@ package com.btb.chalKak.domain.post.controller;
 
 import static com.btb.chalKak.global.response.type.SuccessCode.SUCCESS_SAVE_POST;
 
+import com.btb.chalKak.domain.post.dto.PostDto;
 import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
 import com.btb.chalKak.domain.post.dto.response.SavePostResponse;
+import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.service.PostService;
+import com.btb.chalKak.global.mapper.PostMapper;
 import com.btb.chalKak.global.response.dto.CommonResponse;
 import com.btb.chalKak.global.response.service.ResponseService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +27,10 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<?> savePost(@RequestBody SavePostRequest request) {
+        Post post = postService.savePost(request);
+        PostDto postDto = PostMapper.MAPPER.toDto(post);
         SavePostResponse data = SavePostResponse.builder()
-                .postId(postService.savePost(request))
+                .postId(postDto.getId())
                 .build();
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
