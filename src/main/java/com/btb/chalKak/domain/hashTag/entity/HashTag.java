@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.hashTag.entity;
 
 import com.btb.chalKak.domain.post.entity.Post;
+import com.btb.chalKak.global.entity.BaseTimeEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "hash_tag")
-public class HashTag {
+public class HashTag extends BaseTimeEntity {
 
     @Id
     @Column(name ="hash_tag_id", nullable = false)
