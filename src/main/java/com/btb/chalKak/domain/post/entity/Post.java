@@ -54,7 +54,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member writer;
 
     @ManyToMany
     @JoinTable(
