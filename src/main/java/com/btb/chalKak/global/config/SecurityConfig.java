@@ -1,4 +1,4 @@
-package com.btb.chalKak.global.security;
+package com.btb.chalKak.global.config;
 
 import com.btb.chalKak.global.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
