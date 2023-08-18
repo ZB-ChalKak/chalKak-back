@@ -37,4 +37,4 @@ spring:
 
   # jwt
   jwt:
-    secret: temp123
+    secret: ZeroBase_Team3_#Chalkak_BackEnd_SeCrEtKEy
