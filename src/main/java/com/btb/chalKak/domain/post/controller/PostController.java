@@ -1,15 +1,15 @@
 package com.btb.chalKak.domain.post.controller;
 
-import static com.btb.chalKak.global.response.type.SuccessCode.SUCCESS_SAVE_POST;
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
 
 import com.btb.chalKak.domain.post.dto.PostDto;
 import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
 import com.btb.chalKak.domain.post.dto.response.SavePostResponse;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.service.PostService;
-import com.btb.chalKak.global.mapper.PostMapper;
-import com.btb.chalKak.global.response.dto.CommonResponse;
-import com.btb.chalKak.global.response.service.ResponseService;
+import com.btb.chalKak.common.mapper.PostMapper;
+import com.btb.chalKak.common.response.dto.CommonResponse;
+import com.btb.chalKak.common.response.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

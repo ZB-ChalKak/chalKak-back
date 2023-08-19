@@ -1,6 +1,6 @@
 package com.btb.chalKak.domain.comment.controller;
 
-import static com.btb.chalKak.global.response.type.SuccessCode.SUCCESS_SAVE_POST;
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
 
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
@@ -8,8 +8,8 @@ import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
 import com.btb.chalKak.domain.comment.dto.response.CommentResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.service.CommentService;
-import com.btb.chalKak.global.response.dto.CommonResponse;
-import com.btb.chalKak.global.response.service.ResponseService;
+import com.btb.chalKak.common.response.dto.CommonResponse;
+import com.btb.chalKak.common.response.service.ResponseService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

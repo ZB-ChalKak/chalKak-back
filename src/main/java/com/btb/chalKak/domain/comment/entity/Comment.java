@@ -2,7 +2,7 @@ package com.btb.chalKak.domain.comment.entity;
 
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
-import com.btb.chalKak.global.entity.BaseTimeEntity;
+import com.btb.chalKak.common.entity.BaseTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
