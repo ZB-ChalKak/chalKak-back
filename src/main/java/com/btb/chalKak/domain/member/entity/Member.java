@@ -9,7 +9,7 @@ import com.btb.chalKak.domain.member.type.Gender;
 import com.btb.chalKak.domain.member.type.MemberRole;
 import com.btb.chalKak.domain.member.type.MemberStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import com.btb.chalKak.global.entity.BaseTimeEntity;
+import com.btb.chalKak.common.entity.BaseTimeEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

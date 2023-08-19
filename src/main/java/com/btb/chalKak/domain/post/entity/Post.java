@@ -4,7 +4,7 @@ import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import com.btb.chalKak.global.entity.BaseTimeEntity;
+import com.btb.chalKak.common.entity.BaseTimeEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
