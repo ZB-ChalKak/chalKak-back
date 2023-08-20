@@ -43,7 +43,7 @@ VALUES ('휴가'),
 ;
 
 -- 포스트 정보 삽입
-INSERT INTO post (content, hit_count, like_count, status, member_id)
+INSERT INTO post (content, view_count, like_count, status, member_id)
 VALUES ('첫 번째 포스트 내용', 0, 0, 'PUBLIC', 1)
 ;
 
