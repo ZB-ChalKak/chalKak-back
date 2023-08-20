@@ -5,11 +5,12 @@ import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
 import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
 
+import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.member.type.Gender;
 import com.btb.chalKak.domain.member.type.MemberRole;
 import com.btb.chalKak.domain.member.type.MemberStatus;
+import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import com.btb.chalKak.common.entity.BaseTimeEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -80,6 +82,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role = USER;
+
+    @OneToMany(mappedBy = "writer")
+    private List<Post> posts;
 
     @ManyToMany
     @JoinTable(
