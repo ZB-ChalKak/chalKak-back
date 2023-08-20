@@ -60,7 +60,7 @@ CREATE TABLE post
 (
     post_id    BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     content    TEXT COMMENT '내용',
-    hit_count  BIGINT               DEFAULT 0 COMMENT '조회수',
+    view_count  BIGINT               DEFAULT 0 COMMENT '조회수',
     like_count BIGINT               DEFAULT 0 COMMENT '좋아요 수',
     status     VARCHAR(20) NOT NULL COMMENT '상태',
     member_id  BIGINT COMMENT '멤버 ID',
