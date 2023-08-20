@@ -13,9 +13,11 @@ import com.btb.chalKak.domain.post.service.PostService;
 import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
+    private final RedisTemplate<String, String> redisTemplate;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final HashTagRepository hashTagRepository;
@@ -50,13 +53,17 @@ public class PostServiceImpl implements PostService {
         hashTagRepository.saveAll(hashTags);
 
         // 4. 게시글 저장
-        return postRepository.save(Post.builder()
+        Post post = postRepository.save(Post.builder()
                 .content(request.getContent())
                 .status(PUBLIC)
                 .writer(member)
+                .viewCount(0L)
+                .likeCount(0L)
                 .styleTags(styleTags)
                 .hashTags(hashTags)
                 .build());
+
+        return post;
     }
 
     @Override
@@ -67,11 +74,9 @@ public class PostServiceImpl implements PostService {
         // 2. 게시글 상태 조회
         validatePublicStatus(post.getStatus());
         
-        // 3. 댓글 조회
-        // TODO https://w1661913672-14q788704.slack.com/archives/C05NLUPCH17/p1692381588140449)
-
-        // 4. 좋아요 조회
-
+        // 3. 조회수 증가
+        increasePostViewCntToRedis(postId);
+        
         return post;
     }
 
@@ -90,4 +95,18 @@ public class PostServiceImpl implements PostService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("CustomMemberException"));
     }
+
+    public void increasePostViewCntToRedis(Long postId) {
+        String key = "PostViewCnt::" + postId;
+        org.springframework.data.redis.core.ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        if (valueOperations.get(key) == null) {
+            valueOperations.set(
+                    key,
+                    String.valueOf(getPostById(postId).getViewCount() + 1),
+                    Duration.ofMinutes(5));
+        } else {
+            valueOperations.increment(key);
+        }
+    }
+
 }

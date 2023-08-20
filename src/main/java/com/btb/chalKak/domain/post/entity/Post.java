@@ -1,10 +1,10 @@
 package com.btb.chalKak.domain.post.entity;
 
+import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import com.btb.chalKak.common.entity.BaseTimeEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,10 +42,10 @@ public class Post extends BaseTimeEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "hit_count")
-    private Long hitCount;
+    @Column(name = "view_count", nullable = false)
+    private Long viewCount;
 
-    @Column(name = "like_count")
+    @Column(name = "like_count", nullable = false)
     private Long likeCount;
 
     @Column(name = "status", nullable = false)

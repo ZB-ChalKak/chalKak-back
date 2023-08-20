@@ -1,17 +1,18 @@
 package com.btb.chalKak.domain.post.controller;
 
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS;
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
 
-import com.btb.chalKak.domain.post.dto.PostDto;
+import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
+import com.btb.chalKak.domain.post.dto.response.LoadPostDetailsResponse;
 import com.btb.chalKak.domain.post.dto.response.SavePostResponse;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.service.PostService;
-import com.btb.chalKak.common.mapper.PostMapper;
-import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.response.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +29,19 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> savePost(@RequestBody SavePostRequest request) {
         Post post = postService.savePost(request);
-        PostDto postDto = PostMapper.MAPPER.toDto(post);
         SavePostResponse data = SavePostResponse.builder()
-                .postId(postDto.getId())
+                .postId(post.getId())
                 .build();
 
-        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_SAVE_POST));
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<?> loadPostDetails(@PathVariable Long postId) {
+        Post post = postService.loadPostDetails(postId);
+        LoadPostDetailsResponse data = LoadPostDetailsResponse.fromEntity(post);
+
+        return ResponseEntity.ok(responseService.success(data, SUCCESS));
     }
 
 }
