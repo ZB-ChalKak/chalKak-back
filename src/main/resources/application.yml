@@ -38,3 +38,11 @@ spring:
   # jwt
   jwt:
     secret: ZeroBase_Team3_#Chalkak_BackEnd_SeCrEtKEy
+
+  # redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+scheduler:
+  cron: "0 0/1 * * * ?"
