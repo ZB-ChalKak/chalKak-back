@@ -4,13 +4,11 @@ import com.btb.chalKak.domain.post.repository.CustomPostRepository;
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostScheduler {
@@ -20,24 +18,28 @@ public class PostScheduler {
 
     @Transactional
     @Scheduled(cron = "${scheduler.cron}")
-    public void deletePostViewCntCacheFromRedis() {
-        Set<String> redisKeys = redisTemplate.keys("PostViewCnt*");
+    public void deletePostViewCountCacheFromRedis() {
+        Set<String> postViewCountKeys = redisTemplate.keys("PostViewCount*");
 
-        if (Objects.requireNonNull(redisKeys).isEmpty()) {
+        if (Objects.requireNonNull(postViewCountKeys).isEmpty()) {
             return;
         }
 
-        for (String data : redisKeys) {
-            Long postId = Long.parseLong(data.split("::")[1]);
-            Long viewCnt = Long.parseLong(String.valueOf(redisTemplate.opsForValue().get(data)));
+        for (String postViewCountKey : postViewCountKeys) {
+            Long postId = getPostIdByRedisKey(postViewCountKey);
+            Long viewCount = Long.parseLong(String.valueOf(redisTemplate.opsForValue().get(postViewCountKey)));
             
             // DB 데이터 반영
-            customPostRepository.addViewCntFromRedis(postId, viewCnt);
+            customPostRepository.addViewCountFromRedis(postId, viewCount);
             
             // 캐시 데이터 삭제
-            redisTemplate.delete(data);
-            redisTemplate.delete("PostViewCnt::" + postId);
+            redisTemplate.delete(postViewCountKey);
+            redisTemplate.delete("PostViewCount::" + postId);
         }
 
+    }
+
+    private long getPostIdByRedisKey(String postViewCountKey) {
+        return Long.parseLong(postViewCountKey.split("::")[1]);
     }
 }
