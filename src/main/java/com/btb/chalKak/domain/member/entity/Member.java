@@ -26,6 +26,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,11 +52,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "nickname", nullable = false)
-    private String nickname;
-
     @Column(name = "password")
     private String password;
+
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
 
     @Column(name = "profile_img")
     private String profileImg;
@@ -107,29 +109,34 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return auth;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public String getUsername() {
         return this.email;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isAccountNonExpired() {
         // 사용자 계정 만료(탈퇴) 여부 반환
         return this.status != WITHDRAWAL;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isAccountNonLocked() {
         // 사용자 계정 잠금 여부 반환
         return this.status != BLOCKED;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isCredentialsNonExpired() {
         // 사용자 인증 정보 만료 여부 반환
         return true;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isEnabled() {
         // 사용자 계정 활성화 여부 반환

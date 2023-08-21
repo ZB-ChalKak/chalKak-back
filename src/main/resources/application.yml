@@ -9,6 +9,7 @@ spring:
       schema-locations: classpath*:table/h2/schema.sql
       data-locations: classpath*:table/h2/data.sql
       mode: always
+      encoding: utf-8
 
   profiles:
     include: oauth
