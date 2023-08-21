@@ -45,4 +45,6 @@ spring:
     port: 6379
 
 scheduler:
-  cron: "0 0/1 * * * ?"
+  test:
+    cron: "0 0/1 * * * ?"
+  cron: "0 */5 * * * *"

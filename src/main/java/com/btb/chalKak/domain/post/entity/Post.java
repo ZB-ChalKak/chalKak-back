@@ -1,5 +1,7 @@
 package com.btb.chalKak.domain.post.entity;
 
+import static com.btb.chalKak.domain.post.type.PostStatus.DELETED;
+
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.entity.Member;
@@ -72,4 +74,7 @@ public class Post extends BaseTimeEntity {
     )
     private List<HashTag> hashTags;
 
+    public void deletePost() {
+        this.status = DELETED;
+    }
 }

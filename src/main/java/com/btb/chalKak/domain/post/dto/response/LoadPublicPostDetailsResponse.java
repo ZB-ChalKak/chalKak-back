@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LoadPostDetailsResponse {
+public class LoadPublicPostDetailsResponse {
 
     private Long id;
     private String content;
@@ -15,8 +15,8 @@ public class LoadPostDetailsResponse {
     private Long likeCount;
     private Writer writer;
 
-    public static LoadPostDetailsResponse fromEntity(Post post) {
-        return LoadPostDetailsResponse.builder()
+    public static LoadPublicPostDetailsResponse fromEntity(Post post) {
+        return LoadPublicPostDetailsResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
                 .viewCount(post.getViewCount())
