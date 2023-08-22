@@ -2,6 +2,7 @@ package com.btb.chalKak.common.security;
 
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.service.Impl.CustomUserDetailsService;
+import com.btb.chalKak.domain.member.type.MemberRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +34,7 @@ public class JwtTokenProvider {
     // refresh 토큰 유효 시간은 7일 (임시)
     private final Long refreshTokenValidMilliSecond = 60 * 60 * 1000L * 24 * 7;
 
+    // secretKey 초기화
     @PostConstruct
     protected void init(){
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -54,7 +56,7 @@ public class JwtTokenProvider {
     }
     
     // 토큰 생성
-    public TokenDto createToken(String email, List<String> roles){
+    public TokenDto createToken(String email, MemberRole roles){
 
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("roles", roles);
@@ -70,7 +72,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        String refreshToken =  Jwts.builder()
+        String refreshToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidMilliSecond))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -108,7 +110,7 @@ public class JwtTokenProvider {
                     .getExpiration()
                     .before(new Date());
         } catch (Exception e){
-            // TODO : 커스텀 예외? -> jwtexpiredException or 그냥 false 값만 던져도 filter에서 처리
+            // jwtexpiredException or 그냥 false 값만 던져도 filter에서 처리
             return false;
         }
     }
