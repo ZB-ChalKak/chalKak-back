@@ -81,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 4. refresh 토큰 저장
         RefreshToken refreshToken = RefreshToken.builder()
-                .key(member.getId())
+                .memberId(member.getId())
                 .refreshToken(token.getRefreshToken())
                 .build();
 
@@ -107,13 +107,12 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = tokenRequestDto.getAccessToken();
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
 
-
         // 3. user pk로 유저 검색
         Member member = memberRepository.findById(Long.parseLong(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("CustomUserNotFoundException"));
 
         // 4. repository에 refresh token이 있는지 검사
-        RefreshToken refreshToken = refreshTokenRepository.findByKey(member.getId())
+        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
                 .orElseThrow(() -> new RuntimeException("CustomRefreshTokenException"));
         
         // 5. refresh 토큰 일치 검사

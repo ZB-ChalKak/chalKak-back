@@ -18,10 +18,10 @@ public class RefreshToken extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(nullable = false)
-    private Long key;
+    private Long memberId;
 
     @Column(nullable = false)
     private String refreshToken;
