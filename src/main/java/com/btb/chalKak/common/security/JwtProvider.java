@@ -1,15 +1,13 @@
 package com.btb.chalKak.common.security;
 
-import com.btb.chalKak.common.security.service.CustomUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.btb.chalKak.common.security.dto.TokenDto;
+import com.btb.chalKak.common.security.service.Impl.CustomUserDetailsService;
+import com.btb.chalKak.domain.member.type.MemberRole;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private final CustomUserDetailsService userDetailsService;
 
@@ -30,8 +28,12 @@ public class JwtTokenProvider {
     private Key key;
 
     // 토큰 유효 시간은 1시간 (임시)
-    private Long tokenValidMillisecond = 60 * 60 * 1000L;
+    private final Long tokenValidMillisecond = 60 * 60 * 1000L;
 
+    // refresh 토큰 유효 시간은 7일 (임시)
+    private final Long refreshTokenValidMilliSecond = 60 * 60 * 1000L * 24 * 7;
+
+    // secretKey 초기화
     @PostConstruct
     protected void init(){
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -53,20 +55,34 @@ public class JwtTokenProvider {
     }
     
     // 토큰 생성
-    // TODO : 토큰 DTO 생성
-    public String createToken(String email, List<String> roles){
+    public TokenDto createToken(String email, MemberRole roles){
 
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("roles", roles);
 
         Date now = new Date();
 
-        return Jwts.builder()
+        Long accessTokenExpireTime = now.getTime() + tokenValidMillisecond;
+        String accessToken = Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+                .setExpiration(new Date(accessTokenExpireTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidMilliSecond))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return TokenDto.builder()
+                .grantType("baerer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpireDate(accessTokenExpireTime)
+                .build();
     }
 
     // 토큰 인증
@@ -93,7 +109,7 @@ public class JwtTokenProvider {
                     .getExpiration()
                     .before(new Date());
         } catch (Exception e){
-            // TODO : 커스텀 예외? -> jwtexpiredException or 그냥 false 값만 던져도 filter에서 처리
+            // jwtexpiredException or 그냥 false 값만 던져도 filter에서 처리
             return false;
         }
     }

@@ -12,6 +12,11 @@ public enum SuccessCode {
     SUCCESS_LOAD_POST("게시글 조회에 성공했습니다."),
     SUCCESS_DELETE_POST("게시글 삭제에 성공했습니다."),
 
+    SUCCESS_SAVE_MEMBER("회원 가입에 성공했습니다."),
+    SUCCESS_SIGN_IN("로그인에 성공했습니다."),
+    SUCCESS_REISSUE("토큰 재발급 성공"),
+    SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
+
     ;
 
     private final String message;

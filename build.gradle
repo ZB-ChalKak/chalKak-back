@@ -50,7 +50,9 @@ dependencies {
 			"javax.persistence:javax.persistence-api",
 			"javax.annotation:javax.annotation-api",
 			"com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
-  
+
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'

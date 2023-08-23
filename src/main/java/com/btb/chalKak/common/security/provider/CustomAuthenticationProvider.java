@@ -1,6 +1,6 @@
 package com.btb.chalKak.common.security.provider;
 
-import com.btb.chalKak.common.security.service.CustomUserDetailsService;
+import com.btb.chalKak.common.security.service.Impl.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

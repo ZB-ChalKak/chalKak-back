@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public List<Comment> getComments(Long postId) {
 
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<Comment> comments = commentRepository.findCommentByPostId(postId);
 
         if (comments == null) {
             throw new RuntimeException("NOT_EXIST_COMMENT");  // TODO: 2023-08-19 Exception 제어 필요
