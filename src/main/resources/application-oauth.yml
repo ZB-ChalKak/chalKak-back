@@ -8,3 +8,6 @@ spring:
             client-secret: "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"
             scope: profile, email
             redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
+openWeather:
+  key: "b6984cc1cea8abd964d364969316e0af"

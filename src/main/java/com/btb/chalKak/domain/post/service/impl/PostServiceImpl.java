@@ -8,16 +8,22 @@ import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
+import com.btb.chalKak.domain.post.repository.CustomPostRepository;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.post.service.PostService;
-import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +31,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final HashTagRepository hashTagRepository;
     private final StyleTagRepository styleTagRepository;
+
+    private final CustomPostRepository customPostRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
+    private Authentication createMockAuthentication(Member member) {
+        return new UsernamePasswordAuthenticationToken(member, null);
+    }
 
     @Override
     @Transactional
@@ -53,7 +66,7 @@ public class PostServiceImpl implements PostService {
         hashTagRepository.saveAll(hashTags);
 
         // 4. 게시글 저장
-        Post post = postRepository.save(Post.builder()
+        return postRepository.save(Post.builder()
                 .content(request.getContent())
                 .status(PUBLIC)
                 .writer(member)
@@ -62,28 +75,52 @@ public class PostServiceImpl implements PostService {
                 .styleTags(styleTags)
                 .hashTags(hashTags)
                 .build());
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Post> loadPublicPosts(Pageable pageable) {
+        return customPostRepository.loadPublicPosts(pageable.getPageNumber(), pageable.getPageSize());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Post loadPublicPostDetails(Long postId) {
+        // 1. 게시글 조회
+        Post post = loadPublicPostDetailsById(postId);
+        
+        // 2. 조회수 증가
+        increasePostViewCountToRedis(postId);
+        
         return post;
     }
 
     @Override
-    public Post loadPostDetails(Long postId) {
-        // 1. 게시글 조회
+    @Transactional
+    public void deletePost(Authentication authentication, Long postId) {
+        // 1. 글쓴이 조회
+        Member member = (Member) authentication.getPrincipal();
+
+        // 2. 게시글 조회
         Post post = getPostById(postId);
+
+        // 3. 유효성 검사(글쓴이가 본인인지 확인)
+        validateWriter(member, post);
         
-        // 2. 게시글 상태 조회
-        validatePublicStatus(post.getStatus());
-        
-        // 3. 조회수 증가
-        increasePostViewCntToRedis(postId);
-        
-        return post;
+        // 4. 글 삭제
+        post.deletePost();
+        postRepository.save(post);
     }
 
-    private static void validatePublicStatus(PostStatus status) {
-        if (status != PUBLIC) {
-            throw new RuntimeException("CustomPostException");
+    private void validateWriter(Member member, Post post) {
+        if (!Objects.equals(member.getId(), post.getWriter().getId())) {
+            throw new RuntimeException("CustomMemberException");
         }
+    }
+
+    private Post loadPublicPostDetailsById(Long postId) {
+        return customPostRepository.loadPublicPostDetails(postId)
+                .orElseThrow(() -> new RuntimeException("CustomMemberException"));
     }
 
     private Post getPostById(Long postId) {
@@ -96,17 +133,17 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new RuntimeException("CustomMemberException"));
     }
 
-    public void increasePostViewCntToRedis(Long postId) {
-        String key = "PostViewCnt::" + postId;
-        org.springframework.data.redis.core.ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    private void increasePostViewCountToRedis(Long postId) {
+        String key = "PostViewCount::" + postId;
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         if (valueOperations.get(key) == null) {
+            Post post = getPostById(postId);
             valueOperations.set(
                     key,
-                    String.valueOf(getPostById(postId).getViewCount() + 1),
+                    String.valueOf(post.getViewCount() + 1),
                     Duration.ofMinutes(5));
         } else {
             valueOperations.increment(key);
         }
     }
-
 }
