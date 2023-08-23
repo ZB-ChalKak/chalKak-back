@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private final CustomUserDetailsService userDetailsService;
 

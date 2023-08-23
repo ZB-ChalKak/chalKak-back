@@ -1,6 +1,6 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import com.btb.chalKak.common.security.JwtTokenProvider;
+import com.btb.chalKak.common.security.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final StyleTagRepository styleTagRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
