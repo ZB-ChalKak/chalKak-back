@@ -1,4 +1,4 @@
-package com.btb.chalKak.common.security.service;
+package com.btb.chalKak.common.security.service.Impl;
 
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
