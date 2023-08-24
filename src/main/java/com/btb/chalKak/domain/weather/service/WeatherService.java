@@ -8,7 +8,9 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -59,23 +61,29 @@ public class WeatherService {
 
   }
 
-  public WeatherDto getWeatherFromApi(String lat, String lon) {
+  public List<WeatherDto> getWeatherFromApi(String lat, String lon) {
 
     // open weather map에서 날씨 데이터 가져오기
     String weatherDate = getWeatherString(lat,lon);
     // 받아온 날씨 json 파싱
-    Map<String, Object> parsedWeather = parseWeather(weatherDate);
-    WeatherDto dateWeather = WeatherDto.builder()
-        .date(LocalDate.ofInstant(Instant.ofEpochSecond((Long) parsedWeather.get("date")), ZoneId.systemDefault()))
-        .weather(parsedWeather.get("main").toString())
-        .temperature((Double) parsedWeather.get("temp"))
-        .icon(parsedWeather.get("icon").toString())
-        .build();
+    List<Map<String, Object>> parsedWeathers = parseWeather(weatherDate);
+    List<WeatherDto> weatherDtos = new ArrayList<>();
 
-    return dateWeather;
+    for(Map<String,Object> parsedWeather : parsedWeathers){
+
+      WeatherDto dateWeather = WeatherDto.builder()
+          .date(LocalDate.ofInstant(Instant.ofEpochSecond((Long) parsedWeather.get("date")), ZoneId.systemDefault()))
+          .weather(parsedWeather.get("main").toString())
+          .temperature((Double) parsedWeather.get("temp"))
+          .icon(parsedWeather.get("icon").toString())
+          .build();
+
+      weatherDtos.add(dateWeather);
+    }
+    return weatherDtos;
   }
 
-  private Map<String, Object> parseWeather(String jsonString) {
+  private List<Map<String, Object>> parseWeather(String jsonString) {
     JSONParser jsonParser = new JSONParser();
     JSONObject jsonObject;
 
@@ -86,27 +94,35 @@ public class WeatherService {
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }
-    Map<String, Object> resultMap = new HashMap<>();
-    JSONArray weatherList = (JSONArray)jsonObject.get("list");
 
+    JSONArray weatherList = (JSONArray)jsonObject.get("list");
     log.info("weather size" + weatherList.size());
 
-    JSONObject weatherData = (JSONObject) weatherList.get(0);
-    JSONObject mainData = (JSONObject) weatherData.get("main");
-    Long dtData = (Long) weatherData.get("dt");
-    String dataData = (String) weatherData.get("dt_txt");
-    log.info(mainData.toJSONString());
-    log.info("dataData" + dataData);
-    log.info("dataData " + dtData);
-    resultMap.put("date", dtData );
-    resultMap.put("temp", mainData.get("temp"));
+    List<Map<String, Object>> resultMaps = new ArrayList<>();
 
-    JSONArray weatherArray = (JSONArray) weatherData.get("weather");
-    JSONObject weaData = (JSONObject) weatherArray.get(0);
-    resultMap.put("main", weaData.get("main"));
-    resultMap.put("icon", weaData.get("icon"));
+    for(int i=0; i< weatherList.size(); i++){
 
-    return resultMap;
+      Map<String, Object> resultMap = new HashMap<>();
+
+      JSONObject weatherData = (JSONObject) weatherList.get(i);
+      JSONObject mainData = (JSONObject) weatherData.get("main");
+      Long dtData = (Long) weatherData.get("dt");
+      log.info(mainData.toJSONString());
+      log.info("dataData " + dtData);
+      resultMap.put("date", dtData );
+      resultMap.put("temp", mainData.get("temp"));
+
+      JSONArray weatherArray = (JSONArray) weatherData.get("weather");
+      JSONObject weaData = (JSONObject) weatherArray.get(0);
+      resultMap.put("main", weaData.get("main"));
+      resultMap.put("icon", weaData.get("icon"));
+
+      resultMaps.add(resultMap);
+    }
+
+
+
+    return resultMaps;
 
   }
 }
