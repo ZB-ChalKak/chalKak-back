@@ -4,13 +4,10 @@ import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_WEAT
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.weather.service.WeatherService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

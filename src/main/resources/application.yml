@@ -49,3 +49,5 @@ scheduler:
   test:
     cron: "0 0/1 * * * ?"
   cron: "0 */5 * * * *"
+  weather:
+    cron: "0 0 * * * ?"
