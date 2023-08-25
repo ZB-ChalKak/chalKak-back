@@ -27,7 +27,7 @@ public class SignController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpMemberRequest request){
-        memberService.saveMember(request);
+        memberService.signUp(request);
 
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_SAVE_MEMBER));
     }

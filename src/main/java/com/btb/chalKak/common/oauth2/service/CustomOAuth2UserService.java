@@ -20,13 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
+
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final MemberRepository MemberRepository;
+    private final MemberRepository memberRepository;
     private final HttpSession httpSession;
 
     @Override
@@ -53,7 +55,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // OAuthAttributes: OAuth2User의 attribute를 서비스 유형에 맞게 담아줄 클래스
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName ,oAuth2User.getAttributes());
 
-        Member member = saveOrUpdate(attributes);
+        // 1. member가 없을 경우
+
+        Member member =  createGoolgeMember(attributes);
+
+
+        // 3. member가 있고, 구글 소셜 로그인인 경우
+
+        if(member.getStatus() != ACTIVE){
+            throw new RuntimeException("비활성 계정입니다.");
+        }
+
+        member = UpdateGoogleMember(member);
         httpSession.setAttribute("member",new SessionMember(member));
 //        String email = member.getEmail();
 //        List<GrantedAuthority> authorities = authorityUtils.createAuthorities(email);
@@ -64,19 +77,30 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     }
 
-    private Member saveOrUpdate(OAuthAttributes authAttributes) {
+    private Member UpdateGoogleMember(Member member) {
+
+        log.info("oAuth 유저 수정 처리 진행");
+        member.update(member.getNickname(),member.getProfileImg());
+
+        return memberRepository.save(member);
+    }
+
+    private Member createGoolgeMember(OAuthAttributes authAttributes) {
 
         log.info("oAuth 유저 등록 처리 진행");
-        Member member = MemberRepository.findByEmail(authAttributes.getEmail())
-                .map(members -> members.update(authAttributes.getName(), authAttributes.getProfileImageUrl()))
-                .orElse(authAttributes.toEntity());
+        Member member = memberRepository.findByEmail(authAttributes.getEmail())
+                .orElse(null);
 
-        log.info(authAttributes.toString());
-        log.info(member.getEmail());
-        log.info(member.getPassword());
-        log.info(member.getNickname());
-        log.info(member.getProfileImg());
-        log.info(member.getRole().getRole());
-        return MemberRepository.save(member);
+//        if(member != null && member.getProvider() != GOOGLE){
+//            log.info("구글 계정이 아닙니다.");
+//            throw new RuntimeException("구글 계정이 아닙니다.");
+//        }
+
+        if(member == null){
+            member = authAttributes.toEntity();
+            memberRepository.save(member);
+        }
+
+        return member;
     }
 }
