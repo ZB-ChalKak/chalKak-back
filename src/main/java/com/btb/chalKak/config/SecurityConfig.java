@@ -1,5 +1,6 @@
 package com.btb.chalKak.config;
 
+import com.btb.chalKak.common.oauth2.handler.OAuth2SuccessHandler;
 import com.btb.chalKak.common.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,8 +56,9 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/") // 로그 아웃 성공 시 / 주소로 이동
             .and()
                 .oauth2Login()
+                .defaultSuccessUrl("/")
+                .successHandler(oAuth2SuccessHandler)
                 .userInfoEndpoint()
-
                 .userService(customOAuth2UserService) // 소셜 로그인 성공 시 후속 조치를 진행할 UserService 구현체
             ;
 
