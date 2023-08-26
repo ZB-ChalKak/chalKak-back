@@ -1,4 +1,4 @@
-package com.btb.chalKak.domain.weather.scheduler;
+package com.btb.chalKak.scheduler;
 
 import com.btb.chalKak.domain.weather.dto.WeatherDto;
 import com.btb.chalKak.domain.weather.entity.Weather;
