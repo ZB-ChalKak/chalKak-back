@@ -26,7 +26,7 @@ import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
     private final HttpSession httpSession;
@@ -34,8 +34,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest)
                             throws OAuth2AuthenticationException {
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> service = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = service.loadUser(userRequest);  // OAuth2 정보를 가져옵니다.
+        OAuth2User oAuth2User = super.loadUser(userRequest);  // OAuth2 정보를 가져옵니다.
+
+        validateAttributes(oAuth2User.getAttributes());
 
         Map<String, Object> originAttributes = oAuth2User.getAttributes();  // OAuth2User의 attribute
 
@@ -70,10 +71,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         httpSession.setAttribute("member",new SessionMember(member));
 //        String email = member.getEmail();
 //        List<GrantedAuthority> authorities = authorityUtils.createAuthorities(email);
-
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(member.getRole().getRole()))
-                                                , attributes.getAttributes()
-                                                ,attributes.getNameAttributesKey());
+//
+//        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(member.getRole().getRole()))
+//                                                , attributes.getAttributes()
+//                                                ,attributes.getNameAttributesKey());
+        return UserPrincipal.create(member, attributes.getAttributes());
 
     }
 
@@ -102,5 +104,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         return member;
+    }
+
+    private void validateAttributes(Map<String, Object> attributes) {
+        if (!attributes.containsKey("email")) {
+            throw new IllegalArgumentException("서드파티의 응답에 email이 존재하지 않습니다!!!");
+        }
     }
 }

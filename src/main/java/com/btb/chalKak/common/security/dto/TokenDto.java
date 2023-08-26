@@ -15,4 +15,14 @@ public class TokenDto {
     private String accessToken;
     private String refreshToken;
     private Long accessTokenExpireDate;
+
+    @Override
+    public String toString() {
+        return "TokenDto{" +
+            "grantType='" + grantType + '\'' +
+            ", accessToken='" + accessToken + '\'' +
+            ", refreshToken='" + refreshToken + '\'' +
+            ", accessTokenExpireDate=" + accessTokenExpireDate +
+            '}';
+    }
 }
