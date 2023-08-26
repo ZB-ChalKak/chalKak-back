@@ -9,6 +9,7 @@ import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.common.security.service.Impl.TokenServiceImpl;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
@@ -34,6 +35,8 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final TokenServiceImpl tokenService;
 
     @Override
     @Transactional
@@ -84,15 +87,8 @@ public class MemberServiceImpl implements MemberService {
         checkPassword(request.getPassword(), member.getPassword());
         
         // 3. 토큰 생성
-        TokenDto token = jwtTokenProvider.createToken(member.getEmail(), MemberRole.USER);
-
         // 4. refresh 토큰 저장
-        RefreshToken refreshToken = RefreshToken.builder()
-                .memberId(member.getId())
-                .refreshToken(token.getRefreshToken())
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
+        TokenDto token = tokenService.createToken(member.getEmail(), member.getId());
 
         // 5. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
@@ -143,5 +139,14 @@ public class MemberServiceImpl implements MemberService {
         if(!passwordEncoder.matches(actual, expected)) {
             throw new RuntimeException("CustomMemberException");
         }
+    }
+
+    public Long findMemberId(String email){
+
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("CustomMemberException"));
+
+        return member.getId();
+
     }
 }
