@@ -28,6 +28,11 @@ public enum SuccessCode {
     SUCCESS_LIKE("좋아요 등록에 성공했습니다."),
     SUCCESS_UNLIKE("좋아요 삭제에 성공했습니다."),
 
+    // 팔로우
+
+    SUCCESS_FOLLOW("팔로우 등록에 성공했습니다."),
+    SUCCESS_UNFOLLOW("팔로우 취소에 성공했습니다.")
+
 
     ;
 
