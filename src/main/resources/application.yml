@@ -41,7 +41,7 @@ spring:
 
   # jwt
   jwt:
-    secret: ZeroBase_Team3_#Chalkak_BackEnd_SeCrEtKEy
+    secret: UmVjb21tZW5kYXRpb24gU2VydmljZSBDaGFsa2FrIEJ5IFplcm9CYXNlIEJhY2tlbmQgU2Nob29sIDExIA==
 
   # redis
   redis:

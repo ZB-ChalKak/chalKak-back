@@ -8,9 +8,10 @@ import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 
 public interface MemberService {
 
+    // 회원 가입
     void signUp(SignUpMemberRequest request);
 
-    SignInMemberResponse logIn(SignInMemberRequest request);
+    SignInMemberResponse SignIn(SignInMemberRequest request);
 
     TokenDto reissue(TokenRequestDto tokenRequestDto);
 }

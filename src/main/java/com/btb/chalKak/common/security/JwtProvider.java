@@ -1,11 +1,15 @@
 package com.btb.chalKak.common.security;
 
+import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
 import com.btb.chalKak.common.security.dto.TokenDto;
-import com.btb.chalKak.common.security.service.Impl.CustomUserDetailsService;
 import com.btb.chalKak.domain.member.type.MemberRole;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -16,10 +20,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
+    
+    private static final String TOKEN_HEADER = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String KEY_ROLE = "role";
+
+    private static final Long ACCESS_TOKEN_EXPIRE_TIME = 3 * 60 * 60 * 1000L; // 3 hour
+    private static final Long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7 day
 
     private final CustomUserDetailsService userDetailsService;
 
@@ -27,42 +40,19 @@ public class JwtProvider {
     private String secretKey;
     private Key key;
 
-    // 토큰 유효 시간은 1시간 (임시)
-    private final Long tokenValidMillisecond = 60 * 60 * 1000L;
-
-    // refresh 토큰 유효 시간은 7일 (임시)
-    private final Long refreshTokenValidMilliSecond = 60 * 60 * 1000L * 24 * 7;
-
-    // secretKey 초기화
     @PostConstruct
     protected void init(){
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-    }
-    
-    // token 으로 claims 추출
-    public Claims getClaimsByToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // token 으로 email 추출
-    public String getEmailByToken(String token){
-        return getClaimsByToken(token)
-                .getSubject();
-    }
-    
-    // 토큰 생성
-    public TokenDto createToken(String email, MemberRole roles){
-
+    public TokenDto createToken(String email, MemberRole role) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", roles);
+        claims.put(KEY_ROLE, role);
 
         Date now = new Date();
 
-        Long accessTokenExpireTime = now.getTime() + tokenValidMillisecond;
+        long accessTokenExpireTime = now.getTime() + ACCESS_TOKEN_EXPIRE_TIME;
         String accessToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
@@ -73,44 +63,60 @@ public class JwtProvider {
 
         String refreshToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setExpiration(new Date(now.getTime() + refreshTokenValidMilliSecond))
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         return TokenDto.builder()
-                .grantType("bearer")
+                .grantType(TOKEN_PREFIX.substring(0, TOKEN_PREFIX.length() - 1))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .accessTokenExpireDate(accessTokenExpireTime)
                 .build();
     }
 
-    // 토큰 인증
-    public Authentication getAuthentication(String token) {
-        UserDetails user = userDetailsService.loadUserByUsername(this.getEmailByToken(token));
+    // 토큰 추출
+    public String resolveTokenFromRequest(HttpServletRequest request) {
+        String token = request.getHeader(TOKEN_HEADER);
 
-        return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
-    }
-    
-    // 토큰 정보 헤더에서 읽어오기
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
+        if (!ObjectUtils.isEmpty(token) && token.startsWith(TOKEN_PREFIX)) {
+            return token.substring(TOKEN_PREFIX.length());
+        }
+
+        return null;
     }
 
     // 토큰 유효성 검증
-    public boolean validateToken(String token){
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
-
-            return !claims.getBody()
-                    .getExpiration()
-                    .before(new Date());
-        } catch (Exception e){
-            // jwtexpiredException or 그냥 false 값만 던져도 filter에서 처리
+    public boolean validateToken(String token) {
+        // token 값이 빈 값일 경우 유효하지 않다.
+        if (!StringUtils.hasText(token)) {
             return false;
         }
+
+        Claims claims = parseClaims(token);
+        return !claims.getExpiration().before(new Date());
     }
+
+    // JWT 토큰 복호화
+    public Claims parseClaims(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    // Security 권한 확인
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getSubjectByToken(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    // Subject(email) 가져오기
+    public String getSubjectByToken(String token){
+        return parseClaims(token).getSubject();
+    }
+    
+
+    
 }

@@ -1,9 +1,7 @@
 package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
-import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
-import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
-import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
+import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.member.type.Gender;
@@ -12,8 +10,6 @@ import com.btb.chalKak.domain.member.type.MemberRole;
 import com.btb.chalKak.domain.member.type.MemberStatus;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,15 +23,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Builder
@@ -43,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Entity
 @Table(name = "member")
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseTimeEntity {
 
     @Id
     @Column(name ="member_id", nullable = false)
@@ -71,19 +62,14 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(name = "weight")
     private double weight;
 
-    @Column(name = "privacy_height")
-    private boolean privacyHeight;
-
-    @Column(name = "privacy_weight")
-    private boolean privacyWeight;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Builder.Default
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberStatus status;
+    private MemberStatus status = INACTIVE;
 
     @Builder.Default
     @Column(name = "role", nullable = false)
@@ -105,47 +91,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.nickname = name;
         this.profileImg = profileImageUrl;
         return this;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();
-        auth.add(new SimpleGrantedAuthority(role.getRole()));
-        return auth;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isAccountNonExpired() {
-        // 사용자 계정 만료(탈퇴) 여부 반환
-        return this.status != WITHDRAWAL;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isAccountNonLocked() {
-        // 사용자 계정 잠금 여부 반환
-        return this.status != BLOCKED;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isCredentialsNonExpired() {
-        // 사용자 인증 정보 만료 여부 반환
-        return true;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isEnabled() {
-        // 사용자 계정 활성화 여부 반환
-        return this.status == ACTIVE;
     }
 
 }
