@@ -1,9 +1,8 @@
 package com.btb.chalKak.common.security.provider;
 
-import com.btb.chalKak.common.security.service.Impl.CustomUserDetailsService;
+import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -12,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     private final CustomUserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -32,9 +30,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         validateAuthenticate(member);
 
         // 2. 비밀번호 검증
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new BadCredentialsException("이메일 또는 비밀번호를 잘못 입력했습니다.");
-        }
+//        if (!passwordEncoder.matches(password, member.getPassword())) {
+//            throw new BadCredentialsException("이메일 또는 비밀번호를 잘못 입력했습니다.");
+//        }
 
         return new UsernamePasswordAuthenticationToken(email, password, member.getAuthorities());
     }
