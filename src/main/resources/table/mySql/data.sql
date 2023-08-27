@@ -1,10 +1,10 @@
 -- 테스트를 위한 DML 작성
 
 -- 멤버 데이터 삽입
-INSERT INTO member (email, nickname, password, profile_img, height, weight, privacy_height, privacy_weight, gender, status, role)
+INSERT INTO member (email, nickname, password, profile_img, height, weight, privacy_height, privacy_weight, gender, status, role , provider)
 VALUES
-    ('user@test.com', '테스트', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', '/path/to/profile.jpg', 170.5, 65.2, TRUE, FALSE, 'MALE', 'ACTIVE', 'USER'),
-    ('admin@test.com', '어드민', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', null, 162.0, 55.7, FALSE, TRUE, 'FEMALE', 'ACTIVE', 'USER')
+    ('user@test.com', '테스트', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', '/path/to/profile.jpg', 170.5, 65.2, TRUE, FALSE, 'MALE', 'ACTIVE', 'USER', 'CHALKAK'),
+    ('admin@test.com', '어드민', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', null, 162.0, 55.7, FALSE, TRUE, 'FEMALE', 'ACTIVE', 'USER', 'CHALKAK')
 ;
 
 -- 정적 태그 데이터 삽입

@@ -2,6 +2,7 @@ package com.btb.chalKak.domain.member.service.Impl;
 
 import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_EMAIL;
 import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.common.security.JwtProvider;
@@ -57,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
                 .gender(request.getGender())
                 .height(request.getHeight())
                 .weight(request.getWeight())
+                        .provider(CHALKAK)
                 .privacyHeight(request.isPrivacyHeight())
                 .privacyWeight(request.isPrivacyWeight())
                 .styleTags(styleTags)
@@ -82,6 +84,11 @@ public class MemberServiceImpl implements MemberService {
 
         // 1. 존재하는 이메일인지 확인
         Member member = getMemberByEmail(request.getEmail());
+
+        // 1.5 memberprovider 추가로 provider 확인 필요
+        if(member.getProvider() != CHALKAK){
+            new RuntimeException("CHALKAK 계정이 아닙니다.");
+        }
 
         // 2. 비밀번호 일치 여부 확인 -> passEncoder match 함수 사용
         checkPassword(request.getPassword(), member.getPassword());
