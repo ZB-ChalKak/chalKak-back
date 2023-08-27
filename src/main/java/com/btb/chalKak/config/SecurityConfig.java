@@ -1,15 +1,18 @@
 package com.btb.chalKak.config;
 
 import com.btb.chalKak.common.oauth2.service.CustomOAuth2UserService;
+import com.btb.chalKak.common.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,9 +20,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -58,7 +64,8 @@ public class SecurityConfig {
                 .userService(customOAuth2UserService) // 소셜 로그인 성공 시 후속 조치를 진행할 UserService 구현체
             ;
 
-
+        // JWT 인증 필터 적용
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -81,4 +88,30 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public AuthenticationManager authenticationManager() {
+//        return new ProviderManager(customAuthenticationProvider);
+//    }
+
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() {
+//        List<AuthenticationProvider> authenticationProviderList = new ArrayList<>();
+//        authenticationProviderList.add(authenticationProvider);
+//        ProviderManager authenticationManager = new ProviderManager(authenticationProviderList);
+//        authenticationManager.setAuthenticationEventPublisher(defaultAuthenticationEventPublisher());
+//        return authenticationManager;
+//    }
+//
+//    @Bean
+//    DefaultAuthenticationEventPublisher defaultAuthenticationEventPublisher() {
+//        return new DefaultAuthenticationEventPublisher();
+//    }
+
+    //    @Bean
+//    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+//        AuthenticationManagerBuilder authenticationManagerBuilder =
+//                http.getSharedObject(AuthenticationManagerBuilder.class);
+//        authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
+//        return authenticationManagerBuilder.build();
+//    }
 }
