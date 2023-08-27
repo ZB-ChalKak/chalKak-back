@@ -47,53 +47,36 @@ class CommentServiceImplTest {
   @Test
   @DisplayName("댓글 생성")
   void createComment() {
-
+    // given
     Long memberId = 20L;
-    Member member = Member.builder()
-        .id(memberId)
-        .build();
-
-    given(memberRepository.findById(memberId))
-        .willReturn(Optional.of(member));
-
     Long postId = 20L;
 
-    Post post = Post.builder()
-        .id(postId)
-        .build();
+    Member member = Member.builder().id(memberId).build();
+    Post post = Post.builder().id(postId).build();
 
-    given(postRepository.findById(postId))
-        .willReturn(Optional.of(post));
-
-
+    given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
 
     CreateCommentRequest request = CreateCommentRequest.builder()
-        .content("댓글")
-        .memberId(20L)
-        .postId(20L)
-        .build();
+            .content("Comment")
+            .memberId(memberId)
+            .postId(postId)
+            .build();
 
-    Post post1 = postRepository.findById(request.getPostId())
-        .orElseThrow(()-> new RuntimeException("not post"));
+    Comment expectedComment = Comment.builder()
+            .id(15L)
+            .post(post)
+            .member(member)
+            .comment("Comment")
+            .build();
 
-    Member member1 = memberRepository.findById(request.getMemberId())
-        .orElseThrow(()->new RuntimeException("not member"));
-
-    Comment comment = Comment.builder()
-        .id(15L)
-        .post(post1)
-        .member(member1)
-        .comment(request.getContent())
-        .build();
-
-    given(commentRepository.save(any(Comment.class)))
-        .willReturn(comment);
+    given(commentRepository.save(any(Comment.class))).willReturn(expectedComment);
 
     // when
-    Comment saved = commentService.createComment(request);
+    Comment savedComment = commentService.createComment(request);
 
     // then
-    assertEquals(request.getContent(), saved.getComment());
+    assertEquals(request.getContent(), savedComment.getComment());
 
 
   }
