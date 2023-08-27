@@ -1,26 +1,20 @@
 package com.btb.chalKak.domain.comment.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
-
+import com.btb.chalKak.common.response.dto.CommonResponse;
+import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
 import com.btb.chalKak.domain.comment.dto.response.CommentResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.service.CommentService;
-import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.response.service.ResponseService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.btb.chalKak.common.response.type.SuccessCode.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -38,7 +32,7 @@ public class CommentController {
                 .commentId(commentService.createComment(request).getId())
                 .build();
 
-        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_COMMENT);
         return ResponseEntity.ok(response);
     }
 
@@ -48,7 +42,7 @@ public class CommentController {
 
         List<Comment> comments = commentService.getComments(postId);
 
-        CommonResponse<?> response = responseService.success(comments, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(comments, SUCCESS_LOAD_COMMENT);
         return ResponseEntity.ok(response);
     }
 
@@ -60,7 +54,7 @@ public class CommentController {
             .commentId(commentService.modifyComment(request).getId())
             .build();
 
-        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(data, SUCCESS_MODIFY_COMMENT);
         return ResponseEntity.ok(response);
     }
 
@@ -74,7 +68,7 @@ public class CommentController {
                                 request);
 
 
-        CommonResponse<?> response = responseService.success(isDeleted, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(isDeleted, SUCCESS_DELETE_COMMENT);
         return ResponseEntity.ok(response);
     }
 }
