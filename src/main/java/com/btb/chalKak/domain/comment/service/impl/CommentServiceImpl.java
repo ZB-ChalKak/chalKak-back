@@ -68,13 +68,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public boolean deleteComment(DeleteCommentRequest request) {
 
-        // TODO: 2023-08-19 todo MemberId 검증 필요 
-        
-        return commentRepository.deleteCommentById(request.getCommentId());
-    }
+        // MemberId verification
+        Comment comment = commentRepository.findById(request.getCommentId())
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
+        if(!comment.getMember().getId().equals(request.getMemberId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        int deletedCount = commentRepository.deleteCommentById(request.getCommentId());
+
+        return deletedCount > 0;
+    }
 //        @Override
 //    @Transactional
 //    public Long saveComment(SaveCommentRequest request) {

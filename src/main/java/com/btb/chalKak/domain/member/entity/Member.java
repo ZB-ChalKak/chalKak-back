@@ -5,6 +5,7 @@ import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.member.type.Gender;
+import com.btb.chalKak.domain.member.type.MemberProvider;
 import com.btb.chalKak.domain.member.type.MemberRole;
 import com.btb.chalKak.domain.member.type.MemberStatus;
 import com.btb.chalKak.domain.post.entity.Post;
@@ -51,6 +52,10 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "profile_img")
     private String profileImg;
+
+    @Column(name = "provider", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MemberProvider provider;
 
     @Column(name = "height")
     private double height;

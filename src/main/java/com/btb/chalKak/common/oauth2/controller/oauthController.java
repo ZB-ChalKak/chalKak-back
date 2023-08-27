@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,15 +26,7 @@ public class oauthController {
       model.addAttribute("memberName", member.getName());
     }
 
-
-//    log.info(member.toString());
-
     return "index";
   }
 
-  @GetMapping("/login/oauth2/{code}/{registrationId}")
-  public void googleLogin(@PathVariable String code, @PathVariable String registrationId) {
-        log.info("google code " + code);
-        log.info("google registrationId " + registrationId);
-  }
 }

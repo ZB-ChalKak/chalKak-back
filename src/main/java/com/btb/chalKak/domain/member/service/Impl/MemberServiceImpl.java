@@ -4,6 +4,8 @@ import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_EMAI
 import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
 import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_EMAIL;
 import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
+
 
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.common.security.JwtProvider;
@@ -11,6 +13,7 @@ import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.common.security.service.Impl.TokenServiceImpl;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
@@ -36,6 +39,8 @@ public class MemberServiceImpl implements MemberService {
     private final JwtProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final TokenServiceImpl tokenService;
+
     @Override
     @Transactional
     public void signUp(SignUpMemberRequest request) {
@@ -55,6 +60,7 @@ public class MemberServiceImpl implements MemberService {
                 .gender(request.getGender())
                 .height(request.getHeight())
                 .weight(request.getWeight())
+                .provider(CHALKAK)
                 .styleTags(styleTags)
                 .build()
         );
@@ -78,6 +84,10 @@ public class MemberServiceImpl implements MemberService {
         // 1. 존재하는 이메일인지 확인
         Member member = getMemberByEmail(request.getEmail());
 
+        if(member.getProvider() != CHALKAK){
+            new RuntimeException("CHALKAK 계정이 아닙니다.");
+        }
+      
         // 2. 비밀번호 일치 여부 확인
         validatePasswordWithDB(request.getPassword(), member.getPassword());
 
@@ -85,12 +95,7 @@ public class MemberServiceImpl implements MemberService {
         TokenDto token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
 
         // 4. refresh 토큰 저장
-        RefreshToken refreshToken = RefreshToken.builder()
-                .memberId(member.getId())
-                .refreshToken(token.getRefreshToken())
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
+        TokenDto token = tokenService.createToken(member.getEmail(), member.getId());
 
         // 5. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
@@ -141,5 +146,14 @@ public class MemberServiceImpl implements MemberService {
         if(!passwordEncoder.matches(inputPassword, encodedPassword)) {
             throw new MemberException(MISMATCH_PASSWORD);
         }
+    }
+
+    public Long findMemberId(String email){
+
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("CustomMemberException"));
+
+        return member.getId();
+
     }
 }
