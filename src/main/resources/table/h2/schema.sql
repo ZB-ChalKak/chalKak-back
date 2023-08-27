@@ -32,7 +32,7 @@ CREATE TABLE member
     member_id      BIGINT PRIMARY KEY AUTO_INCREMENT,
     email          VARCHAR(100) UNIQUE NOT NULL,
     nickname       VARCHAR(100)        NOT NULL,
-    password       VARCHAR(60)         NOT NULL,
+    password       VARCHAR(60) ,
     profile_img    VARCHAR(255),
     height         DOUBLE,
     weight         DOUBLE,

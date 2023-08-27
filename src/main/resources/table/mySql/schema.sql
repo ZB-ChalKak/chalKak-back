@@ -32,7 +32,7 @@ CREATE TABLE member
     member_id      BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     email          VARCHAR(100) UNIQUE NOT NULL COMMENT '이메일',
     nickname       VARCHAR(100)        NOT NULL COMMENT '닉네임',
-    password       VARCHAR(60)         NOT NULL COMMENT '비밀번호',
+    password       VARCHAR(60)         COMMENT '비밀번호',
     profile_img    VARCHAR(255) COMMENT '프로필 이미지 경로',
     height         DOUBLE COMMENT '키',
     weight         DOUBLE COMMENT '몸무게',
