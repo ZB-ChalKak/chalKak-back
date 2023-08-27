@@ -7,11 +7,15 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignUpMemberRequest {
 
     @NotBlank(message = "이메일이 누락되었습니다.")
@@ -26,7 +30,6 @@ public class SignUpMemberRequest {
     @NotBlank(message = "닉네임이 누락되었습니다.")
     private String nickname;
 
-    @NotBlank(message = "성별이 누락되었습니다.")
     private Gender gender;
 
     @NotNull(message = "키가 누락되었습니다.")
@@ -34,11 +37,11 @@ public class SignUpMemberRequest {
     @NotNull(message = "체중이 누락되었습니다.")
     private Double weight;
 
-    @NotNull(message = "키 프라이버시 설정이 누락되었습니다.")
-    private boolean privacyHeight;
-    @NotNull(message = "체중 프라이버시 설정이 누락되었습니다.")
-    private boolean privacyWeight;
+//    @NotNull(message = "키 프라이버시 설정이 누락되었습니다.")
+//    private boolean privacyHeight;
+//    @NotNull(message = "체중 프라이버시 설정이 누락되었습니다.")
+//    private boolean privacyWeight;
 
-    @NotNull(message = "키워드가 누락되었습니다.")
+//    @NotEmpty(message = "키워드는 최소 1개 이상이어야 합니다.")
     private List<Long> styleTags;
 }

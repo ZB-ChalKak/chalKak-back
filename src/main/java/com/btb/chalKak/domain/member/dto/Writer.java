@@ -15,9 +15,6 @@ public class Writer {
     private double height;
     private double weight;
 
-    private boolean privacyHeight;
-    private boolean privacyWeight;
-
     public static Writer fromEntity(Member member) {
         return Writer.builder()
                 .id(member.getId())
@@ -25,8 +22,6 @@ public class Writer {
                 .profileImg(member.getProfileImg())
                 .height(member.getHeight())
                 .weight(member.getWeight())
-                .privacyHeight(member.isPrivacyHeight())
-                .privacyWeight(member.isPrivacyWeight())
                 .build();
     }
 
