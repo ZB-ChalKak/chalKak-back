@@ -41,6 +41,7 @@ CREATE TABLE member
     gender         VARCHAR(20),
     status         VARCHAR(20),
     role           VARCHAR(20),
+    provider           VARCHAR(20),
     created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
 );
