@@ -27,19 +27,19 @@ CREATE TABLE hash_tag
 -- 멤버 정보
 CREATE TABLE member
 (
-    member_id      BIGINT PRIMARY KEY AUTO_INCREMENT,
-    email          VARCHAR(100) UNIQUE NOT NULL,
-    nickname       VARCHAR(100)        NOT NULL,
-    password       VARCHAR(60) ,
-    profile_img    VARCHAR(255),
-    height         DOUBLE,
-    weight         DOUBLE,
-    gender         VARCHAR(20),
-    status         VARCHAR(20),
-    role           VARCHAR(20),
-    provider           VARCHAR(20),
-    created_at     TIMESTAMP           NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMP           NOT NULL DEFAULT NOW()
+    member_id   BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email       VARCHAR(100) UNIQUE NOT NULL,
+    nickname    VARCHAR(100)        NOT NULL,
+    password    VARCHAR(60),
+    profile_img VARCHAR(255),
+    height      DOUBLE,
+    weight      DOUBLE,
+    gender      VARCHAR(20),
+    status      VARCHAR(20),
+    role        VARCHAR(20),
+    provider    VARCHAR(20),
+    created_at  TIMESTAMP           NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP           NOT NULL DEFAULT NOW()
 );
 
 -- 멤버와 스타일 태그 조인 테이블
