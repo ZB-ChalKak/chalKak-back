@@ -1,9 +1,12 @@
 spring:
-
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
   h2:
     console:
       enabled: true
-
   sql:
     init:
       schema-locations: classpath*:table/h2/schema.sql
@@ -49,3 +52,5 @@ scheduler:
   test:
     cron: "0 0/1 * * * ?"
   cron: "0 */5 * * * *"
+  weather:
+    cron: "0 0 * * * ?"

@@ -26,11 +26,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
     }
 
-    @ExceptionHandler(PostException.class)
-    public ResponseEntity<?> handlePostException(PostException e) {
-        log.error("PostException is occurred. {}",  e.getMessage());
-        return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
-    }
+//    @ExceptionHandler(PostException.class)
+//    public ResponseEntity<?> handlePostException(PostException e) {
+//        log.error("PostException is occurred. {}",  e.getMessage());
+//        return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){

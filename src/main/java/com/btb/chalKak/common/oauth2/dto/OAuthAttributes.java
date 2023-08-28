@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import java.util.Map;
 
+import static com.btb.chalKak.domain.member.type.MemberProvider.GOOGLE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
+
 @Getter
 @ToString
 public class OAuthAttributes {
@@ -55,9 +58,10 @@ public class OAuthAttributes {
         return Member.builder()
             .nickname(name)
             .email(email)
-            .password("default")
             .profileImg(profileImageUrl)
+                .provider(GOOGLE)
             .role(MemberRole.USER)
+            .status(ACTIVE)
             .build();
     }
 
