@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SavePostResponse {
+public class WritePostResponse {
 
     private Long postId;
 
