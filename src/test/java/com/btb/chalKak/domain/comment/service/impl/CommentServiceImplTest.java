@@ -1,6 +1,5 @@
 package com.btb.chalKak.domain.comment.service.impl;
 
-import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -11,12 +10,10 @@ import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
-import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.post.service.impl.PostServiceImpl;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

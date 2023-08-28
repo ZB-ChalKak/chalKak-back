@@ -12,9 +12,7 @@ CREATE TABLE style_tag
 (
     style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     category     VARCHAR(20)         NOT NULL,
-    keyword      VARCHAR(100) UNIQUE NOT NULL,
-    created_at   TIMESTAMP           NOT NULL DEFAULT NOW(),
-    updated_at   TIMESTAMP           NOT NULL DEFAULT NOW()
+    keyword      VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- 동적 태그 (해시 태그)
@@ -36,8 +34,6 @@ CREATE TABLE member
     profile_img    VARCHAR(255),
     height         DOUBLE,
     weight         DOUBLE,
-    privacy_height BOOLEAN,
-    privacy_weight BOOLEAN,
     gender         VARCHAR(20),
     status         VARCHAR(20),
     role           VARCHAR(20),
@@ -59,14 +55,17 @@ CREATE TABLE member_style_tag
 -- 포스트 정보
 CREATE TABLE post
 (
-    post_id    BIGINT PRIMARY KEY AUTO_INCREMENT,
-    content    TEXT,
-    view_count BIGINT               DEFAULT 0,
-    like_count BIGINT               DEFAULT 0,
-    status     VARCHAR(20) NOT NULL,
-    member_id  BIGINT,
-    created_at TIMESTAMP   NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP   NOT NULL DEFAULT NOW(),
+    post_id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    member_id      BIGINT,
+    content        TEXT,
+    view_count     BIGINT               DEFAULT 0,
+    like_count     BIGINT               DEFAULT 0,
+    privacy_height BOOLEAN,
+    privacy_weight BOOLEAN,
+    location       VARCHAR(100),
+    status         VARCHAR(20) NOT NULL,
+    created_at     TIMESTAMP   NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP   NOT NULL DEFAULT NOW(),
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 

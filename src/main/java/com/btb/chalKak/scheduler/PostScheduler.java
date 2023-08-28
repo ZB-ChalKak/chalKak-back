@@ -1,6 +1,6 @@
 package com.btb.chalKak.scheduler;
 
-import com.btb.chalKak.domain.post.repository.CustomPostRepository;
+import com.btb.chalKak.domain.post.repository.PostRepository;
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostScheduler {
 
-    private final CustomPostRepository customPostRepository;
+    private final PostRepository postRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
@@ -30,7 +30,7 @@ public class PostScheduler {
             Long viewCount = Long.parseLong(String.valueOf(redisTemplate.opsForValue().get(postViewCountKey)));
             
             // DB 데이터 반영
-            customPostRepository.addViewCountFromRedis(postId, viewCount);
+            postRepository.addViewCountFromRedis(postId, viewCount);
             
             // 캐시 데이터 삭제
             redisTemplate.delete(postViewCountKey);

@@ -43,8 +43,8 @@ VALUES ('휴가'),
 ;
 
 -- 포스트 정보 삽입
-INSERT INTO post (content, view_count, like_count, status, member_id)
-VALUES ('첫 번째 포스트 내용', 0, 0, 'PUBLIC', 1)
+INSERT INTO post (member_id, content, view_count, like_count, privacy_height, privacy_weight, location, status)
+VALUES (1, '첫 번째 포스트 내용', 0, 0, true, true, '경기도 부천시 소사구', 'PUBLIC')
 ;
 
 -- 포스트와 스타일 태그 조인 테이블 삽입

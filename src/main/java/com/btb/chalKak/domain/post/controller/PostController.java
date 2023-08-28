@@ -2,19 +2,20 @@ package com.btb.chalKak.domain.post.controller;
 
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_DELETE_POST;
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_POST;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_WRITE_POST;
 
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
+import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostDetailsResponse;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
-import com.btb.chalKak.domain.post.dto.response.SavePostResponse;
+import com.btb.chalKak.domain.post.dto.response.WritePostResponse;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,13 +35,17 @@ public class PostController {
     private final ResponseService responseService;
 
     @PostMapping
-    public ResponseEntity<?> savePost(@RequestBody SavePostRequest request) {
-        Post post = postService.savePost(request);
-        SavePostResponse data = SavePostResponse.builder()
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> write(
+            Authentication authentication,
+            @RequestBody WritePostRequest request)
+    {
+        Post post = postService.write(authentication, request);
+        WritePostResponse data = WritePostResponse.builder()
                 .postId(post.getId())
                 .build();
 
-        return ResponseEntity.ok(responseService.success(data, SUCCESS_SAVE_POST));
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_WRITE_POST));
     }
 
     @GetMapping
@@ -56,6 +61,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> loadPublicPostDetails(@PathVariable Long postId) {
         Post post = postService.loadPublicPostDetails(postId);
         LoadPublicPostDetailsResponse data = LoadPublicPostDetailsResponse.fromEntity(post);
@@ -64,8 +70,10 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}/delete")
-    public ResponseEntity<?> deletePost(Authentication authentication, @PathVariable String postId) {
-        postService.deletePost(authentication, Long.valueOf(postId));
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deletePost(
+            Authentication authentication, @PathVariable String postId) {
+        postService.delete(authentication, Long.valueOf(postId));
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_DELETE_POST));
     }
 }

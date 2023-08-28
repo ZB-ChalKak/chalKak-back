@@ -6,12 +6,17 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SavePostRequest {
+public class WritePostRequest {
     
-    private Long memberId;
     private String content;
+
     private List<Long> styleTags;
     private List<String> hashTags;
+
+    private boolean privacyHeight;
+    private boolean privacyWeight;
+
+    private String location;
     
     // TODO 이미지 작업 추가 필요
 
