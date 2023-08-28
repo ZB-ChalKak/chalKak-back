@@ -32,4 +32,5 @@ public class LoadPublicPostsResponse {
                 .posts(loadPublicPostDetailsResponses)
                 .build();
     }
+
 }
