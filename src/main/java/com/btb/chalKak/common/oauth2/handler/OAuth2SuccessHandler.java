@@ -1,24 +1,18 @@
 package com.btb.chalKak.common.oauth2.handler;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
-
 import com.btb.chalKak.common.oauth2.service.TemporaryTokenStoreService;
 import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.response.type.SuccessCode;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.service.Impl.TokenServiceImpl;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
-import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
