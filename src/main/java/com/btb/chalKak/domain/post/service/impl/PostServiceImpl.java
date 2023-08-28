@@ -1,14 +1,15 @@
 package com.btb.chalKak.domain.post.service.impl;
 
-import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
+import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_POST_ID;
+import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_WRITER;
 
+import com.btb.chalKak.common.exception.PostException;
+import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.member.entity.Member;
-import com.btb.chalKak.domain.member.repository.MemberRepository;
-import com.btb.chalKak.domain.post.dto.request.SavePostRequest;
+import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
-import com.btb.chalKak.domain.post.repository.CustomPostRepository;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.post.service.PostService;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,23 +32,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final HashTagRepository hashTagRepository;
     private final StyleTagRepository styleTagRepository;
 
-    private final CustomPostRepository customPostRepository;
-
     private final RedisTemplate<String, String> redisTemplate;
-
-    private Authentication createMockAuthentication(Member member) {
-        return new UsernamePasswordAuthenticationToken(member, null);
-    }
 
     @Override
     @Transactional
-    public Post savePost(SavePostRequest request) {
+    public Post write(Authentication authentication, WritePostRequest request) {
         // 1. 회원 조회
-        Member member = getMemberById(request.getMemberId());
+        Member member = getMemberByAuthentication(authentication);
 
         // 2. 스타일 태그 조회
         List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
@@ -68,10 +61,10 @@ public class PostServiceImpl implements PostService {
         // 4. 게시글 저장
         return postRepository.save(Post.builder()
                 .content(request.getContent())
-                .status(PUBLIC)
                 .writer(member)
-                .viewCount(0L)
-                .likeCount(0L)
+                .location(request.getLocation())
+                .privacyHeight(request.isPrivacyHeight())
+                .privacyWeight(request.isPrivacyWeight())
                 .styleTags(styleTags)
                 .hashTags(hashTags)
                 .build());
@@ -80,7 +73,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(readOnly = true)
     public Page<Post> loadPublicPosts(Pageable pageable) {
-        return customPostRepository.loadPublicPosts(pageable.getPageNumber(), pageable.getPageSize());
+        return postRepository.loadPublicPosts(pageable.getPageNumber(), pageable.getPageSize());
     }
 
     @Override
@@ -97,40 +90,35 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Authentication authentication, Long postId) {
+    public void delete(Authentication authentication, Long postId) {
         // 1. 글쓴이 조회
-        Member member = (Member) authentication.getPrincipal();
+        Member writer = getMemberByAuthentication(authentication);
 
         // 2. 게시글 조회
         Post post = getPostById(postId);
 
         // 3. 유효성 검사(글쓴이가 본인인지 확인)
-        validateWriter(member, post);
+        validateWriterOfPost(writer, post);
         
         // 4. 글 삭제
-        post.deletePost();
+        post.delete();
         postRepository.save(post);
     }
 
-    private void validateWriter(Member member, Post post) {
+    private void validateWriterOfPost(Member member, Post post) {
         if (!Objects.equals(member.getId(), post.getWriter().getId())) {
-            throw new RuntimeException("CustomMemberException");
+            throw new PostException(MISMATCH_WRITER);
         }
     }
 
     private Post loadPublicPostDetailsById(Long postId) {
-        return customPostRepository.loadPublicPostDetails(postId)
-                .orElseThrow(() -> new RuntimeException("CustomMemberException"));
+        return postRepository.loadPublicPostDetails(postId)
+                .orElseThrow(() -> new PostException(INVALID_POST_ID));
     }
 
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("CustomPostException"));
-    }
-
-    private Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("CustomMemberException"));
+                .orElseThrow(() -> new PostException(INVALID_POST_ID));
     }
 
     private void increasePostViewCountToRedis(Long postId) {
@@ -145,5 +133,10 @@ public class PostServiceImpl implements PostService {
         } else {
             valueOperations.increment(key);
         }
+    }
+
+    private Member getMemberByAuthentication(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return customUserDetails.getMember();
     }
 }
