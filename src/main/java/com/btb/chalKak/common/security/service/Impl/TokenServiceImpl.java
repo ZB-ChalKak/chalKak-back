@@ -26,7 +26,7 @@ public class TokenServiceImpl implements TokenService {
     // 4. refresh 토큰 저장
     RefreshToken refreshToken = RefreshToken.builder()
         .memberId(memberId)
-        .refreshToken(token.getRefreshToken())
+        .token(token.getRefreshToken())
         .build();
 
     refreshTokenRepository.save(refreshToken);
