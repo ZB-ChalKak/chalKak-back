@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.post.entity;
 
 import static com.btb.chalKak.domain.post.type.PostStatus.DELETED;
+import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
@@ -44,15 +45,27 @@ public class Post extends BaseTimeEntity {
     @Column(name = "content")
     private String content;
 
+    @Builder.Default
     @Column(name = "view_count", nullable = false)
-    private Long viewCount;
+    private Long viewCount = 0L;
 
+    @Builder.Default
     @Column(name = "like_count", nullable = false)
-    private Long likeCount;
+    private Long likeCount = 0L;
 
+    @Column(name = "privacy_height")
+    private boolean privacyHeight;
+
+    @Column(name = "privacy_weight")
+    private boolean privacyWeight;
+
+    @Column(name = "location")
+    private String location;
+
+    @Builder.Default
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PostStatus status;
+    private PostStatus status = PUBLIC;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -74,7 +87,7 @@ public class Post extends BaseTimeEntity {
     )
     private List<HashTag> hashTags;
 
-    public void deletePost() {
+    public void delete() {
         this.status = DELETED;
     }
 }
