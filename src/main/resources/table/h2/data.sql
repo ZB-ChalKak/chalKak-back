@@ -1,10 +1,10 @@
 -- 테스트를 위한 DML 작성
 
 -- 멤버 데이터 삽입
-INSERT INTO member (email, nickname, password, profile_img, height, weight, privacy_height, privacy_weight, gender, status, role)
+INSERT INTO member (email, nickname, password, profile_img, height, weight, gender, status, role)
 VALUES
-    ('user@test.com', '테스트', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', '/path/to/profile.jpg', 170.5, 65.2, TRUE, FALSE, 'MALE', 'ACTIVE', 'USER'),
-    ('admin@test.com', '어드민', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', null, 162.0, 55.7, FALSE, TRUE, 'FEMALE', 'ACTIVE', 'USER')
+    ('user@test.com', '테스트', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', '/path/to/profile.jpg', 170.5, 65.2, 'MALE', 'ACTIVE', 'USER'),
+    ('admin@test.com', '어드민', '$2a$10$wMXNvfMMkAmIaOHy7NbE4OTqKz0F12tNe1xulO06oHdcA40p4c8Te', null, 162.0, 55.7, 'FEMALE', 'ACTIVE', 'USER')
 ;
 
 -- 정적 태그 데이터 삽입
@@ -43,8 +43,8 @@ VALUES ('휴가'),
 ;
 
 -- 포스트 정보 삽입
-INSERT INTO post (content, view_count, like_count, status, member_id)
-VALUES ('첫 번째 포스트 내용', 0, 0, 'PUBLIC', 1)
+INSERT INTO post (member_id, content, view_count, like_count, privacy_height, privacy_weight, location, status)
+VALUES (1, '첫 번째 포스트 내용', 0, 0, true, true, '경기도 부천시 소사구', 'PUBLIC')
 ;
 
 -- 포스트와 스타일 태그 조인 테이블 삽입
@@ -54,3 +54,4 @@ VALUES (1, 1);
 -- 포스트와 해시 태그 조인 테이블 삽입
 INSERT INTO post_hash_tag (post_id, hash_tag_id)
 VALUES (1, 1);
+
