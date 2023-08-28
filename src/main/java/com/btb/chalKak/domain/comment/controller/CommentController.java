@@ -1,6 +1,6 @@
 package com.btb.chalKak.domain.comment.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_POST;
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_WRITE_POST;
 
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
@@ -38,7 +38,7 @@ public class CommentController {
                 .commentId(commentService.createComment(request).getId())
                 .build();
 
-        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(data, SUCCESS_WRITE_POST);
         return ResponseEntity.ok(response);
     }
 
@@ -48,7 +48,7 @@ public class CommentController {
 
         List<Comment> comments = commentService.getComments(postId);
 
-        CommonResponse<?> response = responseService.success(comments, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(comments, SUCCESS_WRITE_POST);
         return ResponseEntity.ok(response);
     }
 
@@ -60,7 +60,7 @@ public class CommentController {
             .commentId(commentService.modifyComment(request).getId())
             .build();
 
-        CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(data, SUCCESS_WRITE_POST);
         return ResponseEntity.ok(response);
     }
 
@@ -74,7 +74,7 @@ public class CommentController {
                                 request);
 
 
-        CommonResponse<?> response = responseService.success(isDeleted, SUCCESS_SAVE_POST);
+        CommonResponse<?> response = responseService.success(isDeleted, SUCCESS_WRITE_POST);
         return ResponseEntity.ok(response);
     }
 }
