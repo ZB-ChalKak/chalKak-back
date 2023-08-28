@@ -3,7 +3,6 @@ package com.btb.chalKak.domain.styleTag.entity;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.styleTag.type.StyleCategory;
-import com.btb.chalKak.common.entity.BaseTimeEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "style_tag")
-public class StyleTag extends BaseTimeEntity {
+public class StyleTag {
 
     @Id
     @Column(name ="style_tag_id", nullable = false)
