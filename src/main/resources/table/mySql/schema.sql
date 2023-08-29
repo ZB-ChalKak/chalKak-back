@@ -12,6 +12,7 @@ CREATE TABLE style_tag
 (
     style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
     category     VARCHAR(20)         NOT NULL COMMENT '카테고리',
+    keyword_img  VARCHAR(100)                 COMMENT '이미지',
     keyword      VARCHAR(100) UNIQUE NOT NULL COMMENT '키워드'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

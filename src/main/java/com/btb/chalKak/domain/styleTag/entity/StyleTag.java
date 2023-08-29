@@ -35,6 +35,9 @@ public class StyleTag {
     @Enumerated(EnumType.STRING)
     private StyleCategory category;
 
+    @Column(name = "keyword_img")
+    private String keywordImg;
+
     @Column(name = "keyword", nullable = false, unique = true)
     private String keyword;
 
