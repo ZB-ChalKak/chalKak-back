@@ -30,7 +30,6 @@ public class SignController {
     private final MemberService memberService;
     private final ResponseService responseService;
 
-
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(
             @Valid @RequestBody SignUpMemberRequest request

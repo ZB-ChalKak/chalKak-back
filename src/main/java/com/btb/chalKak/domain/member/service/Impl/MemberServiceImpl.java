@@ -8,7 +8,7 @@ import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 
 import com.btb.chalKak.common.exception.MemberException;
-import com.btb.chalKak.common.security.JwtProvider;
+import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
