@@ -9,6 +9,7 @@ public enum SuccessCode {
 
     SUCCESS("성공했습니다."),
     SUCCESS_WRITE_POST("게시글 등록에 성공했습니다."),
+    SUCCESS_EDIT_POST("게시글 수정에 성공했습니다."),
     SUCCESS_LOAD_POST("게시글 조회에 성공했습니다."),
     SUCCESS_DELETE_POST("게시글 삭제에 성공했습니다."),
 
