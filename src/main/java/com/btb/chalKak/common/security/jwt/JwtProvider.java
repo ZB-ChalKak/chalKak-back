@@ -134,7 +134,5 @@ public class JwtProvider {
     public String getSubjectByToken(String token){
         return parseClaims(token).getSubject();
     }
-    
 
-    
 }

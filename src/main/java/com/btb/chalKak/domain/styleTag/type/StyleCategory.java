@@ -9,7 +9,7 @@ public enum StyleCategory {
 
     STYLE,
     TPO,
-
-    ;
+    SEASON,
+    WEATHER,
 
 }
