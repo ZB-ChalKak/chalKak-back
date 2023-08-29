@@ -114,7 +114,6 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    // TODO : 코드 리뷰 후 리팩토링 요
     @Override
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
@@ -128,7 +127,7 @@ public class MemberServiceImpl implements MemberService {
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
         // 3. user pk로 유저 검색
-        Member member = memberRepository.findById(Long.parseLong(authentication.getName()))
+        Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("CustomUserNotFoundException"));
 
         // 4. repository에 refresh token이 있는지 검사
@@ -163,6 +162,5 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(() -> new RuntimeException("CustomMemberException"));
 
         return member.getId();
-
     }
 }
