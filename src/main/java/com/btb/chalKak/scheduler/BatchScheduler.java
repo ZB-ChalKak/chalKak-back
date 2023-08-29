@@ -17,7 +17,7 @@ public class BatchScheduler {
   private final JobLauncher jobLauncher;
 
   // 20초마다 실행
-  @Scheduled(fixedDelay = 20 * 1000L)
+  @Scheduled(fixedDelay = 2000 * 1000L)
   public void executeJob () {
     try {
       jobLauncher.run(
