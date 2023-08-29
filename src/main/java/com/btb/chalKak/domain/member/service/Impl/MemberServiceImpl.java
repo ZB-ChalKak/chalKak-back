@@ -119,7 +119,7 @@ public class MemberServiceImpl implements MemberService {
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
         // 1. 만료된 refresh 토큰은 에러 발생
         if(!jwtProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("CustomRefreshTokenException");
+            throw new RuntimeException("CustomRefreshTokenException ");
         }
 
         // 2. accessToken에서 name 가져오기
