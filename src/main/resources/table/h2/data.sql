@@ -11,23 +11,22 @@ VALUES
 -- STYLE 태그 데이터 삽입
 INSERT INTO style_tag (category, keyword_img, keyword)
 VALUES
-    ('STYLE', '', '아메카지'),
-    ('STYLE', '', '원마일웨어'),
-    ('STYLE', '', '미니멀'),
-    ('STYLE', '', '댄디'),
-    ('STYLE', '', '비즈니스'),
-    ('STYLE', '', '캐주얼'),
-    ('STYLE', '', '빈티지'),
-    ('STYLE', '', '스트릿'),
-    ('STYLE', '', '스포티');
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%95%84%EB%A9%94%EC%B9%B4%EC%A7%80.png', '아메카지'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%9B%90%EB%A7%88%EC%9D%BC%EC%9B%A8%EC%96%B4.png', '원마일웨어'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EB%AF%B8%EB%8B%88%EB%A9%80.png', '미니멀'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EB%8C%84%EB%94%94.png', '댄디'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EB%B9%84%EC%A6%88%EB%8B%88%EC%8A%A4%EC%BA%90%EC%A3%BC%EC%96%BC.png', '비즈니스캐주얼'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EB%B9%88%ED%8B%B0%EC%A7%80.png', '빈티지'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%8A%A4%ED%8A%B8%EB%A6%BF.png', '스트릿'),
+    ('STYLE', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%8A%A4%ED%8F%AC%ED%8B%B0.png', '스포티');
 
 -- TPO 태그 데이터 삽입
 INSERT INTO style_tag (category, keyword_img, keyword)
 VALUES
-    ('TPO', '', '데이트'),
-    ('TPO', '', '하객'),
-    ('TPO', '', '여행'),
-    ('TPO', '', '출근');
+    ('TPO', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EB%8D%B0%EC%9D%B4%ED%8A%B8%EB%A3%A9.png', '데이트'),
+    ('TPO', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%ED%95%98%EA%B0%9D%EB%A3%A9.png', '하객'),
+    ('TPO', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%97%AC%ED%96%89%EB%A3%A9.png', '여행'),
+    ('TPO', 'https://spring-photo-bucket.s3.ap-south-1.amazonaws.com/%EC%B6%9C%EA%B7%BC%EB%A3%A9.png', '출근');
 
 -- SEASON 태그 데이터 삽입
 INSERT INTO style_tag (category, keyword_img, keyword)
