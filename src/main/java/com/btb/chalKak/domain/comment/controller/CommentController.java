@@ -5,11 +5,14 @@ import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
+import com.btb.chalKak.domain.comment.dto.response.CommentLoadResponse;
 import com.btb.chalKak.domain.comment.dto.response.CommentResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,12 +30,14 @@ public class CommentController {
     @PostMapping("/comments")
     public ResponseEntity<?> createComment(
 //                            @RequestHeader("Authorization") String token,
+                            Authentication authentication,
                             @RequestBody CreateCommentRequest request) {
         CommentResponse data = CommentResponse.builder()
                 .commentId(commentService.createComment(request).getId())
                 .build();
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_COMMENT);
+
         return ResponseEntity.ok(response);
     }
 
@@ -40,9 +45,9 @@ public class CommentController {
     public ResponseEntity<?> getComments(
         @PathVariable("postId") Long postId) {
 
-        List<Comment> comments = commentService.getComments(postId);
+        List<CommentLoadResponse> commentLoadResponses = commentService.getComments(postId);
 
-        CommonResponse<?> response = responseService.success(comments, SUCCESS_LOAD_COMMENT);
+        CommonResponse<?> response = responseService.success(commentLoadResponses, SUCCESS_LOAD_COMMENT);
         return ResponseEntity.ok(response);
     }
 
