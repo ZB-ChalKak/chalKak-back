@@ -1,11 +1,14 @@
 package com.btb.chalKak.domain.post.controller;
 
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_DELETE_POST;
+import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_EDIT_POST;
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_POST;
 import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_WRITE_POST;
 
 import com.btb.chalKak.common.response.service.ResponseService;
+import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
+import com.btb.chalKak.domain.post.dto.response.EditPostResponse;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostDetailsResponse;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
 import com.btb.chalKak.domain.post.dto.response.WritePostResponse;
@@ -48,6 +51,21 @@ public class PostController {
         return ResponseEntity.ok(responseService.success(data, SUCCESS_WRITE_POST));
     }
 
+    @PatchMapping("/{postId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> edit(
+            Authentication authentication,
+            @PathVariable Long postId,
+            @RequestBody EditPostRequest request)
+    {
+        Post post = postService.edit(authentication, postId, request);
+        EditPostResponse data = EditPostResponse.builder()
+                .postId(post.getId())
+                .build();
+
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_EDIT_POST));
+    }
+
     @GetMapping
     public ResponseEntity<?> loadPublicPosts(
             @RequestParam(defaultValue = "0") int page,
@@ -61,7 +79,6 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> loadPublicPostDetails(@PathVariable Long postId) {
         Post post = postService.loadPublicPostDetails(postId);
         LoadPublicPostDetailsResponse data = LoadPublicPostDetailsResponse.fromEntity(post);
@@ -74,6 +91,7 @@ public class PostController {
     public ResponseEntity<?> deletePost(
             Authentication authentication, @PathVariable String postId) {
         postService.delete(authentication, Long.valueOf(postId));
+
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_DELETE_POST));
     }
 }

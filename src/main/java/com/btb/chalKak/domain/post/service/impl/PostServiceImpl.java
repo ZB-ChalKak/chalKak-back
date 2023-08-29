@@ -8,6 +8,8 @@ import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.post.dto.EditPost;
+import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
@@ -47,15 +49,7 @@ public class PostServiceImpl implements PostService {
         List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
 
         // 3. 해시 태그 조회 및 업로드
-        List<HashTag> hashTags = new ArrayList<>();
-        for (String keyword : request.getHashTags()) {
-            HashTag hashTag = hashTagRepository.findByKeyword(keyword)
-                    .orElse(HashTag.builder()
-                            .keyword(keyword)
-                            .build());
-
-            hashTags.add(hashTag);
-        }
+        List<HashTag> hashTags = getHashTagsByKeywords(request.getHashTags());
         hashTagRepository.saveAll(hashTags);
 
         // 4. 게시글 저장
@@ -68,6 +62,32 @@ public class PostServiceImpl implements PostService {
                 .styleTags(styleTags)
                 .hashTags(hashTags)
                 .build());
+    }
+
+    @Override
+    public Post edit(Authentication authentication, Long postId, EditPostRequest request) {
+        // 1. 회원 조회
+        Member writer = getMemberByAuthentication(authentication);
+
+        // 2. 게시글 조회
+        Post post = getPostById(postId);
+
+        // 3. 유효성 검사(글쓴이가 본인인지 확인)
+        validateWriterOfPost(writer, post);
+
+        List<StyleTag> editedStyleTags = styleTagRepository.findAllById(request.getStyleTags());
+        post.updateStyleTags(editedStyleTags);
+
+        List<HashTag> editedHashTags = getHashTagsByKeywords(request.getHashTags());
+        post.updateHashTags(editedHashTags);
+        hashTagRepository.saveAll(editedHashTags);
+
+        return postRepository.save(post.edit(EditPost.builder()
+                .privacyHeight(request.isPrivacyHeight())
+                .privacyWeight(request.isPrivacyWeight())
+                .content(request.getContent())
+                .location(request.getLocation())
+                .build()));
     }
 
     @Override
@@ -101,8 +121,7 @@ public class PostServiceImpl implements PostService {
         validateWriterOfPost(writer, post);
         
         // 4. 글 삭제
-        post.delete();
-        postRepository.save(post);
+        postRepository.save(post.delete());
     }
 
     private void validateWriterOfPost(Member member, Post post) {
@@ -139,4 +158,18 @@ public class PostServiceImpl implements PostService {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         return customUserDetails.getMember();
     }
+
+    private List<HashTag> getHashTagsByKeywords(List<String> keywords) {
+        List<HashTag> hashTags = new ArrayList<>();
+        for (String keyword : keywords) {
+            HashTag hashTag = hashTagRepository.findByKeyword(keyword)
+                    .orElse(HashTag.builder()
+                            .keyword(keyword)
+                            .build());
+
+            hashTags.add(hashTag);
+        }
+        return hashTags;
+    }
+
 }
