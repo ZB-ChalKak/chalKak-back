@@ -75,3 +75,10 @@ VALUES (1, 1);
 INSERT INTO post_hash_tag (post_id, hash_tag_id)
 VALUES (1, 1);
 
+-- 댓글 정보 삽입
+INSERT INTO comments (member_id, post_id, comment)
+VALUES  (1, 1, '첫번째 댓글'),
+        (1, 1, '두번째 댓글'),
+        (2, 1, '세번째 댓글'),
+        (2, 1, '네번째 댓글')
+;
