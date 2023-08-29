@@ -2,7 +2,10 @@ package com.btb.chalKak.config;
 
 import com.btb.chalKak.common.oauth2.handler.OAuth2SuccessHandler;
 import com.btb.chalKak.common.oauth2.service.CustomOAuth2UserService;
-import com.btb.chalKak.common.security.JwtAuthenticationFilter;
+import com.btb.chalKak.common.security.jwt.JwtAccessDeniedHandler;
+import com.btb.chalKak.common.security.jwt.JwtAuthenticationEntryPoint;
+import com.btb.chalKak.common.security.jwt.JwtAuthenticationFilter;
+import com.btb.chalKak.common.security.jwt.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +29,13 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -70,10 +76,22 @@ public class SecurityConfig {
                 .userService(customOAuth2UserService) // 소셜 로그인 성공 시 후속 조치를 진행할 UserService 구현체
             ;
 
+        http.exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 예외 핸들링
+                .accessDeniedHandler(jwtAccessDeniedHandler); // 인가 예외 핸들링
+
         // JWT 인증 필터 적용
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     public CorsConfigurationSource configurationSource() {
@@ -89,35 +107,4 @@ public class SecurityConfig {
         return urlBasedCorsConfigurationSource;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-//    @Bean
-//    public AuthenticationManager authenticationManager() {
-//        return new ProviderManager(customAuthenticationProvider);
-//    }
-
-//    @Bean
-//    public AuthenticationManager authenticationManagerBean() {
-//        List<AuthenticationProvider> authenticationProviderList = new ArrayList<>();
-//        authenticationProviderList.add(authenticationProvider);
-//        ProviderManager authenticationManager = new ProviderManager(authenticationProviderList);
-//        authenticationManager.setAuthenticationEventPublisher(defaultAuthenticationEventPublisher());
-//        return authenticationManager;
-//    }
-//
-//    @Bean
-//    DefaultAuthenticationEventPublisher defaultAuthenticationEventPublisher() {
-//        return new DefaultAuthenticationEventPublisher();
-//    }
-
-    //    @Bean
-//    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-//        AuthenticationManagerBuilder authenticationManagerBuilder =
-//                http.getSharedObject(AuthenticationManagerBuilder.class);
-//        authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
-//        return authenticationManagerBuilder.build();
-//    }
 }

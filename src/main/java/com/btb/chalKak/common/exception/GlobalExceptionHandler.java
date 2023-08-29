@@ -1,14 +1,18 @@
 package com.btb.chalKak.common.exception;
 
 import static com.btb.chalKak.common.response.type.ErrorCode.CONSTRAINT_VIOLATION;
+import static com.btb.chalKak.common.response.type.ErrorCode.FORBIDDEN_RESPONSE;
 import static com.btb.chalKak.common.response.type.ErrorCode.INTERNAL_SERVER_ERROR;
 import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_REQUEST;
+import static com.btb.chalKak.common.response.type.ErrorCode.UNAUTHORIZED_RESPONSE;
 
 import com.btb.chalKak.common.response.service.ResponseService;
+import javax.naming.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +34,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handlePostException(PostException e) {
         log.error("PostException is occurred. {}",  e.getMessage());
         return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+        log.error("AuthenticationException is occurred. {}",  e.getMessage());
+        return ResponseEntity.status(UNAUTHORIZED_RESPONSE.getHttpStatus()).body(responseService.failure(UNAUTHORIZED_RESPONSE.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        log.error("AccessDeniedException is occurred. {}",  e.getMessage());
+        return ResponseEntity.status(FORBIDDEN_RESPONSE.getHttpStatus()).body(responseService.failure(FORBIDDEN_RESPONSE.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

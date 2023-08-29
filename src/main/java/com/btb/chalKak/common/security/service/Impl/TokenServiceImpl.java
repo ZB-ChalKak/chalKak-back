@@ -1,6 +1,6 @@
 package com.btb.chalKak.common.security.service.Impl;
 
-import com.btb.chalKak.common.security.JwtProvider;
+import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
