@@ -6,6 +6,7 @@ import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import java.util.List;
@@ -87,7 +88,24 @@ public class Post extends BaseTimeEntity {
     )
     private List<HashTag> hashTags;
 
-    public void delete() {
+    public Post delete() {
         this.status = DELETED;
+        return this;
+    }
+
+    public void updateStyleTags(List<StyleTag> editedStyleTags) {
+        this.styleTags = editedStyleTags;
+    }
+
+    public void updateHashTags(List<HashTag> editedHashTags) {
+        this.hashTags = editedHashTags;
+    }
+
+    public Post edit(EditPost editPost) {
+        this.content = editPost.getContent();
+        this.location = editPost.getLocation();
+        this.privacyHeight = editPost.isPrivacyHeight();
+        this.privacyWeight = editPost.isPrivacyWeight();
+        return this;
     }
 }
