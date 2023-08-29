@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
+import com.btb.chalKak.domain.comment.dto.response.CommentLoadResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.member.entity.Member;
@@ -138,10 +139,10 @@ class CommentServiceImplTest {
     commentService.createComment(request);
     commentService.createComment(request);
 
-    List<Comment> result = commentService.getComments(postId);
+    List<CommentLoadResponse> result = commentService.getComments(postId);
 
     //then
-    assertEquals(result, comments);
+    assertEquals(result.get(0).getCommentId(), comments.get(0).getId());
 
 
   }

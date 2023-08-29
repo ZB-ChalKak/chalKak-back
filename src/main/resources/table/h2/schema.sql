@@ -70,6 +70,19 @@ CREATE TABLE post
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
+-- 댓글 정보
+CREATE TABLE comments
+(
+    comment_id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    member_id      BIGINT,
+    post_id         BIGINT,
+    comment        TEXT,
+    created_at     TIMESTAMP   NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP   NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (post_id) REFERENCES post (post_id)
+);
+
 -- 포스트와 스타일 태그 조인 테이블
 CREATE TABLE post_style_tag
 (
