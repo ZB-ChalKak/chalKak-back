@@ -1,5 +1,12 @@
-package com.btb.chalKak.common.security;
+package com.btb.chalKak.common.security.jwt;
 
+import static com.btb.chalKak.common.response.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.response.type.ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION;
+import static com.btb.chalKak.common.response.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.response.type.ErrorCode.SIGNATURE_EXCEPTION;
+import static com.btb.chalKak.common.response.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
+
+import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.domain.member.type.MemberRole;
@@ -7,9 +14,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -102,7 +112,15 @@ public class JwtProvider {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }  catch (UnsupportedJwtException e) {
+            throw new JwtException(UNSUPPORTED_JWT_EXCEPTION);
+        } catch (MalformedJwtException e) {
+            throw new JwtException(MALFORMED_JWT_EXCEPTION);
+        } catch (SignatureException e) {
+            throw new JwtException(SIGNATURE_EXCEPTION);
+        } catch (IllegalArgumentException e) {
+            throw new JwtException(ILLEGAL_ARGUMENT_EXCEPTION);
         }
     }
 
