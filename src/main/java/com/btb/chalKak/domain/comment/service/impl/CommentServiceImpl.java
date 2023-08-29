@@ -3,6 +3,7 @@ package com.btb.chalKak.domain.comment.service.impl;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
+import com.btb.chalKak.domain.comment.dto.response.CommentLoadResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.comment.service.CommentService;
@@ -10,7 +11,9 @@ import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,15 +46,29 @@ public class CommentServiceImpl implements CommentService {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getComments(Long postId) {
+    public List<CommentLoadResponse> getComments(Long postId) {
 
         List<Comment> comments = commentRepository.findCommentByPostId(postId);
+
+        List<CommentLoadResponse> commentLoadResponses = new ArrayList<>();
+
+        for(Comment comment : comments){
+
+            commentLoadResponses.add(CommentLoadResponse.builder()
+                    .nickname(comment.getMember().getNickname())
+                    .profileUrl(comment.getMember().getProfileImg())
+                    .commentId(comment.getId())
+                    .comment(comment.getComment())
+                    .updatedAt(comment.getUpdatedAt())
+                    .createAt(comment.getCreatedAt())
+                    .build());
+        }
 
         if (comments == null) {
             throw new RuntimeException("NOT_EXIST_COMMENT");  // TODO: 2023-08-19 Exception 제어 필요
         }
 
-        return comments;
+        return commentLoadResponses;
     }
 
     @Override
