@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS post_hash_tag;
 CREATE TABLE style_tag
 (
     style_tag_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    keyword_img  VARCHAR(100),
     category     VARCHAR(20)         NOT NULL,
     keyword      VARCHAR(100) UNIQUE NOT NULL
 );

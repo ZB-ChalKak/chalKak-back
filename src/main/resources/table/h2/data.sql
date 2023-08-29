@@ -8,21 +8,42 @@ VALUES
 ;
 
 -- 정적 태그 데이터 삽입
-INSERT INTO style_tag (category, keyword)
+-- STYLE 태그 데이터 삽입
+INSERT INTO style_tag (category, keyword_img, keyword)
 VALUES
-    ('STYLE', '아메카지'),
-    ('STYLE', '원마일웨어'),
-    ('STYLE', '미니멀'),
-    ('STYLE', '댄디'),
-    ('STYLE', '비즈니스캐주얼'),
-    ('STYLE', '빈티지'),
-    ('STYLE', '스트릿'),
-    ('STYLE', '스포티'),
-    ('TPO', '데이트'),
-    ('TPO', '하객'),
-    ('TPO', '여행'),
-    ('TPO', '출근')
-;
+    ('STYLE', '', '아메카지'),
+    ('STYLE', '', '원마일웨어'),
+    ('STYLE', '', '미니멀'),
+    ('STYLE', '', '댄디'),
+    ('STYLE', '', '비즈니스'),
+    ('STYLE', '', '캐주얼'),
+    ('STYLE', '', '빈티지'),
+    ('STYLE', '', '스트릿'),
+    ('STYLE', '', '스포티');
+
+-- TPO 태그 데이터 삽입
+INSERT INTO style_tag (category, keyword_img, keyword)
+VALUES
+    ('TPO', '', '데이트'),
+    ('TPO', '', '하객'),
+    ('TPO', '', '여행'),
+    ('TPO', '', '출근');
+
+-- SEASON 태그 데이터 삽입
+INSERT INTO style_tag (category, keyword_img, keyword)
+VALUES
+    ('SEASON', '', '봄'),
+    ('SEASON', '', '여름'),
+    ('SEASON', '', '가을'),
+    ('SEASON', '', '겨울');
+
+-- WEATHER 태그 데이터 삽입
+INSERT INTO style_tag (category, keyword_img, keyword)
+VALUES
+    ('WEATHER', '', '맑음'),
+    ('WEATHER', '', '흐림'),
+    ('WEATHER', '', '비'),
+    ('WEATHER', '', '눈');
 
 -- 조인 테이블 데이터 삽입
 INSERT INTO member_style_tag (member_id, style_tag_id)

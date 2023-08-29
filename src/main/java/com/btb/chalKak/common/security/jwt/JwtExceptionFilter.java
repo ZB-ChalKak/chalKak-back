@@ -50,7 +50,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 sendErrorResponse(response, ILLEGAL_ARGUMENT_EXCEPTION);
             }
         }
-
     }
 
     private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws RuntimeException, IOException {
