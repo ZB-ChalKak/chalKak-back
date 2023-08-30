@@ -24,6 +24,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,14 +55,15 @@ public class Post extends BaseTimeEntity {
     @Column(name = "like_count", nullable = false)
     private Long likeCount = 0L;
 
-    @Column(name = "privacy_height")
+    @Column(name = "privacy_height", nullable = false)
     private boolean privacyHeight;
 
-    @Column(name = "privacy_weight")
+    @Column(name = "privacy_weight", nullable = false)
     private boolean privacyWeight;
 
+    @Builder.Default
     @Column(name = "location")
-    private String location;
+    private String location = "";
 
     @Builder.Default
     @Column(name = "status", nullable = false)
@@ -107,5 +109,10 @@ public class Post extends BaseTimeEntity {
         this.privacyHeight = editPost.isPrivacyHeight();
         this.privacyWeight = editPost.isPrivacyWeight();
         return this;
+    }
+
+    public void updateIsFollowingAndIsLiked(boolean isFollowing, boolean isLiked) {
+        this.following = isFollowing;
+        this.liked = isLiked;
     }
 }
