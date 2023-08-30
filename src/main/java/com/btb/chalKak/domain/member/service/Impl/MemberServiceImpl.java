@@ -1,13 +1,15 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
-import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 
 import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
@@ -163,4 +165,21 @@ public class MemberServiceImpl implements MemberService {
 
         return member.getId();
     }
+
+    public Member getMemberByAuthentication(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return customUserDetails.getMember();
+    }
+
+    public boolean validateMemberId (Authentication authentication, Long memberId){
+
+        Member member = getMemberByAuthentication(authentication);
+
+        if(!member.getId().equals(memberId)){
+            throw new MemberException(INVALID_MEMBER_ID);
+        }
+
+        return true;
+    }
+
 }

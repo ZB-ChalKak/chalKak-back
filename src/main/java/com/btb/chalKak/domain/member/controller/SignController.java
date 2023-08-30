@@ -1,8 +1,8 @@
 package com.btb.chalKak.domain.member.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_REISSUE;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SAVE_MEMBER;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_SIGN_IN;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_REISSUE;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SAVE_MEMBER;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_IN;
 
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;

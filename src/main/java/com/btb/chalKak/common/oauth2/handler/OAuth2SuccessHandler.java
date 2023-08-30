@@ -2,7 +2,7 @@ package com.btb.chalKak.common.oauth2.handler;
 
 import com.btb.chalKak.common.oauth2.service.TemporaryTokenStoreService;
 import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.response.type.SuccessCode;
+import com.btb.chalKak.common.exception.type.SuccessCode;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.service.Impl.TokenServiceImpl;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;

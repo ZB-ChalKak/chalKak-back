@@ -1,6 +1,6 @@
 package com.btb.chalKak.common.exception;
 
-import com.btb.chalKak.common.response.type.ErrorCode;
+import com.btb.chalKak.common.exception.type.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

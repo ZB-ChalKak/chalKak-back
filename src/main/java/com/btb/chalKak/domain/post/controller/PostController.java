@@ -1,9 +1,9 @@
 package com.btb.chalKak.domain.post.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_DELETE_POST;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_EDIT_POST;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_POST;
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_WRITE_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_DELETE_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_EDIT_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_WRITE_POST;
 
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
