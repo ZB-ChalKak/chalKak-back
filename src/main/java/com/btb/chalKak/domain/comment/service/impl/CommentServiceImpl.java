@@ -91,6 +91,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         comment.updateComment(request.getContent());
+
         return commentRepository.save(comment);
     }
 
