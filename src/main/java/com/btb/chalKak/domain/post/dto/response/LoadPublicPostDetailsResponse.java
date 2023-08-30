@@ -4,8 +4,6 @@ import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.dto.Writer;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -28,12 +26,6 @@ public class LoadPublicPostDetailsResponse {
     private List<String> styleTags;
     private List<String> hashTags;
 
-    private boolean following;
-    private boolean liked;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
-
     private Writer writer;
 
     public static LoadPublicPostDetailsResponse fromEntity(Post post) {
@@ -51,9 +43,6 @@ public class LoadPublicPostDetailsResponse {
                 .hashTags(post.getHashTags().stream()
                         .map(HashTag::getKeyword)
                         .collect(Collectors.toList()))
-                .following(post.isFollowing())
-                .liked(post.isLiked())
-                .createdAt(post.getCreatedAt())
                 .writer(Writer.fromEntity(post.getWriter()))
                 .build();
     }

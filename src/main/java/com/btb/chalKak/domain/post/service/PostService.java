@@ -13,12 +13,10 @@ public interface PostService {
 
     Post edit(Authentication authentication, Long postId, EditPostRequest request);
 
-    Page<Post> loadPublicPostsOrderByDesc(Pageable pageable);
+    Page<Post> loadPublicPosts(Pageable pageable);
 
-    Post loadPublicPostDetails(Authentication authentication, Long postId);
+    Post loadPublicPostDetails(Long postId);
 
     void delete(Authentication authentication, Long postId);
-
-//    Page<Post> loadPublicFeaturedPostsByKeywords(Pageable pageable, LoadPublicFeaturedPostsRequest request);
 
 }

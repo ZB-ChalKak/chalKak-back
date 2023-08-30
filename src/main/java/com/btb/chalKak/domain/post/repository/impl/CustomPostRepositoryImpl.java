@@ -33,7 +33,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     }
 
     @Override
-    public Page<Post> loadPublicPostsOrderByDesc(int page, int size) {
+    public Page<Post> loadPublicPosts(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         BooleanExpression publicPostsFilter = getPublicPostFilter();
 
