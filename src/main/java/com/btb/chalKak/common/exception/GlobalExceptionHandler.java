@@ -36,6 +36,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
     }
 
+    @ExceptionHandler(CommentException.class)
+    public ResponseEntity<?> handleCommentException(PostException e) {
+        log.error("CommentException is occurred. {}",  e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
         log.error("AuthenticationException is occurred. {}",  e.getMessage());
