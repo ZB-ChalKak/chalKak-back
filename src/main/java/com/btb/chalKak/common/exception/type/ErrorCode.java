@@ -40,8 +40,13 @@ public enum ErrorCode {
     MISMATCH_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
 
     // COMMENT
-
     INVALID_COMMENT_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 댓글 번호입니다."),
+
+    // LIKE
+    NOT_FOUND_LIKE_ID(HttpStatus.BAD_REQUEST, "좋아요 정보를 찾을 수 없습니다"),
+
+    // FOLLOW
+    NOT_FOUND_FOLLOW_ID(HttpStatus.BAD_REQUEST, "팔로우 정보를 찾을 수 없습니다"),
     ;
 
     private final HttpStatus httpStatus;
