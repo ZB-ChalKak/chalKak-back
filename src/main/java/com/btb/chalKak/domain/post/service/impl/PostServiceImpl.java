@@ -14,7 +14,6 @@ import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
-import com.btb.chalKak.domain.post.dto.request.LoadPublicFeaturedPostsRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
@@ -151,18 +150,18 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post.delete());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Post> loadPublicFeaturedPostsByKeywords(
-            Pageable pageable,
-            LoadPublicFeaturedPostsRequest request
-    ) {
-        // 1. 키워드로 조회
-
-        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
-
-        return null;
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<Post> loadPublicFeaturedPostsByKeywords(
+//            Pageable pageable,
+//            LoadPublicFeaturedPostsRequest request
+//    ) {
+//        // 1. 키워드로 조회
+//
+//        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
+//
+//        return null;
+//    }
 
     private void validateWriterOfPost(Member member, Post post) {
         if (!Objects.equals(member.getId(), post.getWriter().getId())) {
