@@ -2,7 +2,7 @@ package com.btb.chalKak.domain.like.controller;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.domain.like.entity.Like;
+import com.btb.chalKak.domain.like.dto.LikeResponse;
 import com.btb.chalKak.domain.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class LikeController {
 //                            @RequestHeader("Authorization") String token,
         Authentication authentication, @PathVariable Long postId) {
 
-        Like data = likeService.likePost(authentication, postId);
+        LikeResponse data = likeService.likePost(authentication, postId);
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_LIKE);
 

@@ -44,6 +44,7 @@ public enum ErrorCode {
 
     // LIKE
     NOT_FOUND_LIKE_ID(HttpStatus.BAD_REQUEST, "좋아요 정보를 찾을 수 없습니다"),
+    ALREADY_LIKE(HttpStatus.BAD_REQUEST, "이미 좋아요가 등록되었습니다."),
 
     // FOLLOW
     NOT_FOUND_FOLLOW_ID(HttpStatus.BAD_REQUEST, "팔로우 정보를 찾을 수 없습니다"),
