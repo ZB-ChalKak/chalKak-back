@@ -8,7 +8,7 @@ public interface CustomPostRepository {
 
     void addViewCountFromRedis(Long postId, Long postViewCount);
 
-    Page<Post> loadPublicPosts(int page, int size);
+    Page<Post> loadPublicPostsOrderByDesc(int page, int size);
 
     Optional<Post> loadPublicPostDetails(Long postId);
 
