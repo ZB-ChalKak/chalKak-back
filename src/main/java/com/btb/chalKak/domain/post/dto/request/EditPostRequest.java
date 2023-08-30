@@ -17,6 +17,7 @@ public class EditPostRequest {
     private boolean privacyHeight;
     private boolean privacyWeight;
 
+
     // TODO 이미지
 
 }
