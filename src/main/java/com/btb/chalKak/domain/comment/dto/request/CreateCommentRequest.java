@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 public class CreateCommentRequest {
     
-    private Long memberId;
     private Long postId;
     private String content;
 

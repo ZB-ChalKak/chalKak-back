@@ -2,8 +2,8 @@ package com.btb.chalKak.common.response.service.impl;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.common.response.type.ErrorCode;
-import com.btb.chalKak.common.response.type.SuccessCode;
+import com.btb.chalKak.common.exception.type.ErrorCode;
+import com.btb.chalKak.common.exception.type.SuccessCode;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

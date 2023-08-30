@@ -1,13 +1,15 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
-import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 
 import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
@@ -114,13 +116,12 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    // TODO : 코드 리뷰 후 리팩토링 요
     @Override
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
         // 1. 만료된 refresh 토큰은 에러 발생
         if(!jwtProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("CustomRefreshTokenException");
+            throw new RuntimeException("CustomRefreshTokenException ");
         }
 
         // 2. accessToken에서 name 가져오기
@@ -128,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
         // 3. user pk로 유저 검색
-        Member member = memberRepository.findById(Long.parseLong(authentication.getName()))
+        Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("CustomUserNotFoundException"));
 
         // 4. repository에 refresh token이 있는지 검사
@@ -163,6 +164,22 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(() -> new RuntimeException("CustomMemberException"));
 
         return member.getId();
-
     }
+
+    public Member getMemberByAuthentication(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return customUserDetails.getMember();
+    }
+
+    public boolean validateMemberId (Authentication authentication, Long memberId){
+
+        Member member = getMemberByAuthentication(authentication);
+
+        if(!member.getId().equals(memberId)){
+            throw new MemberException(INVALID_MEMBER_ID);
+        }
+
+        return true;
+    }
+
 }

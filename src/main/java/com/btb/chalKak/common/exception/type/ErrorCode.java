@@ -1,4 +1,4 @@
-package com.btb.chalKak.common.response.type;
+package com.btb.chalKak.common.exception.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +29,8 @@ public enum ErrorCode {
     ALREADY_EXISTS_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다."),
     ALREADY_EXISTS_NICKNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 닉네임입니다."),
 
-    INVALID_MEMBER_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 회원 번호입니다."),
+    INVALID_MEMBER_ID(HttpStatus.BAD_REQUEST, "잘못된 회원 번호입니다."),
+
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일입니다."),
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
@@ -38,6 +39,15 @@ public enum ErrorCode {
     INVALID_POST_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글 번호입니다."),
     MISMATCH_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
 
+    // COMMENT
+    INVALID_COMMENT_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 댓글 번호입니다."),
+
+    // LIKE
+    NOT_FOUND_LIKE_ID(HttpStatus.BAD_REQUEST, "좋아요 정보를 찾을 수 없습니다"),
+    ALREADY_LIKE(HttpStatus.BAD_REQUEST, "이미 좋아요가 등록되었습니다."),
+
+    // FOLLOW
+    NOT_FOUND_FOLLOW_ID(HttpStatus.BAD_REQUEST, "팔로우 정보를 찾을 수 없습니다"),
     ;
 
     private final HttpStatus httpStatus;
