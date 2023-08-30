@@ -1,6 +1,6 @@
 package com.btb.chalKak.domain.weather.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_WEATHER;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_WEATHER;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;

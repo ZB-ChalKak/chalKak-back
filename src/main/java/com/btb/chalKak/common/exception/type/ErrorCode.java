@@ -1,4 +1,4 @@
-package com.btb.chalKak.common.response.type;
+package com.btb.chalKak.common.exception.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

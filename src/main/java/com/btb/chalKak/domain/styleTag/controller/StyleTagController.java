@@ -1,6 +1,6 @@
 package com.btb.chalKak.domain.styleTag.controller;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.SUCCESS_LOAD_STYLE_TAG;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_STYLE_TAG;
 
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.styleTag.dto.response.LoadStyleTagsResponse;
