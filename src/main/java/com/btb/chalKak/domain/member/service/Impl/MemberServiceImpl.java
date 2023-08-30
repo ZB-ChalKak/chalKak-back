@@ -3,6 +3,7 @@ package com.btb.chalKak.domain.member.service.Impl;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
 import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
@@ -175,7 +176,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = getMemberByAuthentication(authentication);
 
         if(!member.getId().equals(memberId)){
-            throw new RuntimeException("Unauthorized");
+            throw new MemberException(INVALID_MEMBER_ID);
         }
 
         return true;

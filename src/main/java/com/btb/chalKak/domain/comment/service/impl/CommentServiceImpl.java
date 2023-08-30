@@ -1,6 +1,10 @@
 package com.btb.chalKak.domain.comment.service.impl;
 
-import com.btb.chalKak.common.security.customUser.CustomUserDetails;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_COMMENT_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+
+import com.btb.chalKak.common.exception.CommentException;
+import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
@@ -9,16 +13,13 @@ import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.comment.service.CommentService;
 import com.btb.chalKak.domain.member.entity.Member;
-import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,6 @@ public class CommentServiceImpl implements CommentService {
 
     private final MemberServiceImpl memberService;
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
 
     private final PostRepository postRepository;
 
@@ -71,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         if (comments == null) {
-            throw new RuntimeException("NOT_EXIST_COMMENT");  // TODO: 2023-08-19 Exception 제어 필요
+            throw new CommentException(INVALID_COMMENT_ID);  // TODO: 2023-08-19 Exception 제어 필요
         }
 
         return commentLoadResponses;
@@ -84,10 +84,10 @@ public class CommentServiceImpl implements CommentService {
         Member member = memberService.getMemberByAuthentication(authentication);
 
         Comment comment = commentRepository.findById(request.getCommentId())
-            .orElseThrow(()-> new RuntimeException("NOT_EXIST_COMMENT"));
+            .orElseThrow(()-> new CommentException(INVALID_COMMENT_ID));
 
         if(!comment.getMember().getId().equals(member.getId())) {
-            throw new RuntimeException("Unauthorized");
+            throw new MemberException(INVALID_MEMBER_ID);
         }
 
         comment.updateComment(request.getContent());
@@ -100,12 +100,12 @@ public class CommentServiceImpl implements CommentService {
 
         // MemberId verification
         Comment comment = commentRepository.findById(request.getCommentId())
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+            .orElseThrow(()-> new CommentException(INVALID_COMMENT_ID));
 
         Member member = memberService.getMemberByAuthentication(authentication);
 
         if(!comment.getMember().getId().equals(member.getId())) {
-            throw new RuntimeException("Unauthorized");
+            throw new MemberException(INVALID_MEMBER_ID);
         }
 
         int deletedCount = commentRepository.deleteCommentById(request.getCommentId());
