@@ -1,14 +1,14 @@
 package com.btb.chalKak.common.security.jwt;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
-import static com.btb.chalKak.common.response.type.ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION;
-import static com.btb.chalKak.common.response.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
-import static com.btb.chalKak.common.response.type.ErrorCode.SIGNATURE_EXCEPTION;
-import static com.btb.chalKak.common.response.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.SIGNATURE_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
 
 import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.response.type.ErrorCode;
+import com.btb.chalKak.common.exception.type.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

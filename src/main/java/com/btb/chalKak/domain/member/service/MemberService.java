@@ -18,4 +18,6 @@ public interface MemberService {
     TokenDto reissue(TokenRequestDto tokenRequestDto);
 
     Member getMemberByAuthentication(Authentication authentication);
+
+    boolean validateMemberId (Authentication authentication, Long memberId);
 }

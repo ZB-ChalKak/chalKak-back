@@ -7,10 +7,8 @@ import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
 import com.btb.chalKak.domain.comment.dto.response.CommentLoadResponse;
 import com.btb.chalKak.domain.comment.dto.response.CommentResponse;
-import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.btb.chalKak.common.response.type.SuccessCode.*;
+import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 @RestController
 @RequestMapping("/posts")

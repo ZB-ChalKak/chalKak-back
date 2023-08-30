@@ -1,10 +1,9 @@
 package com.btb.chalKak.domain.post.service.impl;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_POST_ID;
-import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_WRITER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_POST_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_WRITER;
 
 import com.btb.chalKak.common.exception.PostException;
-import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.member.entity.Member;

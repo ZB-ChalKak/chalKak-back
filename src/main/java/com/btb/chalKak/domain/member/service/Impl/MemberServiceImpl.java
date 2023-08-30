@@ -1,9 +1,9 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
-import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_EMAIL;
-import static com.btb.chalKak.common.response.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 
@@ -169,4 +169,16 @@ public class MemberServiceImpl implements MemberService {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         return customUserDetails.getMember();
     }
+
+    public boolean validateMemberId (Authentication authentication, Long memberId){
+
+        Member member = getMemberByAuthentication(authentication);
+
+        if(!member.getId().equals(memberId)){
+            throw new RuntimeException("Unauthorized");
+        }
+
+        return true;
+    }
+
 }
