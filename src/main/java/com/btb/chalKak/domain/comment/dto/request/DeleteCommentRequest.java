@@ -7,6 +7,5 @@ import lombok.Getter;
 @Builder
 public class DeleteCommentRequest {
     
-    private Long memberId;
     private Long commentId;
 }

@@ -131,7 +131,7 @@ public class PostServiceImpl implements PostService {
 
         // 4. 조회수 증가
         increasePostViewCountToRedis(postId);
-        
+
         return post;
     }
 
@@ -146,23 +146,23 @@ public class PostServiceImpl implements PostService {
 
         // 3. 유효성 검사(글쓴이가 본인인지 확인)
         validateWriterOfPost(member, post);
-        
+
         // 4. 글 삭제
         postRepository.save(post.delete());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Post> loadPublicFeaturedPostsByKeywords(
-            Pageable pageable,
-            LoadPublicFeaturedPostsRequest request
-    ) {
-        // 1. 키워드로 조회
-
-        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
-
-        return null;
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<Post> loadPublicFeaturedPostsByKeywords(
+//            Pageable pageable,
+//            LoadPublicFeaturedPostsRequest request
+//    ) {
+//        // 1. 키워드로 조회
+//
+//        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
+//
+//        return null;
+//    }
 
     private void validateWriterOfPost(Member member, Post post) {
         if (!Objects.equals(member.getId(), post.getWriter().getId())) {
