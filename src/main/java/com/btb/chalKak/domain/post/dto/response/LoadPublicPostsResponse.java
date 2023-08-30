@@ -16,20 +16,20 @@ public class LoadPublicPostsResponse {
 
     private long totalElements;
 
-    private List<LoadPublicPostDetailsResponse> posts;
+    private List<LoadPublicPostPreviewResponse> posts;
 
     public static LoadPublicPostsResponse fromPage(Page<Post> page) {
-        List<LoadPublicPostDetailsResponse> loadPublicPostDetailsResponses =
+        List<LoadPublicPostPreviewResponse> loadPublicPostPreviewResponses =
                 page.getContent()
                         .stream()
-                        .map(LoadPublicPostDetailsResponse::fromEntity)
+                        .map(LoadPublicPostPreviewResponse::fromEntity)
                         .collect(Collectors.toList());
 
         return LoadPublicPostsResponse.builder()
                 .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber())
                 .totalElements(page.getTotalElements())
-                .posts(loadPublicPostDetailsResponses)
+                .posts(loadPublicPostPreviewResponses)
                 .build();
     }
 
