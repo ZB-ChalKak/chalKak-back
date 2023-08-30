@@ -1,9 +1,14 @@
 package com.btb.chalKak.domain.like.service;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_POST_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_LIKE_ID;
+
+import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.common.exception.PostException;
 import com.btb.chalKak.domain.like.entity.Like;
 import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
-import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
@@ -19,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
 
     private final LikeRepository likeRepository;
-    private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
     private final MemberServiceImpl memberService;
@@ -40,7 +44,7 @@ public class LikeService {
         }
 
         Post post  = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new PostException(INVALID_POST_ID));
 
         return likeRepository.save(Like.builder()
                 .member(member)
@@ -55,13 +59,13 @@ public class LikeService {
 
         Long memberId = member.getId();
 
-        try {
-            int deletedCount = likeRepository.deleteByMemberIdAndPostId(memberId, postId);
-            return deletedCount > 0;
-        } catch (Exception e) {
-            log.info("unlike 목록이 없습니다.");
-            return false;
+        int deletedCount = likeRepository.deleteByMemberIdAndPostId(memberId, postId);
+
+        if(deletedCount == 0){
+            throw new MemberException(NOT_FOUND_LIKE_ID);
         }
+
+        return true;
     }
 
 }
