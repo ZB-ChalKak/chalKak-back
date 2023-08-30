@@ -74,11 +74,6 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member writer;
 
-    @Transient
-    private boolean following;
-    @Transient
-    private boolean liked;
-
     @ManyToMany
     @JoinTable(
             name = "post_style_tag",

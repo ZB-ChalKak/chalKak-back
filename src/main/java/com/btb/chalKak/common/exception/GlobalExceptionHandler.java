@@ -1,10 +1,10 @@
 package com.btb.chalKak.common.exception;
 
-import static com.btb.chalKak.common.response.type.ErrorCode.CONSTRAINT_VIOLATION;
-import static com.btb.chalKak.common.response.type.ErrorCode.FORBIDDEN_RESPONSE;
-import static com.btb.chalKak.common.response.type.ErrorCode.INTERNAL_SERVER_ERROR;
-import static com.btb.chalKak.common.response.type.ErrorCode.INVALID_REQUEST;
-import static com.btb.chalKak.common.response.type.ErrorCode.UNAUTHORIZED_RESPONSE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.CONSTRAINT_VIOLATION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INTERNAL_SERVER_ERROR;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_REQUEST;
+import static com.btb.chalKak.common.exception.type.ErrorCode.UNAUTHORIZED_RESPONSE;
 
 import com.btb.chalKak.common.response.service.ResponseService;
 import javax.naming.AuthenticationException;
@@ -33,6 +33,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PostException.class)
     public ResponseEntity<?> handlePostException(PostException e) {
         log.error("PostException is occurred. {}",  e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
+    }
+
+    @ExceptionHandler(CommentException.class)
+    public ResponseEntity<?> handleCommentException(PostException e) {
+        log.error("CommentException is occurred. {}",  e.getMessage());
         return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
     }
 

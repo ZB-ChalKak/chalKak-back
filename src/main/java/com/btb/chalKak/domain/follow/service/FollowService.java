@@ -1,15 +1,17 @@
 package com.btb.chalKak.domain.follow.service;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
+
+import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.domain.follow.entity.Follow;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
-import com.btb.chalKak.domain.like.entity.Like;
-import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
-import com.btb.chalKak.domain.post.entity.Post;
-import com.btb.chalKak.domain.post.repository.PostRepository;
+import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,20 +22,27 @@ public class FollowService {
 
     private final MemberRepository memberRepository;
 
+    private final MemberServiceImpl memberService;
+
     private final FollowRepository followRepository;
     @Transactional
-    public Follow followMember(Long followingId, Long followerId){
+    public Follow followMember(Authentication authentication, Long followerId){
+
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        Long followingId = member.getId();
+
         // 이미 팔로우가 있는지 확인
         if(followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
             throw new RuntimeException("ALREADY_Followed");
         }
 
         Member following = memberRepository.findById(followingId)
-                .orElseThrow(() -> new RuntimeException("following with id " + followingId + " not found"));
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
 
         Member follower = memberRepository.findById(followerId)
-                .orElseThrow(() -> new RuntimeException("follower with id " + followerId + " not found"));
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
         return followRepository.save(Follow.builder()
                         .following(following)
@@ -42,14 +51,18 @@ public class FollowService {
     }
 
     @Transactional
-    public boolean unfollowMember(Long followingId, Long followerId){
-        try {
-            int deletedCount = followRepository.deleteByFollowingIdAndFollowerId(followingId, followerId);
-            return deletedCount > 0;
-        } catch (Exception e) {
-            log.info("unFollow 목록이 없습니다.");
-            return false;
-        }
-    }
+    public boolean unfollowMember(Authentication authentication, Long followerId){
 
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        Long followingId = member.getId();
+
+        int deletedCount = followRepository.deleteByFollowingIdAndFollowerId(followingId, followerId);
+
+        if(deletedCount == 0){
+            throw new MemberException(NOT_FOUND_FOLLOW_ID);
+        }
+
+        return true;
+    }
 }
