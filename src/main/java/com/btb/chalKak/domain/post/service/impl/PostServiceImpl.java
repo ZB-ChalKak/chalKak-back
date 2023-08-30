@@ -8,6 +8,7 @@ import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
@@ -37,13 +38,15 @@ public class PostServiceImpl implements PostService {
     private final HashTagRepository hashTagRepository;
     private final StyleTagRepository styleTagRepository;
 
+    private final MemberServiceImpl memberService;
+
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
     public Post write(Authentication authentication, WritePostRequest request) {
         // 1. 회원 조회
-        Member member = getMemberByAuthentication(authentication);
+        Member member = memberService.getMemberByAuthentication(authentication);
 
         // 2. 스타일 태그 조회
         List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
@@ -67,7 +70,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post edit(Authentication authentication, Long postId, EditPostRequest request) {
         // 1. 회원 조회
-        Member writer = getMemberByAuthentication(authentication);
+        Member writer = memberService.getMemberByAuthentication(authentication);
 
         // 2. 게시글 조회
         Post post = getPostById(postId);
@@ -112,7 +115,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void delete(Authentication authentication, Long postId) {
         // 1. 글쓴이 조회
-        Member writer = getMemberByAuthentication(authentication);
+        Member writer = memberService.getMemberByAuthentication(authentication);
 
         // 2. 게시글 조회
         Post post = getPostById(postId);
@@ -152,11 +155,6 @@ public class PostServiceImpl implements PostService {
         } else {
             valueOperations.increment(key);
         }
-    }
-
-    private Member getMemberByAuthentication(Authentication authentication) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return customUserDetails.getMember();
     }
 
     private List<HashTag> getHashTagsByKeywords(List<String> keywords) {

@@ -1,5 +1,6 @@
 package com.btb.chalKak.domain.comment.service.impl;
 
+import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
@@ -9,12 +10,15 @@ import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.comment.service.CommentService;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
+import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
+    private final MemberServiceImpl memberService;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
     private final PostRepository postRepository;
 
     @Override
-    public Comment createComment(CreateCommentRequest request) {
+    public Comment createComment(Authentication authentication, CreateCommentRequest request) {
 
-        Member member = memberRepository.findById(request.getMemberId())
-            .orElseThrow(()-> new RuntimeException("NOT_FOUND_MEMBER")); // TODO: 2023-08-19 Exception 제어 필요
+
+        Member member = memberService.getMemberByAuthentication(authentication);
+//            .orElseThrow(()-> new RuntimeException("NOT_FOUND_MEMBER")); // TODO: 2023-08-19 Exception 제어 필요
 
         Post post = postRepository.findById(request.getPostId())
             .orElseThrow(()-> new RuntimeException("NOT_FOUND_POST"));  // TODO: 2023-08-19 Exception 제어 필요
@@ -73,12 +79,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment modifyComment(ModifyCommentRequest request) {
+    public Comment modifyComment(Authentication authentication, ModifyCommentRequest request) {
 
-        // TODO: 2023-08-19 token으로 memberId 검증 필요
+        Member member = memberService.getMemberByAuthentication(authentication);
 
         Comment comment = commentRepository.findById(request.getCommentId())
             .orElseThrow(()-> new RuntimeException("NOT_EXIST_COMMENT"));
+
+        if(!comment.getMember().getId().equals(member.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
 
         comment.updateComment(request.getContent());
         return commentRepository.save(comment);
@@ -86,13 +96,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(DeleteCommentRequest request) {
+    public boolean deleteComment(Authentication authentication, DeleteCommentRequest request) {
 
         // MemberId verification
         Comment comment = commentRepository.findById(request.getCommentId())
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        if(!comment.getMember().getId().equals(request.getMemberId())) {
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        if(!comment.getMember().getId().equals(member.getId())) {
             throw new RuntimeException("Unauthorized");
         }
 

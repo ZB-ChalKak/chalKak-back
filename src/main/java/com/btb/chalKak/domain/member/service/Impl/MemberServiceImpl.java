@@ -8,6 +8,7 @@ import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 
 
 import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
@@ -162,5 +163,10 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(() -> new RuntimeException("CustomMemberException"));
 
         return member.getId();
+    }
+
+    public Member getMemberByAuthentication(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return customUserDetails.getMember();
     }
 }

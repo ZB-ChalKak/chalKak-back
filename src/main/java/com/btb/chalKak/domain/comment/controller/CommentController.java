@@ -12,6 +12,7 @@ import com.btb.chalKak.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class CommentController {
     private final ResponseService responseService;
 
     @PostMapping("/comments")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createComment(
-//                            @RequestHeader("Authorization") String token,
                             Authentication authentication,
                             @RequestBody CreateCommentRequest request) {
         CommentResponse data = CommentResponse.builder()
-                .commentId(commentService.createComment(request).getId())
+                .commentId(commentService.createComment(authentication, request).getId())
                 .build();
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_COMMENT);
@@ -52,11 +53,12 @@ public class CommentController {
     }
 
     @PutMapping("/comments")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> modifyComment(
-//                            @RequestHeader("Authorization") String token,
+        Authentication authentication,
         @RequestBody ModifyCommentRequest request) {
         CommentResponse data = CommentResponse.builder()
-            .commentId(commentService.modifyComment(request).getId())
+            .commentId(commentService.modifyComment(authentication, request).getId())
             .build();
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_MODIFY_COMMENT);
@@ -64,12 +66,13 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> deleteComments(
-//                            @RequestHeader("Authorization") String token,
+        Authentication authentication,
         @RequestBody DeleteCommentRequest request) {
 
         boolean isDeleted = commentService.deleteComment(
-//                                token,
+                                authentication,
                                 request);
 
 
