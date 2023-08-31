@@ -1,9 +1,5 @@
 package com.btb.chalKak.domain.member.controller;
 
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_REISSUE;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SAVE_MEMBER;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_IN;
-
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
@@ -12,15 +8,16 @@ import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -56,4 +53,21 @@ public class SignController {
         return ResponseEntity.ok(responseService.success(data, SUCCESS_REISSUE));
     }
 
+    @PutMapping("/signout")
+    public ResponseEntity<?> signOut(HttpServletRequest request) {
+        memberService.signOut(request);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_SIGN_OUT));
+    }
+
+    @GetMapping(path = "/validate", params = "email")
+    public ResponseEntity<?> validateEmail(@RequestParam String email){
+        memberService.validateEmail(email);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_EMAIL));
+    }
+
+    @GetMapping(path = "/validate", params = "nickname")
+    public ResponseEntity<?> validateNickname(@RequestParam String nickname){
+        memberService.validateNickname(nickname);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_NICKNAME));
+    }
 }
