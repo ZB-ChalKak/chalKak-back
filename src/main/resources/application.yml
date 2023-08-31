@@ -15,9 +15,13 @@ spring:
       data-locations: classpath*:table/h2/data.sql
       mode: always
       encoding: utf-8
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
   profiles:
-    include: oauth
+    include: oauth, google
 
   datasource:
 #    url: jdbc:mysql://localhost:3306/chalkak?serverTimezone=UTC&charsetEncoding=UTF-8
