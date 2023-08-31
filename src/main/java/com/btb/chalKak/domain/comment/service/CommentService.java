@@ -6,14 +6,15 @@ import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
 import com.btb.chalKak.domain.comment.dto.response.CommentLoadResponse;
 import com.btb.chalKak.domain.comment.entity.Comment;
 import java.util.List;
+import org.springframework.security.core.Authentication;
 
 public interface CommentService {
 
-    Comment createComment(CreateCommentRequest request);
+    Comment createComment(Authentication authentication,CreateCommentRequest request);
 
     List<CommentLoadResponse> getComments(Long postId);
 
-    Comment modifyComment(ModifyCommentRequest request);
+    Comment modifyComment(Authentication authentication, ModifyCommentRequest request);
 
-    boolean deleteComment(DeleteCommentRequest request);
+    boolean deleteComment(Authentication authentication, DeleteCommentRequest request);
 }

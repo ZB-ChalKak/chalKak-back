@@ -1,5 +1,10 @@
 package com.btb.chalKak.domain.comment.service.impl;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_COMMENT_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+
+import com.btb.chalKak.common.exception.CommentException;
+import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
@@ -8,13 +13,13 @@ import com.btb.chalKak.domain.comment.entity.Comment;
 import com.btb.chalKak.domain.comment.repository.CommentRepository;
 import com.btb.chalKak.domain.comment.service.CommentService;
 import com.btb.chalKak.domain.member.entity.Member;
-import com.btb.chalKak.domain.member.repository.MemberRepository;
+import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
+    private final MemberServiceImpl memberService;
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
 
     private final PostRepository postRepository;
 
     @Override
-    public Comment createComment(CreateCommentRequest request) {
+    public Comment createComment(Authentication authentication, CreateCommentRequest request) {
 
-        Member member = memberRepository.findById(request.getMemberId())
-            .orElseThrow(()-> new RuntimeException("NOT_FOUND_MEMBER")); // TODO: 2023-08-19 Exception 제어 필요
+
+        Member member = memberService.getMemberByAuthentication(authentication);
+//            .orElseThrow(()-> new RuntimeException("NOT_FOUND_MEMBER")); // TODO: 2023-08-19 Exception 제어 필요
 
         Post post = postRepository.findById(request.getPostId())
             .orElseThrow(()-> new RuntimeException("NOT_FOUND_POST"));  // TODO: 2023-08-19 Exception 제어 필요
@@ -65,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         if (comments == null) {
-            throw new RuntimeException("NOT_EXIST_COMMENT");  // TODO: 2023-08-19 Exception 제어 필요
+            throw new CommentException(INVALID_COMMENT_ID);  // TODO: 2023-08-19 Exception 제어 필요
         }
 
         return commentLoadResponses;
@@ -73,27 +79,34 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment modifyComment(ModifyCommentRequest request) {
+    public Comment modifyComment(Authentication authentication, ModifyCommentRequest request) {
 
-        // TODO: 2023-08-19 token으로 memberId 검증 필요
+        Member member = memberService.getMemberByAuthentication(authentication);
 
         Comment comment = commentRepository.findById(request.getCommentId())
-            .orElseThrow(()-> new RuntimeException("NOT_EXIST_COMMENT"));
+            .orElseThrow(()-> new CommentException(INVALID_COMMENT_ID));
+
+        if(!comment.getMember().getId().equals(member.getId())) {
+            throw new MemberException(INVALID_MEMBER_ID);
+        }
 
         comment.updateComment(request.getContent());
+
         return commentRepository.save(comment);
     }
 
     @Override
     @Transactional
-    public boolean deleteComment(DeleteCommentRequest request) {
+    public boolean deleteComment(Authentication authentication, DeleteCommentRequest request) {
 
         // MemberId verification
         Comment comment = commentRepository.findById(request.getCommentId())
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+            .orElseThrow(()-> new CommentException(INVALID_COMMENT_ID));
 
-        if(!comment.getMember().getId().equals(request.getMemberId())) {
-            throw new RuntimeException("Unauthorized");
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        if(!comment.getMember().getId().equals(member.getId())) {
+            throw new MemberException(INVALID_MEMBER_ID);
         }
 
         int deletedCount = commentRepository.deleteCommentById(request.getCommentId());
