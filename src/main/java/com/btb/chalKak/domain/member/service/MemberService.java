@@ -8,6 +8,8 @@ import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import org.springframework.security.core.Authentication;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface MemberService {
 
     // 회원 가입
@@ -20,4 +22,10 @@ public interface MemberService {
     Member getMemberByAuthentication(Authentication authentication);
 
     boolean validateMemberId (Authentication authentication, Long memberId);
+
+    void signOut(HttpServletRequest request);
+
+    void validateEmail(String email);
+
+    void validateNickname(String nickname);
 }
