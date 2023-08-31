@@ -13,9 +13,14 @@ public enum SuccessCode {
     SUCCESS_LOAD_POST("게시글 조회에 성공했습니다."),
     SUCCESS_DELETE_POST("게시글 삭제에 성공했습니다."),
 
+    // 멤버
     SUCCESS_SAVE_MEMBER("회원 가입에 성공했습니다."),
+    SUCCESS_SIGN_OUT("로그아웃에 성공했습니다."),
     SUCCESS_SIGN_IN("로그인에 성공했습니다."),
     SUCCESS_REISSUE("토큰 재발급 성공"),
+    SUCCESS_VALIDATE_EMAIL("사용 가능한 이메일입니다."),
+    SUCCESS_VALIDATE_NICKNAME("사용 가능한 닉네임입니다."),
+
     SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
 
     // 댓글

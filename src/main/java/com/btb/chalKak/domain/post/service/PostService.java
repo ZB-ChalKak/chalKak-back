@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.post.service;
 
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
+import com.btb.chalKak.domain.post.dto.request.LoadPublicFeaturedPostsRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,6 @@ public interface PostService {
 
     void delete(Authentication authentication, Long postId);
 
-//    Page<Post> loadPublicFeaturedPostsByKeywords(Pageable pageable, LoadPublicFeaturedPostsRequest request);
+    Page<Post> loadPublicFeaturedPostsByKeywords(Pageable pageable, LoadPublicFeaturedPostsRequest request);
 
 }
