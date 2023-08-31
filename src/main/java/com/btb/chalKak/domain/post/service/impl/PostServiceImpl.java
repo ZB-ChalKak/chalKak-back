@@ -14,6 +14,7 @@ import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
+import com.btb.chalKak.domain.post.dto.request.LoadPublicFeaturedPostsRequest;
 import com.btb.chalKak.domain.post.dto.request.WritePostRequest;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
@@ -129,11 +130,10 @@ public class PostServiceImpl implements PostService {
         post.updateIsFollowingAndIsLiked(isFollowing, isLiked);
 
         // 4. 조회수 증가
-        increasePostViewCountToRedis(postId);
+//        increasePostViewCountToRedis(postId);
         
         return post;
     }
-
     @Override
     @Transactional
     public void delete(Authentication authentication, Long postId) {
@@ -150,18 +150,19 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post.delete());
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Page<Post> loadPublicFeaturedPostsByKeywords(
-//            Pageable pageable,
-//            LoadPublicFeaturedPostsRequest request
-//    ) {
-//        // 1. 키워드로 조회
-//
-//        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
-//
-//        return null;
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Post> loadPublicFeaturedPostsByKeywords(
+            Pageable pageable,
+            LoadPublicFeaturedPostsRequest request
+    ) {
+        // 1. 키워드로 조회(키워드가 존재하지 않을 경우, 회원 StyleTags를 가져온다.)
+        // 1-1. 로그인 되어있지 않다면? -> 이 부분을 고민
+
+        // 2. 좋아요, 팔로우, 조회수 수 및 자신의 성별 순서 정렬(추천)
+
+        return null;
+    }
 
     private void validateWriterOfPost(Member member, Post post) {
         if (!Objects.equals(member.getId(), post.getWriter().getId())) {
