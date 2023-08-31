@@ -8,4 +8,5 @@ cloud:
       secret-key: "4HT0UKSNibjzkSlutFUfzxhbUhl5XoQ14tjesxE5"
     region:
       static: "ap-south-1"
+    stack:
       auto: false

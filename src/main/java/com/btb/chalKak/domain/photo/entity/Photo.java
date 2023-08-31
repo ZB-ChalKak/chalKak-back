@@ -36,12 +36,11 @@
      @Column(name = "photo_name", nullable = false)
      private String photoName;
 
+   @Column(name = "photo_order")
+   private Integer photoOrder;  // This field is for ordering
+
      @Column(name = "photo_url", nullable = false)
      private String photoUrl;
-
-     @ManyToOne(fetch = FetchType.LAZY)
-     @JoinColumn(name = "member_id")
-     private Member member;
 
      @ManyToOne(fetch = FetchType.LAZY)
      @JoinColumn(name = "post_id")
