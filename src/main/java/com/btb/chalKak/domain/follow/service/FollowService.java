@@ -26,7 +26,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     @Transactional
-    public Follow followMember(Authentication authentication, Long followerId){
+    public boolean followMember(Authentication authentication, Long followerId){
 
         Member member = memberService.getMemberByAuthentication(authentication);
 
@@ -44,10 +44,12 @@ public class FollowService {
         Member follower = memberRepository.findById(followerId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
-        return followRepository.save(Follow.builder()
-                        .following(following)
-                        .follower(follower)
-                        .build());
+        followRepository.save(Follow.builder()
+            .following(following)
+            .follower(follower)
+            .build());
+
+        return true;
     }
 
     @Transactional

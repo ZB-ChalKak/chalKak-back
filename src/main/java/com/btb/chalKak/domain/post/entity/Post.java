@@ -6,10 +6,13 @@ import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.photo.entity.Photo;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,6 +26,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -73,7 +78,9 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writer;
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("photoOrder ASC")  // Order photos by the photoOrder field
+    private List<Photo> photos = new ArrayList<>();
     @Transient
     private boolean following;
     @Transient
@@ -102,6 +109,9 @@ public class Post extends BaseTimeEntity {
 
     public void updateStyleTags(List<StyleTag> editedStyleTags) {
         this.styleTags = editedStyleTags;
+    }
+    public void updatePhotos(List<Photo> photos) {
+        this.photos = photos;
     }
 
     public void updateHashTags(List<HashTag> editedHashTags) {

@@ -3,6 +3,7 @@ package com.btb.chalKak.domain.post.dto.request;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
