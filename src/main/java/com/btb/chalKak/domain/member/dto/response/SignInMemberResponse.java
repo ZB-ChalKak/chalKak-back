@@ -9,8 +9,8 @@ import lombok.Getter;
 @Builder
 public class SignInMemberResponse {
 
-    Long userId;
-    TokenDto token;
+    private Long userId;
+    private TokenDto token;
 
     public static SignInMemberResponse fromEntity(Member member){
         return SignInMemberResponse.builder()

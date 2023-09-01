@@ -4,9 +4,12 @@ import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.common.util.ValidationUtils;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,15 +62,36 @@ public class SignController {
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_SIGN_OUT));
     }
 
-    @GetMapping(path = "/validate", params = "email")
-    public ResponseEntity<?> validateEmail(@RequestParam String email){
+    @GetMapping("/validate/email/{email}")
+    public ResponseEntity<?> validateEmail(@PathVariable String email){
         memberService.validateEmail(email);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_EMAIL));
     }
 
-    @GetMapping(path = "/validate", params = "nickname")
-    public ResponseEntity<?> validateNickname(@RequestParam String nickname){
+    @GetMapping("/validate/nickname/{nickname}")
+    public ResponseEntity<?> validateNickname(@PathVariable String nickname){
         memberService.validateNickname(nickname);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_NICKNAME));
     }
+
+    @GetMapping("/details/{userId}")
+    public ResponseEntity<?> userDetailsInfo(@PathVariable Long userId){
+        UserDetailsInfoResponse data = memberService.userDetailsInfo(userId);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_USER_DETAILS_INFO));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> userInfo(HttpServletRequest request,
+                                      @PathVariable Long userId){
+        UserInfoResponse data = memberService.userInfo(request, userId);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_USER_INFO));
+    }
+
+    @PostMapping("/{userId}/check-password")
+    public ResponseEntity<?> checkPassword(HttpServletRequest servletRequest,
+                                           @RequestBody CheckPasswordRequest passwordRequest){
+        memberService.checkPassword(servletRequest, passwordRequest);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CHECK_PASSWORD));
+    }
+
 }
