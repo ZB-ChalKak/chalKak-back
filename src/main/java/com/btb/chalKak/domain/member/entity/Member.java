@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
@@ -93,4 +94,20 @@ public class Member extends BaseTimeEntity {
         return this;
     }
 
+    public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags, String profileImgUrl){
+        this.nickname = nickname;
+        this.gender = gender;
+        this.height = height;
+        this.weight = weight;
+        this.styleTags = styleTags;
+        this.profileImg = profileImgUrl;
+
+        return this;
+    }
+
+    public Member updateStatus(MemberStatus status){
+        this.status = status;
+
+        return this;
+    }
 }

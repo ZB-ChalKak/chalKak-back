@@ -6,6 +6,7 @@ import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.common.util.ValidationUtils;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
@@ -96,4 +97,16 @@ public class SignController {
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CHECK_PASSWORD));
     }
 
+    @PostMapping("/{userId}/modify")
+    public ResponseEntity<?> modifyUserInfo(HttpServletRequest servletRequest,
+                                            @RequestBody ModifyUserInfoRequest infoRequest){
+        memberService.modifyUserInfo(servletRequest, infoRequest);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
+    }
+
+    @DeleteMapping("/{userId}/withdraw")
+    public ResponseEntity<?> withdrawUser(HttpServletRequest request){
+        memberService.withdrawUser(request);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_WITHDRAWAL));
+    }
 }

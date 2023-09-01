@@ -2,6 +2,7 @@ package com.btb.chalKak.domain.member.service.Impl;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.*;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
+import static com.btb.chalKak.domain.member.type.MemberStatus.*;
 
 
 import com.btb.chalKak.common.exception.JwtException;
@@ -15,6 +16,7 @@ import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
@@ -24,13 +26,17 @@ import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
+import com.btb.chalKak.domain.member.type.MemberStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,18 +80,6 @@ public class MemberServiceImpl implements MemberService {
         );
     }
 
-    private void validateEmailDuplication(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new MemberException(ALREADY_EXISTS_EMAIL);
-        }
-    }
-
-    private void validateNicknameDuplication(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new MemberException(ALREADY_EXISTS_NICKNAME);
-        }
-    }
-
     @Override
     @Transactional
     public SignInMemberResponse SignIn(SignInMemberRequest request) {
@@ -118,7 +112,10 @@ public class MemberServiceImpl implements MemberService {
                             .build());
         }
 
-        // 5. response return (일반적으론 TokenDto return)
+        // 5. 회원을 ACTIVE 상태로 변경
+        memberRepository.save(member.updateStatus(ACTIVE));
+
+        // 6. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
                 .userId(memberId)
                 .token(token)
@@ -132,7 +129,8 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = tokenRequestDto.getAccessToken();
 
         // 1. 만료된 refresh 토큰은 에러 발생
-        validateToken(refreshToken);
+        // TODO : refresh 토큰 만료일 체크
+        jwtProvider.validateToken(refreshToken);
 
         // 2. accessToken에서 name 가져오기
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
@@ -155,39 +153,6 @@ public class MemberServiceImpl implements MemberService {
 
         return newToken;
     }
-    
-    // TODO : 리팩토링
-    private void validateToken(String token) {
-        if(!jwtProvider.validateToken(token)) {
-            throw new JwtException(SIGNATURE_EXCEPTION);
-        }
-    }
-
-    private Member getMemberByEmail(String email){
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(INVALID_EMAIL));
-    }
-
-    private void validatePasswordWithDB(String inputPassword, String encodedPassword){
-        if(!passwordEncoder.matches(inputPassword, encodedPassword)) {
-            throw new MemberException(MISMATCH_PASSWORD);
-        }
-    }
-
-    public Member getMemberByAuthentication(Authentication authentication) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return customUserDetails.getMember();
-    }
-
-    public boolean validateMemberId (Authentication authentication, Long memberId){
-        Member member = getMemberByAuthentication(authentication);
-
-        if(!member.getId().equals(memberId)){
-            throw new MemberException(INVALID_MEMBER_ID);
-        }
-
-        return true;
-    }
 
     @Override
     @Transactional
@@ -196,7 +161,7 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
         // 2. accessToken 검증
-        validateToken(accessToken);
+        validateAccessToken(accessToken);
 
         // 3. accessToken에서 memberId 가져오기
         String email = jwtProvider.getSubjectByToken(accessToken);
@@ -211,6 +176,9 @@ public class MemberServiceImpl implements MemberService {
         if(refreshTokenStoredInDB != null){
             refreshTokenRepository.deleteByMemberId(member.getId());
         }
+
+        // 5. 회원을 INACTIVE 상태로 변경
+        memberRepository.save(member.updateStatus(INACTIVE));
     }
 
     @Override
@@ -229,14 +197,6 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    private String getDecodingNicknameWithBase64(String nickname){
-        try {
-            return URLDecoder.decode(nickname);
-        }catch(Exception e) {
-            throw new MemberException(INVALID_NICKNAME);
-        }
-    }
-
     @Override
     @Transactional
     public UserDetailsInfoResponse userDetailsInfo(Long userId) {
@@ -247,16 +207,6 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    private Long getFollowingCountByUserId(Long userId){
-        return followRepository.countByFollowingId(userId)
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
-    }
-
-    private Long getFollowerCountByUserId(Long userId){
-        return followRepository.countByFollowerId(userId)
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
-    }
-
     @Override
     @Transactional
     public UserInfoResponse userInfo(HttpServletRequest request, Long userId) {
@@ -264,7 +214,7 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(request);
 
         // 2. accessToken 검증
-        validateToken(accessToken);
+        validateAccessToken(accessToken);
         
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
@@ -282,24 +232,14 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)));
     }
 
-    private Member getMemberByAccessToken(String accessToken){
-        String email = jwtProvider.getSubjectByToken(accessToken);
-        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
-        return customUserDetails.getMember();
-    }
-
-    private void validateMemberId(Long userId){
-        memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
-    }
-
     @Override
+    @Transactional
     public void checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest) {
         // 1. 토큰 추출
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
         // 2. accessToken 검증
-        validateToken(accessToken);
+        validateAccessToken(accessToken);
 
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
@@ -314,5 +254,141 @@ public class MemberServiceImpl implements MemberService {
 
         // 6. 비밀번호 일치 여부 검사
         validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword());
+    }
+
+    @Override
+    @Transactional
+    public void modifyUserInfo(HttpServletRequest servletRequest, ModifyUserInfoRequest infoRequest) {
+        // 1. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
+
+        // 2. accessToken 검증
+        validateAccessToken(accessToken);
+
+        // 3. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 4. 닉네임 중복 검사
+        validateNicknameDuplication(infoRequest.getNickname());
+
+        // 5. 수정 부
+        // TODO : profileImg 부분 수정 요
+        List<StyleTag> styleTags = infoRequest.getStyleTags()
+                .stream()
+                .map(x -> styleTagRepository.findById(x)
+                        .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)))
+                .collect(Collectors.toList());
+
+        member.update(infoRequest.getNickname(),
+                infoRequest.getGender(),
+                infoRequest.getHeight(),
+                infoRequest.getWeight(),
+                styleTags,
+                infoRequest.getProfileImg());   // TODO : profileImg 부분 수정 요
+    }
+
+    @Override
+    @Transactional
+    public void withdrawUser(HttpServletRequest request) {
+        // 1. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(request);
+
+        // 2. accessToken 검증
+        validateAccessToken(accessToken);
+
+        // 3. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 4. 회원을 WITHDRAWAL 상태로 변경
+        memberRepository.save(member.updateStatus(WITHDRAWAL));
+    }
+
+    private void validateEmailDuplication(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new MemberException(ALREADY_EXISTS_EMAIL);
+        }
+    }
+
+    private void validateNicknameDuplication(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new MemberException(ALREADY_EXISTS_NICKNAME);
+        }
+    }
+
+    private Member getMemberByEmail(String email){
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(INVALID_EMAIL));
+    }
+
+    private void validatePasswordWithDB(String inputPassword, String encodedPassword){
+        if(!passwordEncoder.matches(inputPassword, encodedPassword)) {
+            throw new MemberException(MISMATCH_PASSWORD);
+        }
+    }
+
+    private void validateAccessToken(String accessToken) {
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
+
+        String email = jwtProvider.getSubjectByToken(accessToken);
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
+        if(!customUserDetails.isEnabled()){
+            MemberStatus status = customUserDetails.getMember().getStatus();
+
+            if(status == INACTIVE) {
+                throw new MemberException(INACTIVE_MEMBER);
+            }
+            if(status == BLOCKED){
+                throw new MemberException(BLOCKED_MEMBER);
+            }
+            if(status == WITHDRAWAL){
+                throw new MemberException(WITHDRAWAL_MEMBER);
+            }
+        }
+    }
+
+    public Member getMemberByAuthentication(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return customUserDetails.getMember();
+    }
+
+    public boolean validateMemberId (Authentication authentication, Long memberId){
+        Member member = getMemberByAuthentication(authentication);
+
+        if(!member.getId().equals(memberId)){
+            throw new MemberException(INVALID_MEMBER_ID);
+        }
+
+        return true;
+    }
+
+    private String getDecodingNicknameWithBase64(String nickname){
+        try {
+            return URLDecoder.decode(nickname);
+        }catch(Exception e) {
+            throw new MemberException(INVALID_NICKNAME);
+        }
+    }
+
+    private Long getFollowingCountByUserId(Long userId){
+        return followRepository.countByFollowingId(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+    }
+
+    private Long getFollowerCountByUserId(Long userId){
+        return followRepository.countByFollowerId(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+    }
+
+    private Member getMemberByAccessToken(String accessToken){
+        String email = jwtProvider.getSubjectByToken(accessToken);
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
+        return customUserDetails.getMember();
+    }
+
+    private void validateMemberId(Long userId){
+        memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
     }
 }
