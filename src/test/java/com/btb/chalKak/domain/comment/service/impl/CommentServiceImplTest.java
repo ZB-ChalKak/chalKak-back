@@ -137,7 +137,7 @@ class CommentServiceImplTest {
 //    commentService.createComment(request);
 //    commentService.createComment(request);
 
-    List<CommentLoadResponse> result = commentService.getComments(postId);
+    List<CommentLoadResponse> result = commentService.loadComments(postId);
 
     //then
     assertEquals(result.get(0).getCommentId(), comments.get(0).getId());
