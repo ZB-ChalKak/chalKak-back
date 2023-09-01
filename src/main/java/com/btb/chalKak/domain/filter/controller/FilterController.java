@@ -1,10 +1,12 @@
 package com.btb.chalKak.domain.filter.controller;
 
 import com.btb.chalKak.common.response.service.ResponseService;
+import com.btb.chalKak.domain.filter.dto.response.MemberFilterResponse;
+import com.btb.chalKak.domain.filter.dto.response.PostFilterResponse;
+import com.btb.chalKak.domain.filter.dto.response.TagFilterResponse;
 import com.btb.chalKak.domain.filter.service.FilterService;
-import com.btb.chalKak.domain.member.service.MemberService;
-import com.btb.chalKak.domain.post.service.PostService;
-import com.btb.chalKak.domain.styleTag.service.StyleTagService;
+import com.btb.chalKak.domain.member.entity.Member;
+import com.btb.chalKak.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,19 +28,19 @@ public class FilterController {
 
     @GetMapping("/users/{keyword}")
     public ResponseEntity<?> loadUsersByKeyword(@PathVariable String keyword){
-        List<Long> users = filterService.loadUsersByKeyword(keyword);
+        List<MemberFilterResponse> users = filterService.loadUsersByKeyword(keyword);
         return ResponseEntity.ok(responseService.success(users, SUCCESS_LOAD_USER_INFO));
     }
 
     @GetMapping("/posts/{keyword}")
     public ResponseEntity<?> loadPostsByKeyword(@PathVariable String keyword){
-        List<Long> posts = filterService.loadPostsByKeyword(keyword);
+        List<PostFilterResponse> posts = filterService.loadPostsByKeyword(keyword);
         return ResponseEntity.ok(responseService.success(posts, SUCCESS_LOAD_POST));
     }
 
     @GetMapping("/tags/{keyword}")
     public ResponseEntity<?> loadTagsByKeyword(@PathVariable String keyword){
-        List<Long> tags = filterService.loadTagsByKeyword(keyword);
+        List<TagFilterResponse> tags = filterService.loadTagsByKeyword(keyword);
         return ResponseEntity.ok(responseService.success(tags, SUCCESS_LOAD_TAG));
     }
 }
