@@ -48,7 +48,13 @@ public enum ErrorCode {
 
     // FOLLOW
     NOT_FOUND_FOLLOW_ID(HttpStatus.BAD_REQUEST, "팔로우 정보를 찾을 수 없습니다"),
+
+    //소셜 로그인
+
+    INVALID_EMAIL_LOGIN(HttpStatus.BAD_REQUEST, "CHALKAK 계정이 아닙니다.")
     ;
+
+
 
     private final HttpStatus httpStatus;
     private final String message;

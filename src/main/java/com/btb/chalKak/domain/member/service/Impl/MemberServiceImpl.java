@@ -87,7 +87,7 @@ public class MemberServiceImpl implements MemberService {
         Long memberId = member.getId();
 
         if(member.getProvider() != CHALKAK){
-            new RuntimeException("CHALKAK 계정이 아닙니다.");
+            new MemberException(INVALID_EMAIL_LOGIN);
         }
       
         // 2. 비밀번호 일치 여부 확인
