@@ -8,7 +8,6 @@ import lombok.Getter;
 public class LikeResponse {
 
   private Long likeId;
-
   private Long memberId;
   private Long postId;
 

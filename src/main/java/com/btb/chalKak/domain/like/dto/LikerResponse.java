@@ -1,4 +1,4 @@
-package com.btb.chalKak.domain.follow.dto.response;
+package com.btb.chalKak.domain.like.dto;
 
 import com.btb.chalKak.domain.member.entity.Member;
 import lombok.Builder;
@@ -6,16 +6,15 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FollowerResponse {
+public class LikerResponse {
 
     private Long memberId;
     private String nickName;
     private String profileUrl;
 
-    public static FollowerResponse fromEntity(Member member){
+    public static LikerResponse fromEntity(Member member){
 
-        return FollowerResponse.builder()
-                .memberId(member.getId())
+        return LikerResponse.builder()
                 .nickName(member.getNickname())
                 .profileUrl(member.getProfileImg())
                 .build();
