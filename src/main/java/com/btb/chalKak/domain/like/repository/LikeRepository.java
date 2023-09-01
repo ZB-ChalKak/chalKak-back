@@ -2,6 +2,8 @@ package com.btb.chalKak.domain.like.repository;
 
 
 import com.btb.chalKak.domain.like.entity.Like;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -12,4 +14,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     int deleteByMemberIdAndPostId(Long memberId, Long PostId);
     boolean existsByMemberIdAndPostId(Long memberId, Long PostId);
+
+    Page<Long> findMemberIdsByPostId(Long postId, Pageable pageable);
 }

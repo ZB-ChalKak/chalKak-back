@@ -2,8 +2,11 @@ package com.btb.chalKak.domain.follow.service;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
+import java.util.Optional;
 
 import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.domain.follow.dto.response.FollowerResponse;
+import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowResponse;
 import com.btb.chalKak.domain.follow.entity.Follow;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.entity.Member;
@@ -11,9 +14,14 @@ import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -66,5 +74,55 @@ public class FollowService {
         }
 
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public LoadPageFollowResponse loadFollowers(Long memberId, Pageable pageable) {
+
+        Page<Long> membersId = followRepository.findFollowerIdsByFollowingId(memberId, pageable);
+
+        List<Member> members = membersId.stream()
+                .map(id -> memberRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        List<FollowerResponse> followerResponses =
+                members.stream()
+                        .map(member -> FollowerResponse.fromEntity(member))
+                        .collect(Collectors.toList());
+
+
+
+        return  LoadPageFollowResponse.builder()
+                .totalPages(membersId.getTotalPages())
+                .currentPage(membersId.getNumber())
+                .totalElements(membersId.getTotalElements())
+                .followerResponses(followerResponses)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LoadPageFollowResponse loadFollowings(Long memberId, Pageable pageable) {
+
+        Page<Long> membersId = followRepository.findFollowingIdsByFollowerId(memberId, pageable);
+
+        List<Member> members = membersId.stream()
+                .map(id -> memberRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        List<FollowerResponse> followerResponses =
+                members.stream()
+                        .map(member -> FollowerResponse.fromEntity(member))
+                        .collect(Collectors.toList());
+
+        return  LoadPageFollowResponse.builder()
+                .totalPages(membersId.getTotalPages())
+                .currentPage(membersId.getNumber())
+                .totalElements(membersId.getTotalElements())
+                .followerResponses(followerResponses)
+                .build();
     }
 }
