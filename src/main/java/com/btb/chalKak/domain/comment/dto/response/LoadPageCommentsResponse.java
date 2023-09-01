@@ -42,6 +42,7 @@ public class LoadPageCommentsResponse {
         return CommentLoadResponse.builder()
             .commentId(comment.getId())
             .comment(comment.getComment())
+                .memberId(comment.getMember().getId())
             .profileUrl(comment.getMember().getProfileImg())
             .nickname(comment.getMember().getNickname())
             .createAt(comment.getCreatedAt())
