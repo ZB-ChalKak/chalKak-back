@@ -28,7 +28,7 @@ public class FollowController {
                             Authentication authentication,
                             @PathVariable Long followerId) {
 
-        Follow data = followService.followMember(
+        boolean data = followService.followMember(
                             authentication,
                             followerId);
 

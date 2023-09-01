@@ -1,10 +1,11 @@
 package com.btb.chalKak.common.oauth2.handler;
 
-import com.btb.chalKak.common.oauth2.service.TemporaryTokenStoreService;
-import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.exception.type.SuccessCode;
+import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.security.dto.TokenDto;
-import com.btb.chalKak.common.security.service.Impl.TokenServiceImpl;
+import com.btb.chalKak.common.security.entity.RefreshToken;
+import com.btb.chalKak.common.security.jwt.JwtProvider;
+import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
@@ -26,12 +27,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-  private final TokenServiceImpl tokenService;
+//  private final TokenServiceImpl tokenService;
   private final MemberRepository memberRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
+
+  private final JwtProvider jwtProvider;
 
 //  private final ResponseService responseService;
   private final ObjectMapper objectMapper;
-  private final TemporaryTokenStoreService temporaryTokenStoreService;
 
 
   @Override
@@ -49,11 +52,26 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     log.info("User email: " + email);
     log.info("User Id : " + member.getId());
 
-    TokenDto tokenDto = tokenService.createToken(email,member.getId());
+    TokenDto token = jwtProvider.createToken(member.getEmail(), member.getRole());
+    String refreshToken = token.getRefreshToken();
+
+    // 4. refresh 토큰 저장
+    RefreshToken tokenStoredInDB =
+        refreshTokenRepository.findByMemberId(member.getId()).orElse(null);
+
+    if (tokenStoredInDB != null) {
+      refreshTokenRepository.save(tokenStoredInDB.updateToken(refreshToken));
+    } else {
+      refreshTokenRepository.save(
+          RefreshToken.builder()
+              .memberId(member.getId())
+              .token(refreshToken)
+              .build());
+    }
 
     SignInMemberResponse data = SignInMemberResponse.builder()
         .userId(member.getId())
-        .token(tokenDto)
+        .token(token)
         .build();
 
     String loginJsonMessage = objectMapper.writeValueAsString(
@@ -71,7 +89,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 //    temporaryTokenStoreService.store(email, tokenDto);
 
-    log.info(tokenDto.toString());
+    log.info(token.toString());
 
 //    response.sendRedirect("/fetch-token"+"/"+ email);
 

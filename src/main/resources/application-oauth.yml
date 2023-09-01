@@ -7,7 +7,8 @@ spring:
             client-id: "899822161186-u1mgp3jjrsnimb5ulv0ro79ksnkb6g6v.apps.googleusercontent.com"
             client-secret: "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"
             scope: profile, email
-            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            redirect-uri: "http://ec2-13-127-154-248.ap-south-1.compute.amazonaws.com:8080/login/oauth2/code/google"
 
 openWeather:
   key: "b6984cc1cea8abd964d364969316e0af"
+
