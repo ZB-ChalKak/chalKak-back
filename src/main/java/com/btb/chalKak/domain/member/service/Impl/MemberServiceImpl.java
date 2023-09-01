@@ -214,18 +214,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void validateEmail(String email) {
-        if(memberRepository.existsByEmail(email)){
-            throw new MemberException(ALREADY_EXISTS_EMAIL);
-        }
+    public boolean validateEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
     @Override
     @Transactional
-    public void validateNickname(String nickname) {
-        if(memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname))){
-            throw new MemberException(ALREADY_EXISTS_NICKNAME);
-        }
+    public boolean validateNickname(String nickname) {
+        return memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname));
     }
 
     private String getDecodingNicknameWithBase64(String nickname){
