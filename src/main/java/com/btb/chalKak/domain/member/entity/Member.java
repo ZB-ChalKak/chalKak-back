@@ -58,9 +58,9 @@ public class Member extends BaseTimeEntity {
     private MemberProvider provider;
 
     @Column(name = "height")
-    private double height;
+    private Double height;
     @Column(name = "weight")
-    private double weight;
+    private Double weight;
 
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)

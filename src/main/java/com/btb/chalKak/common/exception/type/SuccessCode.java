@@ -18,10 +18,15 @@ public enum SuccessCode {
     SUCCESS_SIGN_OUT("로그아웃에 성공했습니다."),
     SUCCESS_SIGN_IN("로그인에 성공했습니다."),
     SUCCESS_REISSUE("토큰 재발급 성공"),
-    SUCCESS_VALIDATE_EMAIL("사용 가능한 이메일입니다."),
-    SUCCESS_VALIDATE_NICKNAME("사용 가능한 닉네임입니다."),
+    SUCCESS_LOAD_VALIDATE_EMAIL("이메일 중복 여부 조회에 성공했습니다."),
+    SUCCESS_LOAD_VALIDATE_NICKNAME("닉네임 중복 여부 조회에 성공했습니다."),
+    SUCCESS_CHECK_PASSWORD("비밀번호가 일치합니다."),
+
+    SUCCESS_LOAD_USER_DETAILS_INFO("사용자 상세 정보입니다."),
+    SUCCESS_LOAD_USER_INFO("회원 정보를 조회했습니다."),
 
     SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
+
 
     // 댓글
     SUCCESS_SAVE_COMMENT("댓글 등록에 성공했습니다."),

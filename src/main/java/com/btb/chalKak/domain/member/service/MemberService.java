@@ -2,13 +2,18 @@ package com.btb.chalKak.domain.member.service;
 
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 public interface MemberService {
 
@@ -25,7 +30,13 @@ public interface MemberService {
 
     void signOut(HttpServletRequest request);
 
-    void validateEmail(String email);
+    ValidateInfoResponse validateEmail(String email);
 
-    void validateNickname(String nickname);
+    ValidateInfoResponse validateNickname(String nickname);
+
+    UserDetailsInfoResponse userDetailsInfo(Long userId);
+
+    UserInfoResponse userInfo(HttpServletRequest request, Long userId);
+
+    void checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest);
 }

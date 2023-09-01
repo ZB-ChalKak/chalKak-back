@@ -13,17 +13,23 @@ import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.domain.follow.repository.FollowRepository;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
 import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
+
+import java.net.URLDecoder;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.CachingUserDetailsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final CustomUserDetailsService customUserDetailsService;
+    private final FollowRepository followRepository;
 
     @Override
     @Transactional
@@ -208,17 +215,104 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void validateEmail(String email) {
-        if(memberRepository.existsByEmail(email)){
-            throw new MemberException(ALREADY_EXISTS_EMAIL);
+    public ValidateInfoResponse validateEmail(String email) {
+        return ValidateInfoResponse.builder()
+                .isDuplicated(memberRepository.existsByEmail(email))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ValidateInfoResponse validateNickname(String nickname) {
+        return ValidateInfoResponse.builder()
+                .isDuplicated(memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname)))
+                .build();
+    }
+
+    private String getDecodingNicknameWithBase64(String nickname){
+        try {
+            return URLDecoder.decode(nickname);
+        }catch(Exception e) {
+            throw new MemberException(INVALID_NICKNAME);
         }
     }
 
     @Override
     @Transactional
-    public void validateNickname(String nickname) {
-        if(memberRepository.existsByNickname(nickname)){
-            throw new MemberException(ALREADY_EXISTS_NICKNAME);
+    public UserDetailsInfoResponse userDetailsInfo(Long userId) {
+        return UserDetailsInfoResponse.builder()
+                //.posts()
+                .followingCount(getFollowingCountByUserId(userId))
+                .followerCount(getFollowerCountByUserId(userId))
+                .build();
+    }
+
+    private Long getFollowingCountByUserId(Long userId){
+        return followRepository.countByFollowingId(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+    }
+
+    private Long getFollowerCountByUserId(Long userId){
+        return followRepository.countByFollowerId(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+    }
+
+    @Override
+    @Transactional
+    public UserInfoResponse userInfo(HttpServletRequest request, Long userId) {
+        // 1. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(request);
+
+        // 2. accessToken 검증
+        validateToken(accessToken);
+        
+        // 3. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 4. 유효한 이용자 id인지 검사
+        validateMemberId(userId);
+
+        // 5. 토큰의 id와 전달된 id가 같은지 검사
+        if(userId != member.getId()) {
+            throw new MemberException(FORBIDDEN_RESPONSE);
         }
+
+        return UserInfoResponse.fromEntity(
+                memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)));
+    }
+
+    private Member getMemberByAccessToken(String accessToken){
+        String email = jwtProvider.getSubjectByToken(accessToken);
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
+        return customUserDetails.getMember();
+    }
+
+    private void validateMemberId(Long userId){
+        memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+    }
+
+    @Override
+    public void checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest) {
+        // 1. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
+
+        // 2. accessToken 검증
+        validateToken(accessToken);
+
+        // 3. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 4. 유효한 이용자 id인지 검사
+        validateMemberId(passwordRequest.getUserId());
+
+        // 5. 토큰의 id와 전달된 id가 같은지 검사
+        if(passwordRequest.getUserId() != member.getId()) {
+            throw new MemberException(FORBIDDEN_RESPONSE);
+        }
+
+        // 6. 비밀번호 일치 여부 검사
+        validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword());
     }
 }
