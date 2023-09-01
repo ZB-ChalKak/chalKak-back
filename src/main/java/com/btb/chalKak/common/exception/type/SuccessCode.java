@@ -45,7 +45,7 @@ public enum SuccessCode {
     // 스타일 태그
     SUCCESS_LOAD_STYLE_TAG("스타일 태그 조회에 성공했습니다."),
 
-    ;
+    SUCCESS_LOAD_FOLLOWERS("팔로워 정보 조회에 성공했습니다.");
 
     private final String message;
 
