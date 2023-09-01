@@ -30,8 +30,8 @@ public enum ErrorCode {
     ALREADY_EXISTS_NICKNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 닉네임입니다."),
 
     INVALID_MEMBER_ID(HttpStatus.BAD_REQUEST, "잘못된 회원 번호입니다."),
-
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일입니다."),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "잘못된 형식의 닉네임입니다."),
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
