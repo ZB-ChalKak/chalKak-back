@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS member_style_tag;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS post_style_tag;
 DROP TABLE IF EXISTS post_hash_tag;
+DROP TABLE IF EXISTS ADMINISTRATIVE_GEO_INFO;
 
 -- 정적 태그 (스타일 태그)
 CREATE TABLE style_tag
@@ -14,6 +15,15 @@ CREATE TABLE style_tag
     keyword_img  VARCHAR(150),
     category     VARCHAR(20)         NOT NULL,
     keyword      VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- 행정 구역 좌표
+CREATE TABLE ADMINISTRATIVE_GEO_INFO
+(
+    Geo_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name  VARCHAR(10),
+    longitude     DOUBLE,
+    latitude      DOUBLE
 );
 
 -- 동적 태그 (해시 태그)

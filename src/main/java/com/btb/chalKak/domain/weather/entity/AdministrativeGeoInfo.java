@@ -21,12 +21,12 @@ public class AdministrativeGeoInfo {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name ="Geo_id")
   private Long id;
-  @Column(name ="docity")
-  private String doCity; // 도시
+  @Column(name ="name")
+  private String name; // 도시
   @Column(name ="longitude")
-  private String lon; // longitude
+  private double lon; // longitude
   @Column(name ="latitude")
-  private String lat; // latitude
+  private double lat; // latitude
 
 }
 
