@@ -29,9 +29,9 @@ public interface MemberService {
 
     void signOut(HttpServletRequest request);
 
-    void validateEmail(String email);
+    boolean validateEmail(String email);
 
-    void validateNickname(String nickname);
+    boolean validateNickname(String nickname);
 
     UserDetailsInfoResponse userDetailsInfo(Long userId);
 

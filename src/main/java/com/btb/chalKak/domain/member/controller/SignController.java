@@ -1,5 +1,6 @@
 package com.btb.chalKak.domain.member.controller;
 
+import com.btb.chalKak.common.exception.type.SuccessCode;
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
@@ -64,14 +65,14 @@ public class SignController {
 
     @GetMapping("/validate/email/{email}")
     public ResponseEntity<?> validateEmail(@PathVariable String email){
-        memberService.validateEmail(email);
-        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_EMAIL));
+        Boolean data = memberService.validateEmail(email);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_VALIDATE_EMAIL));
     }
 
     @GetMapping("/validate/nickname/{nickname}")
     public ResponseEntity<?> validateNickname(@PathVariable String nickname){
-        memberService.validateNickname(nickname);
-        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_VALIDATE_NICKNAME));
+        Boolean data = memberService.validateNickname(nickname);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_VALIDATE_NICKNAME));
     }
 
     @GetMapping("/details/{userId}")
