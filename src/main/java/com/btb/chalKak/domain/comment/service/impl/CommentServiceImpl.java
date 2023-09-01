@@ -19,6 +19,8 @@ import com.btb.chalKak.domain.post.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<CommentLoadResponse> getComments(Long postId) {
+    public List<CommentLoadResponse> loadComments(Long postId) {
 
         List<Comment> comments = commentRepository.findCommentByPostId(postId);
 
@@ -113,43 +115,9 @@ public class CommentServiceImpl implements CommentService {
 
         return deletedCount > 0;
     }
-//        @Override
-//    @Transactional
-//    public Long saveComment(SaveCommentRequest request) {
-//        // 1. 회원 조회
-//        Member member = getMemberById(request.getMemberId());
-//
-//
-//
-//        // 2. 스타일 태그 조회
-//        List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
-//
-//        // 3. 해시 태그 조회 및 업로드
-//        List<HashTag> hashTags = new ArrayList<>();
-//        for (String keyword : request.getHashTags()) {
-//            HashTag hashTag = hashTagRepository.findByKeyword(keyword)
-//                    .orElse(HashTag.builder()
-//                            .keyword(keyword)
-//                            .build());
-//
-//            hashTags.add(hashTag);
-//        }
-//        hashTagRepository.saveAll(hashTags);
-//
-//        // 4. 게시글 저장
-//        Post post = postRepository.save(Post.builder()
-//                .content(request.getContent())
-//                .status(PUBLIC)
-//                .writer(member)
-//                .styleTags(styleTags)
-//                .hashTags(hashTags)
-//                .build());
-//
-//        return post.getId();
-//    }
-//
-//    private Member getMemberById(Long memberId) {
-//        return memberRepository.findById(memberId)
-//                .orElseThrow(() -> new RuntimeException("CustomMemberException"));
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Comment> loadCommentsOrderByDesc(Long postId, Pageable pageable) {
+        return commentRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
+    }
 }
