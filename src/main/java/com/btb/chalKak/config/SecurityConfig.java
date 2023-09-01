@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/") // 로그 아웃 성공 시 / 주소로 이동
             .and()
                 .oauth2Login()
-                .defaultSuccessUrl("/")
+
 //                .failureUrl("/")
                 .successHandler(oAuth2SuccessHandler)
                 .userInfoEndpoint()
