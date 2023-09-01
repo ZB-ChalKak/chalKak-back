@@ -11,6 +11,7 @@ import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,13 +66,13 @@ public class SignController {
 
     @GetMapping("/validate/email/{email}")
     public ResponseEntity<?> validateEmail(@PathVariable String email){
-        Boolean data = memberService.validateEmail(email);
+        ValidateInfoResponse data = memberService.validateEmail(email);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_VALIDATE_EMAIL));
     }
 
     @GetMapping("/validate/nickname/{nickname}")
     public ResponseEntity<?> validateNickname(@PathVariable String nickname){
-        Boolean data = memberService.validateNickname(nickname);
+        ValidateInfoResponse data = memberService.validateNickname(nickname);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_VALIDATE_NICKNAME));
     }
 

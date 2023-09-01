@@ -20,6 +20,7 @@ import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
@@ -214,14 +215,18 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public boolean validateEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public ValidateInfoResponse validateEmail(String email) {
+        return ValidateInfoResponse.builder()
+                .isDuplicated(memberRepository.existsByEmail(email))
+                .build();
     }
 
     @Override
     @Transactional
-    public boolean validateNickname(String nickname) {
-        return memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname));
+    public ValidateInfoResponse validateNickname(String nickname) {
+        return ValidateInfoResponse.builder()
+                .isDuplicated(memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname)))
+                .build();
     }
 
     private String getDecodingNicknameWithBase64(String nickname){
