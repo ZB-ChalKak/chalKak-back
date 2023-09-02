@@ -16,6 +16,7 @@ public class LikerResponse {
 
         return LikerResponse.builder()
                 .nickName(member.getNickname())
+                .memberId(member.getId())
                 .profileUrl(member.getProfileImg())
                 .build();
 
