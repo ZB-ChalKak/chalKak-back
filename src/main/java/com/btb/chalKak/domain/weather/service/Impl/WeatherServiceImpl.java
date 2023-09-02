@@ -161,8 +161,8 @@ public class WeatherServiceImpl {
             throw new RuntimeException(e);
         }
 
+        log.debug(jsonObject.toJSONString());
         JSONArray weatherList = (JSONArray) jsonObject.get("list");
-        log.info("weather size" + weatherList.size());
 
         List<Map<String, String>> resultMaps = new ArrayList<>();
 

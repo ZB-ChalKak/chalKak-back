@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -28,5 +30,7 @@ public class AdministrativeGeoInfo {
   @Column(name ="latitude")
   private double lat; // latitude
 
+  @OneToMany(mappedBy = "administrativeGeoInfo", cascade = CascadeType.ALL)
+  private List<Weather> weathers = new ArrayList<>();
 }
 
