@@ -33,6 +33,10 @@ public class Weather {
   private double minTemp; // 최저 기온
   private LocalDate date;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "geo_id")
+  private AdministrativeGeoInfo administrativeGeoInfo;
+
 //  @OneToOne(cascade = CascadeType.ALL)
 //  private WeatherApi weatherApi;
 

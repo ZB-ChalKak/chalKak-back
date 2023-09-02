@@ -92,7 +92,7 @@ VALUES  (1, 1, '첫번째 댓글'),
         (2, 1, '네번째 댓글')
 ;
 
-INSERT INTO ADMINISTRATIVE_GEO_INFO (name, latitude, longitude)
+INSERT INTO ADMINISTRATIVE_GEO_INFO (name, longitude, latitude)
 VALUES ('강원강릉시', 128.8784972, 37.74913611),
        ('강원고성군',	128.4701639 ,	38.37796111),
        ('강원동해시',	129.1166333 ,	37.52193056),
