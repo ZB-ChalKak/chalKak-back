@@ -18,7 +18,7 @@ public interface CommentService {
 
     Comment modifyComment(Authentication authentication, ModifyCommentRequest request);
 
-    boolean deleteComment(Authentication authentication, DeleteCommentRequest request);
+    boolean deleteComment(Authentication authentication, Long commentId);
 
     Page<Comment> loadCommentsOrderByDesc(Long postId, Pageable pageable);
 }

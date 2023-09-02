@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,15 +78,15 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/comments")
+    @DeleteMapping("/comments/{commentId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> deleteComments(
         Authentication authentication,
-        @RequestBody DeleteCommentRequest request) {
+        @PathVariable("commentId") Long commentId) {
 
         boolean isDeleted = commentService.deleteComment(
                                 authentication,
-                                request);
+                    commentId);
 
 
         CommonResponse<?> response = responseService.success(isDeleted, SUCCESS_DELETE_COMMENT);
