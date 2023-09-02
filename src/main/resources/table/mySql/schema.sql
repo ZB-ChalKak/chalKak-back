@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS member_style_tag;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS post_style_tag;
 DROP TABLE IF EXISTS post_hash_tag;
+DROP TABLE IF EXISTS ADMINISTRATIVE_GEO_INFO;
 
 -- 정적 태그 (스타일 태그)
 CREATE TABLE style_tag
@@ -24,6 +25,15 @@ CREATE TABLE hash_tag
     created_at  TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '생성일',
     updated_at  TIMESTAMP           NOT NULL DEFAULT NOW() COMMENT '수정일'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 행정 구역 좌표
+CREATE TABLE ADMINISTRATIVE_GEO_INFO
+(
+    Geo_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    docity  VARCHAR(10),
+    longitude     DOUBLE,
+    latitude      DOUBLE
+);
 
 -- 멤버 정보
 CREATE TABLE member

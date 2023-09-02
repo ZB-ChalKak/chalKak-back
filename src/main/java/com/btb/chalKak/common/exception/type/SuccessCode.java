@@ -17,13 +17,15 @@ public enum SuccessCode {
     SUCCESS_SAVE_MEMBER("회원 가입에 성공했습니다."),
     SUCCESS_SIGN_OUT("로그아웃에 성공했습니다."),
     SUCCESS_SIGN_IN("로그인에 성공했습니다."),
+    SUCCESS_WITHDRAWAL("회원 탈퇴에 성공했습니다."),
     SUCCESS_REISSUE("토큰 재발급 성공"),
     SUCCESS_LOAD_VALIDATE_EMAIL("이메일 중복 여부 조회에 성공했습니다."),
     SUCCESS_LOAD_VALIDATE_NICKNAME("닉네임 중복 여부 조회에 성공했습니다."),
     SUCCESS_CHECK_PASSWORD("비밀번호가 일치합니다."),
 
     SUCCESS_LOAD_USER_DETAILS_INFO("사용자 상세 정보입니다."),
-    SUCCESS_LOAD_USER_INFO("회원 정보를 조회했습니다."),
+    SUCCESS_LOAD_USER_INFO("회원 정보 조회에 성공했습니다."),
+    SUCCESS_MODIFY_USER_INFO("회원 정보 수정에 성공했습니다."),
 
     SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
 
@@ -44,8 +46,11 @@ public enum SuccessCode {
 
     // 스타일 태그
     SUCCESS_LOAD_STYLE_TAG("스타일 태그 조회에 성공했습니다."),
+    SUCCESS_LOAD_TAG("태그 조회에 성공했습니다."),
 
-    SUCCESS_LOAD_FOLLOWERS("팔로워 정보 조회에 성공했습니다.");
+    SUCCESS_LOAD_FOLLOWERS("팔로워 정보 조회에 성공했습니다."),
+
+    SUCCESS_LOAD_LIKER("Liker 정보 조회에 성공했습니다.");
 
     private final String message;
 

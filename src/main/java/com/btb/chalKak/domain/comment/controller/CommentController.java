@@ -51,6 +51,7 @@ public class CommentController {
         CommonResponse<?> response = responseService.success(data, SUCCESS_SAVE_COMMENT);
 
         return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("/{postId}/comments")
