@@ -1,19 +1,24 @@
 package com.btb.chalKak.domain.follow.controller;
 
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_FOLLOW;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_COMMENT;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_FOLLOWERS;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_UNFOLLOW;
+
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.domain.comment.dto.response.LoadPageCommentsResponse;
 import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowResponse;
 import com.btb.chalKak.domain.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-
-import static com.btb.chalKak.common.exception.type.SuccessCode.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/follow")
@@ -24,15 +29,13 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @GetMapping("/{followerId}")
+    @GetMapping("/{followingId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> followMember(
                             Authentication authentication,
-                            @PathVariable Long followerId) {
+                            @PathVariable Long followingId) {
 
-        boolean data = followService.followMember(
-                            authentication,
-                            followerId);
+        boolean data = followService.followMember(authentication, followingId);
 
         CommonResponse<?> response = responseService.success(data, SUCCESS_FOLLOW);
 
