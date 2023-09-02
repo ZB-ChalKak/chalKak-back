@@ -21,6 +21,6 @@ public interface PostService {
 
     void delete(Authentication authentication, Long postId);
 
-    Page<Post> loadPublicFeaturedPostsByKeywords(Pageable pageable, LoadPublicFeaturedPostsRequest request);
+    Page<Post> loadPublicFeaturedPostsByKeywords(Authentication authentication, Pageable pageable, LoadPublicFeaturedPostsRequest request);
 
 }

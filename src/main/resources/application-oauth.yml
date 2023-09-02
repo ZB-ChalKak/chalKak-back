@@ -9,6 +9,7 @@ spring:
             scope: profile, email
             redirect-uri: "http://ec2-13-127-154-248.ap-south-1.compute.amazonaws.com:8080/login/oauth2/code/google"
 #            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
   datasource:
     #    url: jdbc:mysql://localhost:3306/chalkak?serverTimezone=UTC&charsetEncoding=UTF-8
     url: jdbc:h2:mem:chalkak;DB_CLOSE_DELAY=-1
