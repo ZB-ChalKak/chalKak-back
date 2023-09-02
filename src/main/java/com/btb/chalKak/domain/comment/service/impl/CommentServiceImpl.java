@@ -99,10 +99,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(Authentication authentication, DeleteCommentRequest request) {
+    public boolean deleteComment(Authentication authentication, Long commentId) {
 
         // MemberId verification
-        Comment comment = commentRepository.findById(request.getCommentId())
+        Comment comment = commentRepository.findById(commentId)
             .orElseThrow(()-> new CommentException(INVALID_COMMENT_ID));
 
         Member member = memberService.getMemberByAuthentication(authentication);
@@ -111,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
             throw new MemberException(INVALID_MEMBER_ID);
         }
 
-        int deletedCount = commentRepository.deleteCommentById(request.getCommentId());
+        int deletedCount = commentRepository.deleteCommentById(commentId);
 
         return deletedCount > 0;
     }

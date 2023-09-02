@@ -23,16 +23,6 @@ spring:
   profiles:
     include: oauth, google
 
-  datasource:
-#    url: jdbc:mysql://localhost:3306/chalkak?serverTimezone=UTC&charsetEncoding=UTF-8
-    url: jdbc:h2:mem:chalkak;DB_CLOSE_DELAY=-1
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-    driver-class-name: org.h2.Driver
-#    username: root
-#    password: 1q2w3e4r!@
-    username: sa
-    password:
-
   jpa:
     generate-ddl: true
     hibernate:
@@ -44,15 +34,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-  # jwt
-  jwt:
-    secret: UmVjb21tZW5kYXRpb24gU2VydmljZSBDaGFsa2FrIEJ5IFplcm9CYXNlIEJhY2tlbmQgU2Nob29sIDExIA==
-
-  # redis
-  redis:
-    host: 127.0.0.1
-    port: 6379
 
 scheduler:
   test:
