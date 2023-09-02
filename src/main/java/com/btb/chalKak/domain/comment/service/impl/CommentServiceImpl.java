@@ -111,9 +111,9 @@ public class CommentServiceImpl implements CommentService {
             throw new MemberException(INVALID_MEMBER_ID);
         }
 
-        int deletedCount = commentRepository.deleteCommentById(commentId);
+        commentRepository.deleteById(commentId);
 
-        return deletedCount > 0;
+        return true;
     }
     @Override
     @Transactional(readOnly = true)
