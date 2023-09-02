@@ -12,6 +12,7 @@ import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +82,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             .data(data)
             .build()
     );
+
+    Cookie tokenCookie = new Cookie("token", data.toString());
+
+    tokenCookie.setSecure(true);  // Send cookie over HTTPS only
+    tokenCookie.setHttpOnly(true);  // Make cookie accessible only through the HTTP protocol
+    tokenCookie.setPath("/");  // Setting path
+    tokenCookie.setMaxAge(24 * 60 * 60);  // Set expiry date after 24 Hrs
+
+    response.addCookie(tokenCookie);
 
     response.setStatus(HttpStatus.OK.value());
     response.setCharacterEncoding("UTF-8");
