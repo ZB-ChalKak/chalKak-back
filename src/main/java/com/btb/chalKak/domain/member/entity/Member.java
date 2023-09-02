@@ -1,10 +1,11 @@
 package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
-import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
+import com.btb.chalKak.domain.follow.entity.Follow;
+import com.btb.chalKak.domain.like.entity.Like;
 import com.btb.chalKak.domain.member.type.Gender;
 import com.btb.chalKak.domain.member.type.MemberProvider;
 import com.btb.chalKak.domain.member.type.MemberRole;
@@ -16,6 +17,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -80,7 +82,16 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "writer")
     private List<Post> posts;
 
-    @ManyToMany
+    @OneToMany(mappedBy = "following")
+    private List<Follow> followings;
+
+    @OneToMany(mappedBy = "follower")
+    private List<Follow> followers;
+
+    @OneToMany(mappedBy = "member")
+    private List<Like> likes;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "member_style_tag",
             joinColumns = @JoinColumn(name = "member_id"),
@@ -92,6 +103,14 @@ public class Member extends BaseTimeEntity {
         this.nickname = name;
         this.profileImg = profileImageUrl;
         return this;
+    }
+
+    public int getFollowerCount() {
+        return this.followers != null ? followers.size() : 0;
+    }
+
+    public int getFollowingCount() {
+        return this.followings != null ? followings.size() : 0;
     }
 
     public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags, String profileImgUrl){

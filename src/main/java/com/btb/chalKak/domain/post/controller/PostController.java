@@ -73,8 +73,8 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> loadPublicPostsOrderByDesc(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+            @RequestParam(defaultValue = "10") int size)
+    {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Post> posts = postService.loadPublicPostsOrderByDesc(pageRequest);
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
@@ -85,7 +85,8 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<?> loadPublicPostDetails(
             Authentication authentication,
-            @PathVariable Long postId) {
+            @PathVariable Long postId)
+    {
         Post post = postService.loadPublicPostDetails(authentication, postId);
         LoadPublicPostDetailsResponse data = LoadPublicPostDetailsResponse.fromEntity(post);
 
