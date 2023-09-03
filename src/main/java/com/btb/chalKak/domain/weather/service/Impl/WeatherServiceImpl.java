@@ -60,8 +60,6 @@ public class WeatherServiceImpl {
 
         String apiUrl = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
 
-        log.info(apiUrl);
-
         try {
             URL url = new URL(apiUrl);
 
@@ -120,8 +118,6 @@ public class WeatherServiceImpl {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
 
-        log.info(jsonString);
-
         try {
             jsonObject = (JSONObject) jsonParser.parse(jsonString);
         } catch (ParseException e) {
@@ -134,8 +130,6 @@ public class WeatherServiceImpl {
         JSONObject weatherData = (JSONObject) weatherList.get(0);
         JSONObject mainData = (JSONObject) weatherData.get("main");
         Long dtData = (Long) weatherData.get("dt");
-        log.info(mainData.toJSONString());
-        log.info("dataData " + dtData);
         resultMap.put("date", dtData.toString());
         resultMap.put("temp", mainData.get("temp").toString());
 
@@ -152,7 +146,6 @@ public class WeatherServiceImpl {
     private List<Map<String, String>> parseWeathers(String jsonString) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
-        log.info(jsonString);
         try {
 
             jsonObject = (JSONObject) jsonParser.parse(jsonString);
@@ -173,11 +166,8 @@ public class WeatherServiceImpl {
             JSONObject weatherData = (JSONObject) weatherList.get(i);
             JSONObject mainData = (JSONObject) weatherData.get("main");
             Long dtData = (Long) weatherData.get("dt");
-            log.info(mainData.toJSONString());
-            log.info("dataData " + dtData);
             resultMap.put("date", dtData.toString());
             resultMap.put("temp", mainData.get("temp").toString());
-            log.info(""+mainData.get("temp"));
 
             JSONArray weatherArray = (JSONArray) weatherData.get("weather");
             JSONObject weaData = (JSONObject) weatherArray.get(0);
