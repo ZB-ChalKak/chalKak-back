@@ -49,7 +49,7 @@ public class WeatherScheduler {
     // api call이 1분에 60개 최대이기 때문에, 임의로 50개씩 나누어 스케쥴을 돌려야함.(무료 티어 한계)
     // 현재 중요 거점 위도 경도가 300개 이하임
     public void processGetWeather() {
-
+        log.info("06:00 weather 스케쥴 시작");
         if (runCount >= 10) {
             return;
         }
@@ -74,6 +74,7 @@ public class WeatherScheduler {
             weatherRepository.saveAll(weathers);
 
         }
+        log.info("06:00 weather 스케쥴 종료");
     }
 
     private List<Weather> convertDtosToWeathers(List<WeatherDto> weatherDtos) {
