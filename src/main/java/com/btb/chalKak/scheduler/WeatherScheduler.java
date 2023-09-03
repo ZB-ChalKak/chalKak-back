@@ -44,7 +44,7 @@ public class WeatherScheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "${scheduler.cron}")
+    @Scheduled(cron = "${scheduler.weather.cron}")
     // 1시간 마다 스케쥴( 저장되어 모든 위도 경도에 따라 값을 변환하고 저장)
     // api call이 1분에 60개 최대이기 때문에, 임의로 50개씩 나누어 스케쥴을 돌려야함.(무료 티어 한계)
     // 현재 중요 거점 위도 경도가 300개 이하임
