@@ -1,11 +1,10 @@
 package com.btb.chalKak.domain.photo.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.btb.chalKak.domain.photo.entity.Photo;
-import com.btb.chalKak.domain.photo.repository.PhotoRepository;
 import com.btb.chalKak.domain.post.entity.Post;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class PhotoService {
 
   private final static String S3Bucket = "spring-photo-bucket"; // Bucket 이름
 
-  private final AmazonS3Client amazonS3Client;
+  private final AmazonS3 amazonS3Client;
 
   @Transactional
   public List<Photo> upload(MultipartFile[] multipartFileList, Post post) {

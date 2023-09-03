@@ -3,18 +3,16 @@ spring:
     job:
       enabled: false
     jdbc:
-      initialize-schema: always
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-  sql:
-    init:
-      schema-locations: classpath*:table/h2/schema.sql
-      data-locations: classpath*:table/h2/data.sql
-      mode: always
-      encoding: utf-8
+      initialize-schema: embedded
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
+#  sql:
+#    init:
+#      mode: always
+#      encoding: utf-8
   servlet:
     multipart:
       max-file-size: 5MB
@@ -28,7 +26,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database: h2
+    database: mysql
 
   # swagger
   mvc:
