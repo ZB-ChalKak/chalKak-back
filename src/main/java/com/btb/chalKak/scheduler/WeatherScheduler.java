@@ -6,22 +6,22 @@ import com.btb.chalKak.domain.weather.entity.Weather;
 import com.btb.chalKak.domain.weather.repository.WeatherRepository;
 import com.btb.chalKak.domain.weather.service.AdministrativeGeoService;
 import com.btb.chalKak.domain.weather.service.Impl.WeatherServiceImpl;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class WeatherScheduler {
 
@@ -38,12 +38,13 @@ public class WeatherScheduler {
 
     @PostConstruct
     public void init() {
+        log.debug("weather 스프링");
         administrativeGeoInfos = administrativeGeoService.getAllDistricts();
         processGetWeather(); // 스프링이 올라오면서 저장함
     }
 
     @Transactional
-    @Scheduled(cron = "${scheduler.weather.cron}")
+    @Scheduled(cron = "${scheduler.cron}")
     // 1시간 마다 스케쥴( 저장되어 모든 위도 경도에 따라 값을 변환하고 저장)
     // api call이 1분에 60개 최대이기 때문에, 임의로 50개씩 나누어 스케쥴을 돌려야함.(무료 티어 한계)
     // 현재 중요 거점 위도 경도가 300개 이하임
