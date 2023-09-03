@@ -86,7 +86,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     Cookie tokenCookie = new Cookie("accessToken", token.getAccessToken());
     Cookie userCookie = new Cookie("userId", member.getId().toString());
 
-//    tokenCookie.setSecure(true);  // Send cookie over HTTPS only
+    tokenCookie.setSecure(true);  // Send cookie over HTTPS only
     tokenCookie.setHttpOnly(true);  // Make cookie accessible only through the HTTP protocol
     tokenCookie.setPath("/");  // Setting path
 //    tokenCookie.setMaxAge(24 * 60 * 60);  // Set expiry date after 24 Hrs
