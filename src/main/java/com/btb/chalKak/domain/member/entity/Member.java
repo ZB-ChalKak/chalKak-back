@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
