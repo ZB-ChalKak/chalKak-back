@@ -108,7 +108,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
         PageRequest pageRequest = PageRequest.of(page, size);
 
         List<Long> styleTagIds = getStyleTagIdsByMember(member);
-        List<Post> featuredPosts = getFeaturedPosts(member.getHeight(), member.getWeight(), styleTagIds, pageRequest);
+        List<Post> featuredPosts = getFeaturedPostsByBodyTypeAndStyleTags(member.getHeight(), member.getWeight(), styleTagIds, pageRequest);
 
         long totalCount = featuredPosts.size();
         
@@ -121,11 +121,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     }
 
     @Override
-    public Page<Post> loadPublicFeaturedPostsByHeightAndWeightAndStyleTags(int page, int size, double height,
+    public Page<Post> loadPublicFeaturedPostsByBodyTypeAndStyleTags(int page, int size, double height,
             double weight, List<Long> styleTagIds, Member member) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        List<Post> featuredPosts = getFeaturedPosts(height, weight, styleTagIds, pageRequest);
+        List<Post> featuredPosts = getFeaturedPostsByBodyTypeAndStyleTags(height, weight, styleTagIds, pageRequest);
 
         long totalCount = featuredPosts.size();
 
@@ -137,13 +137,12 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
         return new PageImpl<>(featuredPosts, pageRequest, totalCount);
     }
 
-    private List<Post> getFeaturedPosts(double height, double weight, List<Long> styleTagIds,
+    private List<Post> getFeaturedPostsByBodyTypeAndStyleTags(double height, double weight, List<Long> styleTagIds,
             PageRequest pageRequest) {
-
-        Double minHeight = height - HEIGHT_DEVIATION;
-        Double maxHeight = height + HEIGHT_DEVIATION;
-        Double minWeight = weight - WEIGHT_DEVIATION;
-        Double maxWeight = weight + WEIGHT_DEVIATION;
+        Double minHeight = height == 0 ? 0 : height - HEIGHT_DEVIATION;
+        Double maxHeight = height == 0 ? Double.MAX_VALUE : height + HEIGHT_DEVIATION;
+        Double minWeight = weight == 0 ? 0 : weight - WEIGHT_DEVIATION;
+        Double maxWeight = weight == 0 ? Double.MAX_VALUE : weight + WEIGHT_DEVIATION;
 
         BooleanExpression publicPostsFilter = getPublicPostFilter();
         BooleanExpression styleTagsFilter = QPost.post.styleTags.any().id.in(styleTagIds);
@@ -160,6 +159,25 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .orderBy(QPost.post.likeCount.multiply(LIKE_WEIGHT)
                         .add(QPost.post.viewCount.multiply(VIEW_WEIGHT))
                         .desc(),
+                        QPost.post.createdAt.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+    }
+
+    private List<Post> getFeaturedPostsByStyleTags(List<Long> styleTagIds,
+            PageRequest pageRequest) {
+        BooleanExpression publicPostsFilter = getPublicPostFilter();
+        BooleanExpression styleTagsFilter = QPost.post.styleTags.any().id.in(styleTagIds);
+
+        return queryFactory
+                .select(QPost.post)
+                .from(QPost.post)
+                .where(publicPostsFilter
+                        .and(styleTagsFilter))
+                .orderBy(QPost.post.likeCount.multiply(LIKE_WEIGHT)
+                                .add(QPost.post.viewCount.multiply(VIEW_WEIGHT))
+                                .desc(),
                         QPost.post.createdAt.desc())
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
