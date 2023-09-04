@@ -42,6 +42,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
     }
 
+    @ExceptionHandler(FilterException.class)
+    public ResponseEntity<?> handleFilterException(FilterException e){
+        log.error("FilterException is occurred. {}",  e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus()).body(responseService.failure(e.getMessage()));
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
         log.error("AuthenticationException is occurred. {}",  e.getMessage());
