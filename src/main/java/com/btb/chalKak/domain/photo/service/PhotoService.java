@@ -23,65 +23,66 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class PhotoService {
 
-  private final static String S3Bucket = "spring-photo-bucket"; // Bucket 이름
+    private final static String S3Bucket = "spring-photo-bucket"; // Bucket 이름
 
-  private final AmazonS3 amazonS3Client;
+    private final AmazonS3 amazonS3Client;
 
-  @Transactional
-  public List<Photo> upload(MultipartFile[] multipartFileList, Post post) {
-    List<String> imagePathList = new ArrayList<>();
-    List<Photo> photos = new ArrayList<>();
+    @Transactional
+    public List<Photo> upload(MultipartFile[] multipartFileList, Post post) {
+        List<String> imagePathList = new ArrayList<>();
+        List<Photo> photos = new ArrayList<>();
 
-    log.info("Here Photo Service!");
-    int order = 0;
+        log.info("Here Photo Service!");
+        int order = 0;
 
-    try {
-      for (MultipartFile multipartFile : multipartFileList) {
-        // Null and size check
-        if (multipartFile == null || multipartFile.isEmpty()) {
-          continue;
+        try {
+            for (MultipartFile multipartFile : multipartFileList) {
+                // Null and size check
+                if (multipartFile == null || multipartFile.isEmpty()) {
+                    continue;
+                }
+
+                String originalName = Optional.ofNullable(multipartFile.getOriginalFilename())
+                        .orElse(UUID.randomUUID().toString()); // default to random UUID if null
+
+                long size = multipartFile.getSize();
+
+                StringBuilder sb = new StringBuilder(originalName);
+
+                sb.append(LocalDateTime.now());
+
+                String encodedString = Base64.getEncoder().encodeToString(sb.toString().getBytes());
+
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+
+                objectMetadata.setContentType(Optional.ofNullable(multipartFile.getContentType())
+                        .orElse("application/octet-stream")); // default to "application/octet-stream" if null
+                objectMetadata.setContentLength(size);
+
+                // Upload to S3
+                amazonS3Client.putObject(
+                        new PutObjectRequest(S3Bucket, encodedString,
+                                multipartFile.getInputStream(),
+                                objectMetadata)
+                                .withCannedAcl(CannedAccessControlList.PublicRead)
+                );
+
+                String imagePath = amazonS3Client.getUrl(S3Bucket, encodedString).toString();
+
+                photos.add(
+                        Photo.builder()
+                                .url(imagePath)
+                                .order(++order)
+                                .post(post)
+                                .name(originalName)
+                                .build()
+                );
+
+                imagePathList.add(imagePath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        String originalName = Optional.ofNullable(multipartFile.getOriginalFilename())
-            .orElse(UUID.randomUUID().toString()); // default to random UUID if null
-
-        long size = multipartFile.getSize();
-
-        StringBuilder sb = new StringBuilder(originalName);
-
-        sb.append(LocalDateTime.now());
-
-        String encodedString = Base64.getEncoder().encodeToString(sb.toString().getBytes());
-
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-
-        objectMetadata.setContentType(Optional.ofNullable(multipartFile.getContentType())
-            .orElse("application/octet-stream")); // default to "application/octet-stream" if null
-        objectMetadata.setContentLength(size);
-
-        // Upload to S3
-        amazonS3Client.putObject(
-            new PutObjectRequest(S3Bucket, encodedString, multipartFile.getInputStream(),
-                objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead)
-        );
-
-        String imagePath = amazonS3Client.getUrl(S3Bucket, encodedString).toString();
-
-        photos.add(
-            Photo.builder()
-                .photoUrl(imagePath)
-                .photoOrder(++order)
-                .post(post)
-                .photoName(originalName)
-                .build()
-        );
-
-        imagePathList.add(imagePath);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+        return photos;
     }
-    return photos;
-  }
 }

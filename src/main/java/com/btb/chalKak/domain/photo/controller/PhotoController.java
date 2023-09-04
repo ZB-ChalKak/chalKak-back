@@ -29,6 +29,6 @@ public class PhotoController {
 
         log.info(multipartFileList.toString());
 
-        return ResponseEntity.ok().body(photoService.upload(multipartFileList, post).get(0).getPhotoUrl());
+        return ResponseEntity.ok().body(photoService.upload(multipartFileList, post).get(0).getUrl());
     }
 }
