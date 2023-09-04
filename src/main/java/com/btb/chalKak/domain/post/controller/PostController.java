@@ -72,11 +72,12 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> loadPublicPostsOrderByDesc(
+            Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size)
     {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Post> posts = postService.loadPublicPostsOrderByDesc(pageRequest);
+        Page<Post> posts = postService.loadPublicPostsOrderByDesc(authentication, pageRequest);
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
 
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));

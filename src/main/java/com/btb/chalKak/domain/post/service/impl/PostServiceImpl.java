@@ -121,9 +121,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Post> loadPublicPostsOrderByDesc(Pageable pageable) {
-        return postRepository.loadPublicPostsOrderByDesc(pageable.getPageNumber(),
+    public Page<Post> loadPublicPostsOrderByDesc(Authentication authentication, Pageable pageable) {
+        // 1. 최신순 게시글 리스트 조회
+        Page<Post> posts = postRepository.loadPublicPostsOrderByDesc(pageable.getPageNumber(),
                 pageable.getPageSize());
+        
+        // 2. 회원가입 여부 확인 및 비로그인시 리스트 응답
+        Member member = getMemberByAuthentication(authentication);
+        if (member == null) {
+            return posts;
+        }
+
+        // 3. 로그인시 좋아요 여부 업데이트
+        for (Post post : posts) {
+            boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
+            post.updateIsLiked(isLiked);
+        }
+
+        return posts;
     }
 
     @Override
@@ -178,7 +193,7 @@ public class PostServiceImpl implements PostService {
         // 1. 회원 조회
         Member member = getMemberByAuthentication(authentication);
         if (member == null) {
-            return loadPublicPostsOrderByDesc(pageable);
+            return loadPublicPostsOrderByDesc(authentication, pageable);
         }
 
         // 2. 키워드를 통한 추천
@@ -187,9 +202,9 @@ public class PostServiceImpl implements PostService {
                 postRepository.loadPublicFeaturedPostsByMember(
                         pageable.getPageNumber(), pageable.getPageSize(), member) :
                 // 2-2. 키워드가 선택되었을 때 선택된 키워드로 추천 + 체형
-                postRepository.loadPublicFeaturedPostsByHeightAndWeightAndStyleTags(
-                        pageable.getPageNumber(), pageable.getPageSize(), member.getHeight(),
-                        member.getWeight(), request.getStyleTagIds(), member);
+                postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
+                        pageable.getPageNumber(), pageable.getPageSize(), request.getHeight(),
+                        request.getWeight(), request.getStyleTagIds(), member);
     }
 
     private void validateWriterOfPost(Member member, Post post) {

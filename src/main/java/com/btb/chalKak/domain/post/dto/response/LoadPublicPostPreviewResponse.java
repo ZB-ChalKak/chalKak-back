@@ -14,6 +14,7 @@ import lombok.Getter;
 public class LoadPublicPostPreviewResponse {
 
     private Long id;
+    private String thumbnail;
     private String content;
     private String location;
 
@@ -23,11 +24,14 @@ public class LoadPublicPostPreviewResponse {
     private List<String> styleTags;
     private List<String> hashTags;
 
+    private boolean liked;
+
     private WriterPreview writer;
 
     public static LoadPublicPostPreviewResponse fromEntity(Post post) {
         return LoadPublicPostPreviewResponse.builder()
                 .id(post.getId())
+                .thumbnail(post.getThumbnail())
                 .content(post.getContent())
                 .location(post.getLocation())
                 .viewCount(post.getViewCount())
@@ -38,6 +42,7 @@ public class LoadPublicPostPreviewResponse {
                 .hashTags(post.getHashTags().stream()
                         .map(HashTag::getKeyword)
                         .collect(Collectors.toList()))
+                .liked(post.isLiked())
                 .writer(WriterPreview.fromEntity(post.getWriter()))
                 .build();
     }
