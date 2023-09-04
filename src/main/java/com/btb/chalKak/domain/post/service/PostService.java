@@ -15,7 +15,7 @@ public interface PostService {
 
     Post edit(Authentication authentication, Long postId, EditPostRequest request, MultipartFile[] multipartFileList);
 
-    Page<Post> loadPublicPostsOrderByDesc(Pageable pageable);
+    Page<Post> loadPublicPostsOrderByDesc(Authentication authentication, Pageable pageable);
 
     Post loadPublicPostDetails(Authentication authentication, Long postId);
 

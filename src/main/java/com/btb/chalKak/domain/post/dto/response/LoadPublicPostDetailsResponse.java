@@ -2,8 +2,10 @@ package com.btb.chalKak.domain.post.dto.response;
 
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.member.dto.Writer;
+import com.btb.chalKak.domain.photo.dto.PostPhoto;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
+import com.btb.chalKak.domain.styleTag.type.StyleCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +28,12 @@ public class LoadPublicPostDetailsResponse {
     private boolean privacyWeight;
 
     private List<String> styleTags;
+    private List<String> seasonTags;
+    private List<String> weatherTags;
+
+//    private List<String> styleTags;
     private List<String> hashTags;
+    private List<PostPhoto> postPhotos;
 
     private boolean following;
     private boolean liked;
@@ -46,10 +53,22 @@ public class LoadPublicPostDetailsResponse {
                 .privacyHeight(post.isPrivacyHeight())
                 .privacyWeight(post.isPrivacyWeight())
                 .styleTags(post.getStyleTags().stream()
+                        .filter(styleTag -> styleTag.getCategory() == StyleCategory.STYLE)
+                        .map(StyleTag::getKeyword)
+                        .collect(Collectors.toList()))
+                .seasonTags(post.getStyleTags().stream()
+                        .filter(styleTag -> styleTag.getCategory() == StyleCategory.SEASON)
+                        .map(StyleTag::getKeyword)
+                        .collect(Collectors.toList()))
+                .weatherTags(post.getStyleTags().stream()
+                        .filter(styleTag -> styleTag.getCategory() == StyleCategory.WEATHER)
                         .map(StyleTag::getKeyword)
                         .collect(Collectors.toList()))
                 .hashTags(post.getHashTags().stream()
                         .map(HashTag::getKeyword)
+                        .collect(Collectors.toList()))
+                .postPhotos(post.getPhotos().stream()
+                        .map(PostPhoto::fromEntity)
                         .collect(Collectors.toList()))
                 .following(post.isFollowing())
                 .liked(post.isLiked())

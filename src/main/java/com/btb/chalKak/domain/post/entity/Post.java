@@ -81,16 +81,19 @@ public class Post extends BaseTimeEntity {
     private Member writer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("photoOrder ASC")  // Order photos by the photoOrder field
+    @OrderBy("order ASC")
     private List<Photo> photos = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     private List<Like> likes;
 
     @Transient
-    private boolean following;
-    @Transient
     private boolean liked;
+    @Transient
+    private boolean following;
+
+    @Transient
+    private String thumbnail;
 
     @ManyToMany
     @JoinTable(
@@ -135,5 +138,13 @@ public class Post extends BaseTimeEntity {
     public void updateIsFollowingAndIsLiked(boolean isFollowing, boolean isLiked) {
         this.following = isFollowing;
         this.liked = isLiked;
+    }
+
+    public void updateIsLiked(boolean isLiked) {
+        this.liked = isLiked;
+    }
+
+    public String getThumbnail() {
+        return photos.isEmpty() ? null : photos.get(0).getUrl();
     }
 }
