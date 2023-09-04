@@ -15,12 +15,12 @@ public interface PostService {
 
     Post edit(Authentication authentication, Long postId, EditPostRequest request, MultipartFile[] multipartFileList);
 
-    Page<Post> loadPublicPostsOrderByDesc(Pageable pageable);
+    Page<Post> loadPublicPostsOrderByDesc(Authentication authentication, Pageable pageable);
 
     Post loadPublicPostDetails(Authentication authentication, Long postId);
 
     void delete(Authentication authentication, Long postId);
 
-    Page<Post> loadPublicFeaturedPostsByKeywords(Pageable pageable, LoadPublicFeaturedPostsRequest request);
+    Page<Post> loadPublicFeaturedPostsByKeywords(Authentication authentication, Pageable pageable, LoadPublicFeaturedPostsRequest request);
 
 }

@@ -1,17 +1,30 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.exception.type.ErrorCode.*;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_MEMBER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_LOGIN;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.WITHDRAWAL_MEMBER;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
-import static com.btb.chalKak.domain.member.type.MemberStatus.*;
-
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
+import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
 
 import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
-import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.entity.RefreshToken;
+import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
@@ -27,26 +40,29 @@ import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.member.type.MemberStatus;
+import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
-
 import java.net.URLDecoder;
 import java.util.List;
-
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
     private final StyleTagRepository styleTagRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -332,6 +348,22 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member.updateStatus(WITHDRAWAL));
     }
 
+    @Override
+    public Page<Post> loadPublicPosts(Authentication authentication, int page, int size) {
+        if (authentication == null) {
+            return null;
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        Member member = customUserDetails.getMember();
+
+        List<Post> posts = postRepository.findAllByWriter(member);
+
+        return new PageImpl<>(posts, pageRequest, posts.size());
+    }
+
     private void validateEmailDuplication(String email) {
         Member member = memberRepository.findByEmail(email).orElse(null);
 
@@ -416,4 +448,5 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
     }
+
 }

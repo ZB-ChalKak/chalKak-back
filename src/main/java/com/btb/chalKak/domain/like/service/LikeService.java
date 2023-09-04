@@ -87,25 +87,38 @@ public class LikeService {
     public LoadPageLikeResponse loadLikers(Long postId, Pageable pageable) {
 
 
-        Page<Long> membersId = likeRepository.findMemberIdsByPostId(postId, pageable);
+// 1. Fetch Likes by postId
+        Page<Like> likes = likeRepository.findAllByPostId(postId, pageable);
 
-        List<Member> members = membersId.stream()
-                .map(id -> memberRepository.findById(id))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+// 2. Convert Like entities to LikeDto
+        List<LikeResponse> likeDtos = likes.getContent().stream()
+            .map(LikeResponse::fromEntity)
+            .collect(Collectors.toList());
 
-        List<LikerResponse> likerResponses =
-                members.stream()
-                        .map(member -> LikerResponse.fromEntity(member))
-                        .collect(Collectors.toList());
+// 3. Extract memberIds from LikeDto
+        List<Long> memberIds = likeDtos.stream()
+            .map(LikeResponse::getMemberId)
+            .collect(Collectors.toList());
 
+// 4. Fetch Members using memberIds
+        List<Member> members = memberIds.stream()
+            .map(id -> memberRepository.findById(id))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+// 5. Convert Members to LikerResponse
+        List<LikerResponse> likerResponses = members.stream()
+            .map(LikerResponse::fromEntity)
+            .collect(Collectors.toList());
+
+// 6. Build the response
         return LoadPageLikeResponse.builder()
-                .totalPages(membersId.getTotalPages())
-                .currentPage(membersId.getNumber())
-                .totalElements(membersId.getTotalElements())
-                .likerResponses(likerResponses)
-                .build();
+            .totalPages(likes.getTotalPages())
+            .currentPage(likes.getNumber())
+            .totalElements(likes.getTotalElements())
+            .likerResponses(likerResponses)
+            .build();
     }
 
 }

@@ -11,10 +11,10 @@ import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
-import org.springframework.security.core.Authentication;
-
+import com.btb.chalKak.domain.post.entity.Post;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 
 public interface MemberService {
 
@@ -44,4 +44,6 @@ public interface MemberService {
     void modifyUserInfo(HttpServletRequest servletRequest, ModifyUserInfoRequest infoRequest);
 
     void withdrawUser(HttpServletRequest request);
+
+    Page<Post> loadPublicPosts(Authentication authentication, int page, int size);
 }

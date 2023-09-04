@@ -11,6 +11,7 @@ public class CommentLoadResponse {
 
     private Long commentId;
     private String comment;
+    private Long memberId;
     private String nickname;
     private String profileUrl;
     private LocalDateTime createAt;

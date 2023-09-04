@@ -33,6 +33,7 @@ public class Like {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
     @CreatedDate
     @Column(name ="liked_at")
     private LocalDateTime likedAt;

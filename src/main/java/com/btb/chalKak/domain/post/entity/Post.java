@@ -5,6 +5,7 @@ import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
+import com.btb.chalKak.domain.like.entity.Like;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.photo.entity.Photo;
 import com.btb.chalKak.domain.post.dto.EditPost;
@@ -78,13 +79,21 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writer;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("photoOrder ASC")  // Order photos by the photoOrder field
+    @OrderBy("order ASC")
     private List<Photo> photos = new ArrayList<>();
-    @Transient
-    private boolean following;
+
+    @OneToMany(mappedBy = "post")
+    private List<Like> likes;
+
     @Transient
     private boolean liked;
+    @Transient
+    private boolean following;
+
+    @Transient
+    private String thumbnail;
 
     @ManyToMany
     @JoinTable(
@@ -129,5 +138,13 @@ public class Post extends BaseTimeEntity {
     public void updateIsFollowingAndIsLiked(boolean isFollowing, boolean isLiked) {
         this.following = isFollowing;
         this.liked = isLiked;
+    }
+
+    public void updateIsLiked(boolean isLiked) {
+        this.liked = isLiked;
+    }
+
+    public String getThumbnail() {
+        return photos.isEmpty() ? null : photos.get(0).getUrl();
     }
 }

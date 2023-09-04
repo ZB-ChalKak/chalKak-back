@@ -11,5 +11,5 @@ public class LoadPublicFeaturedPostsRequest {
     private double height;
     private double weight;
 
-    private List<Long> styleTags;
+    private List<Long> styleTagIds;
 }

@@ -2,6 +2,7 @@ package com.btb.chalKak.domain.follow.service;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
+
 import java.util.Optional;
 
 import com.btb.chalKak.common.exception.MemberException;
@@ -33,43 +34,44 @@ public class FollowService {
     private final MemberServiceImpl memberService;
 
     private final FollowRepository followRepository;
+
     @Transactional
-    public boolean followMember(Authentication authentication, Long followerId){
+    public boolean followMember(Authentication authentication, Long followingId) {
 
         Member member = memberService.getMemberByAuthentication(authentication);
 
-        Long followingId = member.getId();
+        Long followerId = member.getId();
 
         // 이미 팔로우가 있는지 확인
-        if(followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
+        if (followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
             throw new RuntimeException("ALREADY_Followed");
         }
-
-        Member following = memberRepository.findById(followingId)
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
-
 
         Member follower = memberRepository.findById(followerId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
+        Member following = memberRepository.findById(followingId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+
         followRepository.save(Follow.builder()
-            .following(following)
-            .follower(follower)
-            .build());
+                .following(following)
+                .follower(follower)
+                .build());
 
         return true;
     }
 
     @Transactional
-    public boolean unfollowMember(Authentication authentication, Long followerId){
+    public boolean unfollowMember(Authentication authentication, Long followingId) {
 
         Member member = memberService.getMemberByAuthentication(authentication);
 
-        Long followingId = member.getId();
+        Long followerId = member.getId();
 
-        int deletedCount = followRepository.deleteByFollowingIdAndFollowerId(followingId, followerId);
+        int deletedCount = followRepository.deleteByFollowingIdAndFollowerId(followingId,
+                followerId);
 
-        if(deletedCount == 0){
+        if (deletedCount == 0) {
             throw new MemberException(NOT_FOUND_FOLLOW_ID);
         }
 
@@ -82,19 +84,17 @@ public class FollowService {
         Page<Long> membersId = followRepository.findFollowerIdsByFollowingId(memberId, pageable);
 
         List<Member> members = membersId.stream()
-                .map(id -> memberRepository.findById(id))
+                .map(memberRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
         List<FollowerResponse> followerResponses =
                 members.stream()
-                        .map(member -> FollowerResponse.fromEntity(member))
+                        .map(FollowerResponse::fromEntity)
                         .collect(Collectors.toList());
 
-
-
-        return  LoadPageFollowResponse.builder()
+        return LoadPageFollowResponse.builder()
                 .totalPages(membersId.getTotalPages())
                 .currentPage(membersId.getNumber())
                 .totalElements(membersId.getTotalElements())
@@ -108,17 +108,17 @@ public class FollowService {
         Page<Long> membersId = followRepository.findFollowingIdsByFollowerId(memberId, pageable);
 
         List<Member> members = membersId.stream()
-                .map(id -> memberRepository.findById(id))
+                .map(memberRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
         List<FollowerResponse> followerResponses =
                 members.stream()
-                        .map(member -> FollowerResponse.fromEntity(member))
+                        .map(FollowerResponse::fromEntity)
                         .collect(Collectors.toList());
 
-        return  LoadPageFollowResponse.builder()
+        return LoadPageFollowResponse.builder()
                 .totalPages(membersId.getTotalPages())
                 .currentPage(membersId.getNumber())
                 .totalElements(membersId.getTotalElements())
