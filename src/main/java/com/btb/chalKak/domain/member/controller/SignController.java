@@ -1,6 +1,19 @@
 package com.btb.chalKak.domain.member.controller;
 
-import com.btb.chalKak.common.exception.type.SuccessCode;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_CHECK_PASSWORD;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_DETAILS_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_EMAIL;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_NICKNAME;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_MODIFY_USER_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_REISSUE;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SAVE_MEMBER;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_IN;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_OUT;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_WITHDRAWAL;
+
+import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
@@ -14,16 +27,25 @@ import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
-
+import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
+import com.btb.chalKak.domain.post.entity.Post;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import static com.btb.chalKak.common.exception.type.SuccessCode.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -108,5 +130,17 @@ public class SignController {
     public ResponseEntity<?> withdrawUser(HttpServletRequest request){
         memberService.withdrawUser(request);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_WITHDRAWAL));
+    }
+
+    @GetMapping("/public/posts")
+    public ResponseEntity<CommonResponse<LoadPublicPostsResponse>> loadPublicPosts(
+            Authentication authentication,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size)
+    {
+        Page<Post> posts = memberService.loadPublicPosts(authentication, page, size);
+        LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
+
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
     }
 }
