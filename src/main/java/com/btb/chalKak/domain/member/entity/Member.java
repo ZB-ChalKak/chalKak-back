@@ -70,7 +70,7 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberStatus status = INACTIVE;
+    private MemberStatus status = ACTIVE;
 
     @Builder.Default
     @Column(name = "role", nullable = false)

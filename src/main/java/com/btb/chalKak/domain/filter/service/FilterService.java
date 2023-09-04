@@ -9,7 +9,7 @@ import java.util.List;
 public interface FilterService {
     List<MemberFilterResponse> loadUsersByKeyword(String keyword);
 
-    List<PostFilterResponse> loadPostsByKeyword(String keyword);
+    List<PostFilterResponse> loadPostsByKeyword(String keyword, Long length);
 
-    List<TagFilterResponse> loadTagsByKeyword(String keyword);
+    TagFilterResponse loadTagsByKeyword(String keyword);
 }

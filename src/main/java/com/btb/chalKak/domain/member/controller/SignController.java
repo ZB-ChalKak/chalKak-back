@@ -97,9 +97,9 @@ public class SignController {
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CHECK_PASSWORD));
     }
 
-    @PostMapping("/{userId}/modify")
+    @PatchMapping("/{userId}/modify")
     public ResponseEntity<?> modifyUserInfo(HttpServletRequest servletRequest,
-                                            @RequestBody ModifyUserInfoRequest infoRequest){
+                                            @Valid @RequestBody ModifyUserInfoRequest infoRequest){
         memberService.modifyUserInfo(servletRequest, infoRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
     }

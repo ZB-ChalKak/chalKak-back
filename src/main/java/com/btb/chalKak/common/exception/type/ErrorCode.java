@@ -37,6 +37,7 @@ public enum ErrorCode {
     BLOCKED_MEMBER(HttpStatus.UNAUTHORIZED, "정지된 사용자입니다."),
     WITHDRAWAL_MEMBER(HttpStatus.UNAUTHORIZED, "탈퇴한 사용자입니다."),
 
+    INACTIVE_SING_IN(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다."),
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
     // POST
@@ -55,7 +56,10 @@ public enum ErrorCode {
 
     //소셜 로그인
 
-    INVALID_EMAIL_LOGIN(HttpStatus.BAD_REQUEST, "CHALKAK 계정이 아닙니다.")
+    INVALID_EMAIL_LOGIN(HttpStatus.BAD_REQUEST, "CHALKAK 계정이 아닙니다."),
+
+    // Filter
+    INVALID_PREVIEW_CONTENT_LENGTH(HttpStatus.BAD_REQUEST, "올바른 문자열 길이가 아닙니다."),
     ;
 
 
