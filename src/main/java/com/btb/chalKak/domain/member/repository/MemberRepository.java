@@ -1,6 +1,8 @@
 package com.btb.chalKak.domain.member.repository;
 
 import com.btb.chalKak.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findById(Long id);
 
-    List<Member> findAllByNicknameContaining(String keyword);
+    Page<Member> findAllByNicknameContaining(String keyword, Pageable pageable);
 
     Optional<Member> findByNickname(String nickname);
 }

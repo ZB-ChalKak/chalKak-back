@@ -1,6 +1,8 @@
 package com.btb.chalKak.domain.filter.controller;
 
 import com.btb.chalKak.common.response.service.ResponseService;
+import com.btb.chalKak.domain.filter.dto.HashTagFilterDto;
+import com.btb.chalKak.domain.filter.dto.StyleTagFilterDto;
 import com.btb.chalKak.domain.filter.dto.response.MemberFilterResponse;
 import com.btb.chalKak.domain.filter.dto.response.PostFilterResponse;
 import com.btb.chalKak.domain.filter.dto.response.TagFilterResponse;
@@ -26,24 +28,31 @@ public class FilterController {
     private final ResponseService responseService;
 
     @GetMapping("/users/{keyword}")
-    public ResponseEntity<?> loadUsersByKeyword(@PathVariable String keyword,
+    public ResponseEntity<?> loadUsersByKeyword(@PathVariable("keyword") String keyword,
                                                 Pageable pageable){
-        Page<MemberFilterResponse> users = filterService.loadUsersByKeyword(keyword, pageable);
+        List<MemberFilterResponse> users = filterService.loadUsersByKeyword(keyword, pageable);
         return ResponseEntity.ok(responseService.success(users, SUCCESS_LOAD_USER_INFO));
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<?> loadPostsByKeyword(@RequestParam String keyword,
-                                                @RequestParam Long length,
+    public ResponseEntity<?> loadPostsByKeyword(@RequestParam("keyword") String keyword,
+                                                @RequestParam("max-length") Long maxLength,
                                                 Pageable pageable){
-        Page<PostFilterResponse> posts = filterService.loadPostsByKeyword(keyword, length, pageable);
+        List<PostFilterResponse> posts = filterService.loadPostsByKeyword(keyword, maxLength, pageable);
         return ResponseEntity.ok(responseService.success(posts, SUCCESS_LOAD_POST));
     }
 
-    @GetMapping("/tags/{keyword}")
-    public ResponseEntity<?> loadTagsByKeyword(@PathVariable String keyword,
+    @GetMapping("/hash-tags/{keyword}")
+    public ResponseEntity<?> loadHashTagsByKeyword(@PathVariable("keyword") String keyword,
                                                Pageable pageable){
-        TagFilterResponse tags = filterService.loadTagsByKeyword(keyword, pageable);
-        return ResponseEntity.ok(responseService.success(tags, SUCCESS_LOAD_TAG));
+        List<HashTagFilterDto> hashTags = filterService.loadHashTagsByKeyword(keyword, pageable);
+        return ResponseEntity.ok(responseService.success(hashTags, SUCCESS_LOAD_TAG));
+    }
+
+    @GetMapping("/style-tags/{keyword}")
+    public ResponseEntity<?> loadStyleTagsByKeyword(@PathVariable("keyword") String keyword,
+                                               Pageable pageable){
+        List<StyleTagFilterDto> styleTags = filterService.loadStyleTagsByKeyword(keyword, pageable);
+        return ResponseEntity.ok(responseService.success(styleTags, SUCCESS_LOAD_TAG));
     }
 }
