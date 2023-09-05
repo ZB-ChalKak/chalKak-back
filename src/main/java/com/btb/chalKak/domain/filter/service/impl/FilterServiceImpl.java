@@ -13,7 +13,9 @@ import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,8 @@ public class FilterServiceImpl implements FilterService {
     @Override
     @Transactional
     public List<MemberFilterResponse> loadUsersByKeyword(String keyword, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
+
         return memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(member -> MemberFilterResponse.fromEntity(member))
@@ -45,6 +49,8 @@ public class FilterServiceImpl implements FilterService {
     @Override
     @Transactional
     public List<PostFilterResponse> loadPostsByKeyword(String keyword, Long maxLength, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
+
         return postRepository.findAllByContentContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(post -> PostFilterResponse.builder()
@@ -58,6 +64,8 @@ public class FilterServiceImpl implements FilterService {
     @Override
     @Transactional
     public List<HashTagFilterDto> loadHashTagsByKeyword(String keyword, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
+
         return hashTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
                 .map(hashTag -> HashTagFilterDto.builder()
