@@ -35,7 +35,8 @@ public class FilterServiceImpl implements FilterService {
     private final HashTagRepository hashTagRepository;
     private final StyleTagRepository styleTagRepository;
 
-    private final Sort sort = Sort.by("updatedAt").descending()
+    private final Sort sort = Sort.by("updatedAt")
+                                    .descending()
                                     .and(Sort.by("createdAt").descending());
 
     @Override
