@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.*;
+
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
