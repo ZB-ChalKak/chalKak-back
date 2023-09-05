@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StyleTagFilterDto {
 
-    private Long id;
+    private Long styleTagId;
     private String keyword;
 
     public static StyleTagFilterDto fromEntity(StyleTag styleTag){
         return StyleTagFilterDto.builder()
-                .id(styleTag.getId())
+                .styleTagId(styleTag.getId())
                 .keyword(styleTag.getKeyword())
                 .build();
     }

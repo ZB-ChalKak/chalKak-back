@@ -6,7 +6,6 @@ import com.btb.chalKak.domain.filter.dto.HashTagFilterDto;
 import com.btb.chalKak.domain.filter.dto.StyleTagFilterDto;
 import com.btb.chalKak.domain.filter.dto.response.MemberFilterResponse;
 import com.btb.chalKak.domain.filter.dto.response.PostFilterResponse;
-import com.btb.chalKak.domain.filter.dto.response.TagFilterResponse;
 import com.btb.chalKak.domain.filter.service.FilterService;
 import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
@@ -14,14 +13,11 @@ import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +61,7 @@ public class FilterServiceImpl implements FilterService {
         return hashTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
                 .map(hashTag -> HashTagFilterDto.builder()
-                        .id(hashTag.getId())
+                        .hashTagId(hashTag.getId())
                         .keyword(hashTag.getKeyword())
                         .build())
                 .collect(Collectors.toList());
@@ -77,7 +73,7 @@ public class FilterServiceImpl implements FilterService {
         return styleTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
                 .map(styleTag -> StyleTagFilterDto.builder()
-                        .id(styleTag.getId())
+                        .styleTagId(styleTag.getId())
                         .keyword(styleTag.getKeyword())
                         .build())
                 .collect(Collectors.toList());
