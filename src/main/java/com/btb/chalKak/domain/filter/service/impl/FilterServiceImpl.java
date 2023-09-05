@@ -100,7 +100,9 @@ public class FilterServiceImpl implements FilterService {
         }
 
         if(keyword.length() >= maxLength) {
-            return keyword.substring(0, maxLength);
+            return keyword;
+            // return keyword.substring(0, maxLength);
+            // 소현님의 요청으로 keyword 전체를 보내주도록 수정. 이후 maxLength로 수정 가능성.
         }
 
 
