@@ -1,27 +1,11 @@
 package com.btb.chalKak.domain.member.controller;
 
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_CHECK_PASSWORD;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_DETAILS_INFO;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_INFO;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_EMAIL;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_NICKNAME;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_MODIFY_USER_INFO;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_REISSUE;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SAVE_MEMBER;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_IN;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_OUT;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_WITHDRAWAL;
-
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.common.util.ValidationUtils;
-import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
-import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
-import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
-import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.*;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
@@ -47,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -122,7 +108,7 @@ public class SignController {
 
     @PatchMapping("/{userId}/modify")
     public ResponseEntity<?> modifyUserInfo(HttpServletRequest servletRequest,
-                                            @Valid @RequestBody ModifyUserInfoRequest infoRequest){
+                                            @RequestBody ModifyUserInfoRequest infoRequest){
         memberService.modifyUserInfo(servletRequest, infoRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
     }
@@ -143,5 +129,12 @@ public class SignController {
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
 
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
+    }
+
+    @PostMapping("/modify-password")
+    public ResponseEntity<?> modifyPassword(HttpServletRequest servletRequest,
+                                            @Valid @RequestBody ModifyPasswordRequest passwordRequest){
+        memberService.modifyPassword(servletRequest, passwordRequest);
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_PASSWORD));
     }
 }

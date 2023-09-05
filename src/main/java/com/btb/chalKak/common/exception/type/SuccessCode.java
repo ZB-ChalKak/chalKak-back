@@ -26,6 +26,7 @@ public enum SuccessCode {
     SUCCESS_LOAD_USER_DETAILS_INFO("사용자 상세 정보입니다."),
     SUCCESS_LOAD_USER_INFO("회원 정보 조회에 성공했습니다."),
     SUCCESS_MODIFY_USER_INFO("회원 정보 수정에 성공했습니다."),
+    SUCCESS_MODIFY_USER_PASSWORD("비밀번호 수정에 성공했습니다."),
 
     SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
 

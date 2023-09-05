@@ -106,21 +106,12 @@ public class Member extends BaseTimeEntity {
         return this;
     }
 
-    public int getFollowerCount() {
-        return this.followers != null ? followers.size() : 0;
-    }
-
-    public int getFollowingCount() {
-        return this.followings != null ? followings.size() : 0;
-    }
-
-    public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags, String profileImgUrl){
+    public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags){
         this.nickname = nickname;
         this.gender = gender;
         this.height = height;
         this.weight = weight;
         this.styleTags = styleTags;
-        this.profileImg = profileImgUrl;
 
         return this;
     }
@@ -129,5 +120,25 @@ public class Member extends BaseTimeEntity {
         this.status = status;
 
         return this;
+    }
+
+    public Member updateProfileImgUrl(String profileImgUrl){
+        this.profileImg = profileImgUrl;
+
+        return this;
+    }
+
+    public Member updatePassword(String encodedPassword){
+        this.password = encodedPassword;
+
+        return this;
+    }
+
+    public int getFollowerCount() {
+        return this.followers != null ? followers.size() : 0;
+    }
+
+    public int getFollowingCount() {
+        return this.followings != null ? followings.size() : 0;
     }
 }
