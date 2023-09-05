@@ -102,18 +102,21 @@ public class MemberServiceImpl implements MemberService {
         Member member = getMemberByEmail(request.getEmail());
         Long memberId = member.getId();
 
+        // 2. 멤버의 상태 확인
         if(member.getProvider() != CHALKAK){
             new MemberException(INVALID_EMAIL_LOGIN);
         }
+
+        validateMemberStatus(member.getStatus());
       
-        // 2. 비밀번호 일치 여부 확인
+        // 3. 비밀번호 일치 여부 확인
         validatePasswordWithDB(request.getPassword(), member.getPassword());
 
-        // 3. 토큰 생성
+        // 4. 토큰 생성
         TokenDto token = jwtProvider.createToken(member.getEmail(), member.getRole());
         String refreshToken = token.getRefreshToken();
 
-        // 4. refresh 토큰 저장
+        // 5. refresh 토큰 저장
         RefreshToken tokenStoredInDB =
                 refreshTokenRepository.findByMemberId(memberId).orElse(null);
 
@@ -127,10 +130,11 @@ public class MemberServiceImpl implements MemberService {
                             .build());
         }
 
-        // 5. 회원을 ACTIVE 상태로 변경
+        // 6. 회원을 ACTIVE 상태로 변경
+        // -> 현재는 회원 가입 시 default 값이 ACTIVE라 의미 없음. 이메일 인증 구현 시 수정.
         memberRepository.save(member.updateStatus(ACTIVE));
 
-        // 6. response return (일반적으론 TokenDto return)
+        // 7. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
                 .userId(memberId)
                 .token(token)
@@ -144,8 +148,9 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = tokenRequestDto.getAccessToken();
 
         // 1. 만료된 refresh 토큰은 에러 발생
-        // TODO : refresh 토큰 만료일 체크
-        jwtProvider.validateToken(refreshToken);
+        if(!jwtProvider.validateToken(refreshToken)){
+            throw new MemberException(INACTIVE_SING_IN);
+        }
 
         // 2. accessToken에서 name 가져오기
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
@@ -155,11 +160,11 @@ public class MemberServiceImpl implements MemberService {
 
         // 4. repository에 refresh token이 있는지 검사
         RefreshToken refreshTokenStoredInDB = refreshTokenRepository.findByMemberId(member.getId())
-                .orElseThrow(() -> new RuntimeException("CustomRefreshTokenException"));
+                .orElseThrow(() -> new JwtException(UNSUPPORTED_JWT_EXCEPTION));
         
         // 5. refresh 토큰 일치 검사
         if(!refreshTokenStoredInDB.getToken().equals(tokenRequestDto.getRefreshToken())){
-            throw new RuntimeException("CustomRefreshTokenException");
+            throw new JwtException(MALFORMED_JWT_EXCEPTION);
         }
 
         TokenDto newToken = jwtProvider.createToken(member.getEmail(), member.getRole());
@@ -176,14 +181,17 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
         // 2. accessToken 검증
-        validateAccessToken(accessToken);
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
 
-        // 3. accessToken에서 memberId 가져오기
-        String email = jwtProvider.getSubjectByToken(accessToken);
-        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
-        Member member = customUserDetails.getMember();
+        // 3. accessToken에서 memberId 추출
+        Member member = getMemberByAccessToken(accessToken);
 
-        // 4. userId에 해당하는 user의 refreshToken을 확인하고, 있다면 삭제
+        // 4. member의 status 검증
+        validateMemberStatus(member.getStatus());
+
+        // 5. userId에 해당하는 user의 refreshToken을 확인하고, 있다면 삭제
         RefreshToken refreshTokenStoredInDB =
                 refreshTokenRepository.findByMemberId(member.getId())
                         .orElse(null);
@@ -191,9 +199,6 @@ public class MemberServiceImpl implements MemberService {
         if(refreshTokenStoredInDB != null){
             refreshTokenRepository.deleteByMemberId(member.getId());
         }
-
-        // 5. 회원을 INACTIVE 상태로 변경
-        memberRepository.save(member.updateStatus(INACTIVE));
     }
 
     @Override
@@ -208,15 +213,22 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ValidateInfoResponse validateNickname(String nickname) {
         return ValidateInfoResponse.builder()
-                .isDuplicated(memberRepository.existsByNickname(getDecodingNicknameWithBase64(nickname)))
+                .isDuplicated(memberRepository.existsByNickname(getDecodingUrl(nickname)))
                 .build();
     }
 
     @Override
     @Transactional
     public UserDetailsInfoResponse userDetailsInfo(Long userId) {
+        // 1. 유효한 userId인지 검사
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+
+        // 2. 추출된 member의 status 검증
+        validateMemberStatus(member.getStatus());
+
         return UserDetailsInfoResponse.builder()
-                //.posts()
+                .postsCount(postRepository.countPostIdsByMemberId(member.getId()))
                 .followingCount(getFollowingCountByUserId(userId))
                 .followerCount(getFollowerCountByUserId(userId))
                 .build();
@@ -225,23 +237,29 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public UserInfoResponse userInfo(HttpServletRequest request, Long userId) {
-        // 1. 토큰 추출
-        String accessToken = jwtProvider.resolveTokenFromRequest(request);
-
-        // 2. accessToken 검증
-        validateAccessToken(accessToken);
-        
-        // 3. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
-
-        // 4. 유효한 이용자 id인지 검사
+        // 1. 유효한 이용자 id인지 검사
         validateMemberId(userId);
 
-        // 5. 토큰의 id와 전달된 id가 같은지 검사
+        // 2. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(request);
+
+        // 3. accessToken 검증
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
+        
+        // 4. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 5. member의 status 검증
+        validateMemberStatus(member.getStatus());
+
+        // 6. 토큰의 id와 전달된 id가 같은지 검사
         if(userId != member.getId()) {
             throw new MemberException(FORBIDDEN_RESPONSE);
         }
 
+        // 7. 1에서 id를 검증했기 떄문에 굳이 elseThrow 할 필요 없긴 하다. 추후 리팩토링
         return UserInfoResponse.fromEntity(
                 memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)));
@@ -254,20 +272,25 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
         // 2. accessToken 검증
-        validateAccessToken(accessToken);
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
 
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
 
-        // 4. 유효한 이용자 id인지 검사
+        // 4. member의 status 검증
+        validateMemberStatus(member.getStatus());
+
+        // 5. 유효한 이용자 id인지 검사
         validateMemberId(passwordRequest.getUserId());
 
-        // 5. 토큰의 id와 전달된 id가 같은지 검사
+        // 6. 토큰의 id와 전달된 id가 같은지 검사
         if(passwordRequest.getUserId() != member.getId()) {
             throw new MemberException(FORBIDDEN_RESPONSE);
         }
 
-        // 6. 비밀번호 일치 여부 검사
+        // 7. 비밀번호 일치 여부 검사
         validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword());
     }
 
@@ -278,21 +301,22 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
         // 2. accessToken 검증
-        validateAccessToken(accessToken);
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
 
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
 
-        // 4. 닉네임 중복 검사
-        validateNicknameDuplication(infoRequest.getNickname());
+        // 4. member의 status 검증
+        validateMemberStatus(member.getStatus());
 
-        // 5. 수정 부
+        // 5. 닉네임 중복 검사
+        //validateNicknameDuplication(infoRequest.getNickname());
+
+        // 6. 수정 부
         // TODO : profileImg 부분 수정 요
-        List<StyleTag> styleTags = infoRequest.getStyleTags()
-                .stream()
-                .map(x -> styleTagRepository.findById(x)
-                        .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)))
-                .collect(Collectors.toList());
+        List<StyleTag> styleTags = styleTagRepository.findAllById(infoRequest.getStyleTags());
 
         member.update(infoRequest.getNickname(),
                 infoRequest.getGender(),
@@ -309,10 +333,15 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtProvider.resolveTokenFromRequest(request);
 
         // 2. accessToken 검증
-        validateAccessToken(accessToken);
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
 
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
+
+        // 5. member의 status 검증
+        validateMemberStatus(member.getStatus());
 
         // 4. 회원을 WITHDRAWAL 상태로 변경
         memberRepository.save(member.updateStatus(WITHDRAWAL));
@@ -335,13 +364,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void validateEmailDuplication(String email) {
-        if (memberRepository.existsByEmail(email)) {
+        Member member = memberRepository.findByEmail(email).orElse(null);
+
+        if(member != null && member.getStatus() != WITHDRAWAL){
             throw new MemberException(ALREADY_EXISTS_EMAIL);
         }
     }
 
     private void validateNicknameDuplication(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
+        Member member = memberRepository.findByNickname(nickname).orElse(null);
+
+        if(member != null && member.getStatus() != WITHDRAWAL) {
             throw new MemberException(ALREADY_EXISTS_NICKNAME);
         }
     }
@@ -357,25 +390,17 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    private void validateAccessToken(String accessToken) {
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+    private void validateMemberStatus(MemberStatus status){
+        /*
+        if(status == INACTIVE) {
+            throw new MemberException(INACTIVE_MEMBER);
         }
-
-        String email = jwtProvider.getSubjectByToken(accessToken);
-        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
-        if(!customUserDetails.isEnabled()){
-            MemberStatus status = customUserDetails.getMember().getStatus();
-
-            if(status == INACTIVE) {
-                throw new MemberException(INACTIVE_MEMBER);
-            }
-            if(status == BLOCKED){
-                throw new MemberException(BLOCKED_MEMBER);
-            }
-            if(status == WITHDRAWAL){
-                throw new MemberException(WITHDRAWAL_MEMBER);
-            }
+        */
+        if(status == BLOCKED){
+            throw new MemberException(BLOCKED_MEMBER);
+        }
+        if(status == WITHDRAWAL){
+            throw new MemberException(WITHDRAWAL_MEMBER);
         }
     }
 
@@ -394,9 +419,9 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    private String getDecodingNicknameWithBase64(String nickname){
+    private String getDecodingUrl(String urlString){
         try {
-            return URLDecoder.decode(nickname);
+            return URLDecoder.decode(urlString, "UTF-8");
         }catch(Exception e) {
             throw new MemberException(INVALID_NICKNAME);
         }

@@ -10,11 +10,17 @@ public class PostFilterResponse {
 
     private Long postId;
     private String content;
+    private String previewContent;
 
     public static PostFilterResponse fromEntity(Post post){
         return PostFilterResponse.builder()
                 .postId(post.getId())
                 .content(post.getContent())
                 .build();
+    }
+
+    public PostFilterResponse setPreviewContent(String previewContent){
+        this.previewContent = previewContent;
+        return this;
     }
 }

@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
 import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
@@ -72,7 +73,7 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberStatus status = INACTIVE;
+    private MemberStatus status = ACTIVE;
 
     @Builder.Default
     @Column(name = "role", nullable = false)
