@@ -35,10 +35,13 @@ public class FilterServiceImpl implements FilterService {
     private final HashTagRepository hashTagRepository;
     private final StyleTagRepository styleTagRepository;
 
+    private final Sort sort = Sort.by("updatedAt").descending()
+                                    .and(Sort.by("createdAt").descending());
+
     @Override
     @Transactional
     public List<MemberFilterResponse> loadUsersByKeyword(String keyword, Pageable pageable) {
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
         return memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
@@ -49,8 +52,8 @@ public class FilterServiceImpl implements FilterService {
     @Override
     @Transactional
     public List<PostFilterResponse> loadPostsByKeyword(String keyword, Long maxLength, Pageable pageable) {
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
-
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+      
         return postRepository.findAllByContentContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(post -> PostFilterResponse.builder()
@@ -64,7 +67,7 @@ public class FilterServiceImpl implements FilterService {
     @Override
     @Transactional
     public List<HashTagFilterDto> loadHashTagsByKeyword(String keyword, Pageable pageable) {
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
         return hashTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
