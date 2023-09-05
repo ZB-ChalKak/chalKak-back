@@ -53,7 +53,7 @@ public class FilterServiceImpl implements FilterService {
     @Transactional
     public List<PostFilterResponse> loadPostsByKeyword(String keyword, Long maxLength, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-
+      
         return postRepository.findAllByContentContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(post -> PostFilterResponse.builder()
