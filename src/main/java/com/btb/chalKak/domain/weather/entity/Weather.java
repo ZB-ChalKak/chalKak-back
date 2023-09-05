@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "weather_To_member")
+@Table(name = "weather_to_member")
 public class Weather {
 
   @Id
@@ -32,6 +32,26 @@ public class Weather {
   @Column(name ="min_temp")
   private double minTemp; // 최저 기온
   private LocalDate date;
+
+  public void updateTemp(double temp) {
+    this.temp = temp;
+  }
+
+  public void updateWeather(String weather) {
+    this.weather = weather;
+  }
+
+  public void updateWeatherIcon(String weatherIcon) {
+    this.weatherIcon = weatherIcon;
+  }
+
+  public void updateMaxTemp(double maxTemp) {
+    this.maxTemp = maxTemp;
+  }
+
+  public void updateMinTemp(double minTemp) {
+    this.minTemp = minTemp;
+  }
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "geo_id")

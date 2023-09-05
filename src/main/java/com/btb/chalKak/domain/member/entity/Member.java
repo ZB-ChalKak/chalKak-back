@@ -100,8 +100,7 @@ public class Member extends BaseTimeEntity {
     )
     private List<StyleTag> styleTags;
 
-    public Member update(String name, String profileImageUrl) {
-        this.nickname = name;
+    public Member updateImg(String profileImageUrl) {
         this.profileImg = profileImageUrl;
         return this;
     }

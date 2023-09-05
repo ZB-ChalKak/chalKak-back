@@ -12,6 +12,8 @@ public class LikerResponse {
     private String nickName;
     private String profileUrl;
 
+    private Boolean followed;
+
     public static LikerResponse fromEntity(Member member){
 
         return LikerResponse.builder()
@@ -22,4 +24,7 @@ public class LikerResponse {
 
     }
 
+    public void updateFollowed(boolean containsValue) {
+        this.followed = containsValue;
+    }
 }

@@ -7,10 +7,7 @@ import com.btb.chalKak.domain.weather.repository.WeatherRepository;
 import com.btb.chalKak.domain.weather.service.AdministrativeGeoService;
 import com.btb.chalKak.domain.weather.service.Impl.WeatherServiceImpl;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +37,7 @@ public class WeatherScheduler {
     public void init() {
         log.debug("weather 스프링");
         administrativeGeoInfos = administrativeGeoService.getAllDistricts();
-//        processGetWeather(); // 스프링이 올라오면서 저장함
+        processGetWeather(); // 스프링이 올라오면서 저장함
     }
 
     @Transactional
@@ -64,20 +61,19 @@ public class WeatherScheduler {
             String lat = Double.toString(administrativeGeoInfo.getLat());
             String lon = Double.toString(administrativeGeoInfo.getLon());
 
-            // 2. weather 서비스로 5일치 3시간 간격의 weather data를 가져온다.
+            // 2. weather 서비스로 6일치 3시간 간격의 weather data를 가져온다.
             List<WeatherDto> weatherDto = weatherService.getWeatherFromApi(lat, lon);
             // 3. 1일치를 하나의 칼럼으로 만든다.
             // 3-1. 평균 기온 , 최고 기온, 최저 기온,
-            List<Weather> weathers = convertDtosToWeathers(weatherDto);
+            List<Weather> weathers = convertDtosToWeathers(weatherDto, administrativeGeoInfo);
 
-            // 4. 5일치의 칼럼을 만들어 repository 저장한다. -> 하루치만 있어도 충분할지도? 아니면 5일까지 추천해줄 수 있도록하는 것도 괜찮을듯
-            weatherRepository.saveAll(weathers);
+            saveOrUpdate(weathers);
 
         }
         log.info("06:00 weather 스케쥴 종료");
     }
 
-    private List<Weather> convertDtosToWeathers(List<WeatherDto> weatherDtos) {
+    private List<Weather> convertDtosToWeathers(List<WeatherDto> weatherDtos,AdministrativeGeoInfo administrativeGeoInfo) {
 
         Map<LocalDate, List<WeatherDto>> weatherDtosByDate = weatherDtos.stream()
                 .collect(Collectors.groupingBy(WeatherDto::getDate));
@@ -123,6 +119,7 @@ public class WeatherScheduler {
                     .maxTemp(maxTemp)
                     .weatherIcon(mostFrequentIcon)
                     .weather(mostFrequentWeather)
+                            .administrativeGeoInfo(administrativeGeoInfo)
                     .minTemp(minTemp)
                     .date(date)
                     .build());
@@ -130,6 +127,31 @@ public class WeatherScheduler {
 
         return weathers;
     }
+    @Transactional
+    public void saveOrUpdate(List<Weather> weathers){
+        for(Weather weather : weathers) {
 
+            // 4. 5일치의 칼럼을 만들어 repository 저장한다. -> 하루치만 있어도 충분할지도? 아니면 5일까지 추천해줄 수 있도록하는 것도 괜찮을듯
+            Optional<Weather> existingWeatherOpt = weatherRepository.findByAdministrativeGeoInfo_IdAndDate(weather.getAdministrativeGeoInfo().getId(), weather.getDate());
+
+            if (existingWeatherOpt.isPresent()) {
+                Weather existingWeather = existingWeatherOpt.get();
+
+                // Update existingWeather fields with newWeather fields
+                existingWeather.updateTemp(weather.getTemp());
+                existingWeather.updateWeather(weather.getWeather());
+                existingWeather.updateWeatherIcon(weather.getWeatherIcon());
+                existingWeather.updateMaxTemp(weather.getMaxTemp());
+                existingWeather.updateMinTemp(weather.getMinTemp());
+
+                // The save method will update because the entity already exists
+                weatherRepository.save(existingWeather);
+
+            } else {
+                // Save as a new record
+                weatherRepository.save(weather);
+            }
+        }
+    }
 
 }

@@ -51,10 +51,10 @@ public class LikeController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/posts/{postId}/liker")
-    public ResponseEntity<?> loadFollowings(
+    public ResponseEntity<?> loadFollowings(Authentication authentication,
         @PathVariable Long postId, Pageable pageable)
     {
-        LoadPageLikeResponse data = likeService.loadLikers(postId, pageable);
+        LoadPageLikeResponse data = likeService.loadLikers(authentication, postId, pageable);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_LIKER));
     }
 }
