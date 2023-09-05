@@ -61,7 +61,7 @@ public class FilterServiceImpl implements FilterService {
         return hashTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
                 .map(hashTag -> HashTagFilterDto.builder()
-                        .hashTagId(hashTag.getId())
+                        .tagId(hashTag.getId())
                         .keyword(hashTag.getKeyword())
                         .build())
                 .collect(Collectors.toList());
@@ -73,7 +73,7 @@ public class FilterServiceImpl implements FilterService {
         return styleTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
                 .map(styleTag -> StyleTagFilterDto.builder()
-                        .styleTagId(styleTag.getId())
+                        .tagId(styleTag.getId())
                         .keyword(styleTag.getKeyword())
                         .build())
                 .collect(Collectors.toList());

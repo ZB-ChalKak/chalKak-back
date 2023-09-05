@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HashTagFilterDto {
 
-    private Long hashTagId;
+    private Long tagId;
     private String keyword;
 
     public static HashTagFilterDto fromEntity(HashTag hashTag){
         return HashTagFilterDto.builder()
-                .hashTagId(hashTag.getId())
+                .tagId(hashTag.getId())
                 .keyword(hashTag.getKeyword())
                 .build();
     }
