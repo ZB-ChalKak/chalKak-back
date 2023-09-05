@@ -40,7 +40,7 @@ public class WeatherScheduler {
     public void init() {
         log.debug("weather 스프링");
         administrativeGeoInfos = administrativeGeoService.getAllDistricts();
-        processGetWeather(); // 스프링이 올라오면서 저장함
+//        processGetWeather(); // 스프링이 올라오면서 저장함
     }
 
     @Transactional

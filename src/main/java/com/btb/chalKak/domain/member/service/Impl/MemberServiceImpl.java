@@ -1,5 +1,6 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.*;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
 import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
