@@ -28,10 +28,7 @@ import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
-import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
-import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
-import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
-import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.*;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
@@ -80,12 +77,12 @@ public class MemberServiceImpl implements MemberService {
         // 2. 스타일 태그 조회
         List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
 
-        // 3. 멤버 저장 TODO 프로필 이미지
+        // 3. 멤버 저장
         memberRepository.save(Member.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
-//                .profileImg(request.getProfileImg())
+                .profileImg(null)
                 .gender(request.getGender())
                 .height(request.getHeight())
                 .weight(request.getWeight())
@@ -137,6 +134,10 @@ public class MemberServiceImpl implements MemberService {
         // 7. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
                 .userId(memberId)
+                .styleTags(member.getStyleTags()
+                        .stream()
+                        .map(styleTag -> styleTag.getId())
+                        .collect(Collectors.toList()))
                 .token(token)
                 .build();
     }
@@ -312,18 +313,26 @@ public class MemberServiceImpl implements MemberService {
         validateMemberStatus(member.getStatus());
 
         // 5. 닉네임 중복 검사
-        //validateNicknameDuplication(infoRequest.getNickname());
+        // 현재 닉네임과 같으면 검사 할 필요 없고, 같지 않다면 검사
+        if(!member.getNickname().equals(infoRequest.getNickname())){
+            validateNicknameDuplication(infoRequest.getNickname());
+        }
 
         // 6. 수정 부
-        // TODO : profileImg 부분 수정 요
         List<StyleTag> styleTags = styleTagRepository.findAllById(infoRequest.getStyleTags());
 
         member.update(infoRequest.getNickname(),
                 infoRequest.getGender(),
                 infoRequest.getHeight(),
                 infoRequest.getWeight(),
-                styleTags,
-                infoRequest.getProfileImg());   // TODO : profileImg 부분 수정 요
+                styleTags);
+
+        // 프로필 이미지 url은 변화가 있을 때에만 전달
+        if(infoRequest.getProfileImg() != null){
+            member.updateProfileImgUrl(infoRequest.getProfileImg());
+        }
+
+        memberRepository.save(member);
     }
 
     @Override
@@ -340,10 +349,10 @@ public class MemberServiceImpl implements MemberService {
         // 3. 토큰으로 이용자 추출
         Member member = getMemberByAccessToken(accessToken);
 
-        // 5. member의 status 검증
+        // 4. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 4. 회원을 WITHDRAWAL 상태로 변경
+        // 5. 회원을 WITHDRAWAL 상태로 변경
         memberRepository.save(member.updateStatus(WITHDRAWAL));
     }
 
@@ -361,6 +370,28 @@ public class MemberServiceImpl implements MemberService {
         List<Post> posts = postRepository.findAllByWriter(member);
 
         return new PageImpl<>(posts, pageRequest, posts.size());
+    }
+
+    @Override
+    @Transactional
+    public void modifyPassword(HttpServletRequest servletRequest, ModifyPasswordRequest passwordRequest) {
+        // 1. 토큰 추출
+        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
+
+        // 2. accessToken 검증
+        if(!jwtProvider.validateToken(accessToken)) {
+            throw new JwtException(EXPIRED_JWT_EXCEPTION);
+        }
+
+        // 3. 토큰으로 이용자 추출
+        Member member = getMemberByAccessToken(accessToken);
+
+        // 4. member의 status 검증
+        validateMemberStatus(member.getStatus());
+        
+        // 5. password 변경
+        memberRepository.save(member.updatePassword(
+                passwordEncoder.encode(passwordRequest.getPassword())));
     }
 
     private void validateEmailDuplication(String email) {
@@ -391,7 +422,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void validateMemberStatus(MemberStatus status){
-        /*
+        /* TODO : 이메일 인증 시 구현
         if(status == INACTIVE) {
             throw new MemberException(INACTIVE_MEMBER);
         }

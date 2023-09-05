@@ -2,10 +2,7 @@ package com.btb.chalKak.domain.member.service;
 
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
-import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
-import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
-import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
-import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.*;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
 import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
 import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
@@ -46,4 +43,6 @@ public interface MemberService {
     void withdrawUser(HttpServletRequest request);
 
     Page<Post> loadPublicPosts(Authentication authentication, int page, int size);
+
+    void modifyPassword(HttpServletRequest servletRequest, ModifyPasswordRequest passwordRequest);
 }

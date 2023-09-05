@@ -13,6 +13,10 @@ import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,17 +39,19 @@ public class FilterServiceImpl implements FilterService {
 
     @Override
     @Transactional
-    public List<MemberFilterResponse> loadUsersByKeyword(String keyword) {
-        return memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword))
+    public Page<MemberFilterResponse> loadUsersByKeyword(String keyword, Pageable pageable) {
+        List<MemberFilterResponse> content = memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword))
                 .stream()
                 .map(member -> MemberFilterResponse.fromEntity(member))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(content, pageable, content.size());
     }
 
     @Override
     @Transactional
-    public List<PostFilterResponse> loadPostsByKeyword(String keyword, Long length) {
-        return postRepository.findAllByContentContaining(getDecodingUrl(keyword))
+    public Page<PostFilterResponse> loadPostsByKeyword(String keyword, Long length, Pageable pageable) {
+        List<PostFilterResponse> content = postRepository.findAllByContentContaining(getDecodingUrl(keyword))
                 .stream()
                 .map(post -> PostFilterResponse.builder()
                         .postId(post.getId())
@@ -53,11 +59,13 @@ public class FilterServiceImpl implements FilterService {
                         .previewContent(getPreviewContentByContent(post.getContent(), keyword, length))
                         .build())
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(content, pageable, content.size());
     }
 
     @Override
     @Transactional
-    public TagFilterResponse loadTagsByKeyword(String keyword) {
+    public TagFilterResponse loadTagsByKeyword(String keyword, Pageable pageable) {
         List<HashTagFilterDto> hashTags = hashTagRepository.findAllByKeywordContaining(getDecodingUrl(keyword))
                 .stream()
                 .map(hashTag -> HashTagFilterDto.fromEntity(hashTag))
@@ -69,8 +77,8 @@ public class FilterServiceImpl implements FilterService {
                 .collect(Collectors.toList());
 
         return TagFilterResponse.builder()
-                .hashTags(hashTags)
-                .styleTags(styleTags)
+                .hashTags(new PageImpl<>(hashTags, pageable, hashTags.size()))
+                .styleTags(new PageImpl<>(styleTags, pageable, styleTags.size()))
                 .build();
     }
 
@@ -113,6 +121,6 @@ public class FilterServiceImpl implements FilterService {
             start -= (idx + keyword.length() + mid) - content.length() + gap;
         }
 
-        return content.substring(start, end);
+        return StringUtils.normalizeSpace(content.substring(start, end));
     }
 }

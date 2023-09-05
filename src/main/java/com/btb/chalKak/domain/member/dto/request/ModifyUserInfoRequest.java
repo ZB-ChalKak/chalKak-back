@@ -11,21 +11,10 @@ import java.util.List;
 @Builder
 public class ModifyUserInfoRequest {
 
-    @NotNull
     private String nickname;
-
-    @NotNull
     private Gender gender;
-
-    @NotNull
     private Double height;
-
-    @NotNull
     private Double weight;
-
-    @NotNull
     private List<Long> styleTags;
-
-    @NotNull
     private String profileImg;
 }
