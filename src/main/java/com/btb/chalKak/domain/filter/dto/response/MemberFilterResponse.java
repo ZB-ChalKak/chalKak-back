@@ -10,7 +10,7 @@ public class MemberFilterResponse {
 
     private Long memberId;
     private String nickname;
-    private String profileImgUrl; // TODO
+    private String profileImgUrl;
 
     public static MemberFilterResponse fromEntity(Member member){
         return MemberFilterResponse.builder()

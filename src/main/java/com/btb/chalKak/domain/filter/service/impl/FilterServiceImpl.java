@@ -39,47 +39,48 @@ public class FilterServiceImpl implements FilterService {
 
     @Override
     @Transactional
-    public Page<MemberFilterResponse> loadUsersByKeyword(String keyword, Pageable pageable) {
-        List<MemberFilterResponse> content = memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword))
+    public List<MemberFilterResponse> loadUsersByKeyword(String keyword, Pageable pageable) {
+        return memberRepository.findAllByNicknameContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(member -> MemberFilterResponse.fromEntity(member))
                 .collect(Collectors.toList());
-
-        return new PageImpl<>(content, pageable, content.size());
     }
 
     @Override
     @Transactional
-    public Page<PostFilterResponse> loadPostsByKeyword(String keyword, Long length, Pageable pageable) {
-        List<PostFilterResponse> content = postRepository.findAllByContentContaining(getDecodingUrl(keyword))
+    public List<PostFilterResponse> loadPostsByKeyword(String keyword, Long maxLength, Pageable pageable) {
+        return postRepository.findAllByContentContaining(getDecodingUrl(keyword), pageable).getContent()
                 .stream()
                 .map(post -> PostFilterResponse.builder()
                         .postId(post.getId())
                         .content(post.getContent())
-                        .previewContent(getPreviewContentByContent(post.getContent(), keyword, length))
+                        .previewContent(getPreviewContentByContent(post.getContent(), keyword, maxLength))
                         .build())
                 .collect(Collectors.toList());
-
-        return new PageImpl<>(content, pageable, content.size());
     }
 
     @Override
     @Transactional
-    public TagFilterResponse loadTagsByKeyword(String keyword, Pageable pageable) {
-        List<HashTagFilterDto> hashTags = hashTagRepository.findAllByKeywordContaining(getDecodingUrl(keyword))
+    public List<HashTagFilterDto> loadHashTagsByKeyword(String keyword, Pageable pageable) {
+        return hashTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
-                .map(hashTag -> HashTagFilterDto.fromEntity(hashTag))
+                .map(hashTag -> HashTagFilterDto.builder()
+                        .id(hashTag.getId())
+                        .keyword(hashTag.getKeyword())
+                        .build())
                 .collect(Collectors.toList());
+    }
 
-        List<StyleTagFilterDto> styleTags = styleTagRepository.findAllByKeywordContaining(getDecodingUrl(keyword))
+    @Override
+    @Transactional
+    public List<StyleTagFilterDto> loadStyleTagsByKeyword(String keyword, Pageable pageable) {
+        return styleTagRepository.findAllByKeywordContaining(keyword, pageable).getContent()
                 .stream()
-                .map(styleTag -> StyleTagFilterDto.fromEntity(styleTag))
+                .map(styleTag -> StyleTagFilterDto.builder()
+                        .id(styleTag.getId())
+                        .keyword(styleTag.getKeyword())
+                        .build())
                 .collect(Collectors.toList());
-
-        return TagFilterResponse.builder()
-                .hashTags(new PageImpl<>(hashTags, pageable, hashTags.size()))
-                .styleTags(new PageImpl<>(styleTags, pageable, styleTags.size()))
-                .build();
     }
 
     private String getDecodingUrl(String urlString){
