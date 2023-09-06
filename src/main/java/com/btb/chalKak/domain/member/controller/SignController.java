@@ -133,7 +133,13 @@ public class SignController {
 
     @PostMapping("/modify-password")
     public ResponseEntity<?> modifyPassword(HttpServletRequest servletRequest,
-                                            @Valid @RequestBody ModifyPasswordRequest passwordRequest){
+                                            @Valid @RequestBody ModifyPasswordRequest passwordRequest,
+                                            BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            String errorMessage = ValidationUtils.getErrorMessageFromBindingResult(bindingResult);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseService.failure(errorMessage));
+        }
+
         memberService.modifyPassword(servletRequest, passwordRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_PASSWORD));
     }
