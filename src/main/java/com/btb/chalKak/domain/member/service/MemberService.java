@@ -9,6 +9,7 @@ import com.btb.chalKak.domain.post.entity.Post;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
 
@@ -35,7 +36,7 @@ public interface MemberService {
 
     CheckPasswordResponse checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest);
 
-    void modifyUserInfo(HttpServletRequest servletRequest, ModifyUserInfoRequest infoRequest);
+    void modifyUserInfo(HttpServletRequest servletRequest, Long userId, MultipartFile[] multipartFiles, ModifyUserInfoRequest infoRequest);
 
     void withdrawUser(HttpServletRequest request);
 

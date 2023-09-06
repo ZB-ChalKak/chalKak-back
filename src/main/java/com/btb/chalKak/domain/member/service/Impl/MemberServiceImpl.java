@@ -33,6 +33,8 @@ import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.member.type.MemberStatus;
+import com.btb.chalKak.domain.photo.repository.PhotoRepository;
+import com.btb.chalKak.domain.photo.service.PhotoService;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
@@ -49,6 +51,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +65,7 @@ public class MemberServiceImpl implements MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final CustomUserDetailsService customUserDetailsService;
     private final FollowRepository followRepository;
+    private final PhotoService photoService;
 
     @Override
     @Transactional
@@ -297,7 +301,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void modifyUserInfo(HttpServletRequest servletRequest, ModifyUserInfoRequest infoRequest) {
+    public void modifyUserInfo(HttpServletRequest servletRequest,
+                               Long userId,
+                               MultipartFile[] multipartFiles,
+                               ModifyUserInfoRequest infoRequest) {
         // 1. 토큰 추출
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
@@ -325,12 +332,8 @@ public class MemberServiceImpl implements MemberService {
                 infoRequest.getGender(),
                 infoRequest.getHeight(),
                 infoRequest.getWeight(),
-                styleTags);
-
-        // 프로필 이미지 url은 변화가 있을 때에만 전달
-        if(infoRequest.getProfileImg() != null){
-            member.updateProfileImgUrl(infoRequest.getProfileImg());
-        }
+                styleTags,
+                photoService.upload(multipartFiles));
 
         memberRepository.save(member);
     }

@@ -105,12 +105,13 @@ public class Member extends BaseTimeEntity {
         return this;
     }
 
-    public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags){
+    public Member update(String nickname, Gender gender, Double height, Double weight, List<StyleTag> styleTags, String profileImgUrl){
         this.nickname = nickname;
         this.gender = gender;
         this.height = height;
         this.weight = weight;
         this.styleTags = styleTags;
+        this.profileImg = profileImgUrl;
 
         return this;
     }
