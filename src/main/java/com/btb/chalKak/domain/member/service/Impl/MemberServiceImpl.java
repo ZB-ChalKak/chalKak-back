@@ -405,6 +405,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public Member getMemberByAuthentication(Authentication authentication) {
+        if (authentication == null) {
+            return null;
+        }
+
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         return customUserDetails.getMember();
     }
