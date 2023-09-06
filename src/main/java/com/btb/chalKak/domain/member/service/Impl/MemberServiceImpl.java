@@ -6,7 +6,6 @@ import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NIC
 import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
 import static com.btb.chalKak.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
 import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_MEMBER;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_LOGIN;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
@@ -29,10 +28,7 @@ import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
-import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.*;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
@@ -107,7 +103,9 @@ public class MemberServiceImpl implements MemberService {
         validateMemberStatus(member.getStatus());
       
         // 3. 비밀번호 일치 여부 확인
-        validatePasswordWithDB(request.getPassword(), member.getPassword());
+        if(!validatePasswordWithDB(request.getPassword(), member.getPassword())){
+            new MemberException(MISMATCH_PASSWORD);
+        };
 
         // 4. 토큰 생성
         TokenDto token = jwtProvider.createToken(member.getEmail(), member.getRole());
@@ -268,7 +266,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest) {
+    public CheckPasswordResponse checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest) {
         // 1. 토큰 추출
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
@@ -292,7 +290,9 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 7. 비밀번호 일치 여부 검사
-        validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword());
+        return CheckPasswordResponse.builder()
+                .isPasswordMatch(validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword()))
+                .build();
     }
 
     @Override
@@ -415,10 +415,8 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(INVALID_EMAIL));
     }
 
-    private void validatePasswordWithDB(String inputPassword, String encodedPassword){
-        if(!passwordEncoder.matches(inputPassword, encodedPassword)) {
-            throw new MemberException(MISMATCH_PASSWORD);
-        }
+    private boolean validatePasswordWithDB(String inputPassword, String encodedPassword){
+        return passwordEncoder.matches(inputPassword, encodedPassword);
     }
 
     private void validateMemberStatus(MemberStatus status){
