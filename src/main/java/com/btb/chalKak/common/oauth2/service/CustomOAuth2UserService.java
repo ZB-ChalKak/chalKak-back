@@ -80,7 +80,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     @Transactional
-    private Member UpdateGoogleMember(Member member) {
+    public Member UpdateGoogleMember(Member member) {
 
         log.info("oAuth 유저 수정 처리 진행");
         member.updateImg(member.getProfileImg());
