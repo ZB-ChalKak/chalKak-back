@@ -7,6 +7,7 @@ import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.domain.weather.service.Impl.WeatherServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,15 @@ public class WeatherController {
   public ResponseEntity<?> getWeather(@RequestParam String lat, @RequestParam String lon) {
 
     CommonResponse<?> response = responseService.success(weatherService.getWeather(lat, lon),  SUCCESS_LOAD_WEATHER);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/posts")
+  public ResponseEntity<?> getWeatherPosts(
+          Authentication authentication, @RequestParam String lat, @RequestParam String lon) {
+
+    CommonResponse<?> response = responseService.success(weatherService.getWeatherPosts(authentication, lat, lon),  SUCCESS_LOAD_WEATHER);
 
     return ResponseEntity.ok(response);
   }

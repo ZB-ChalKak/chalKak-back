@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRepository {
@@ -18,4 +19,15 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
     Long countPostIdsByMemberId(Long memberId);
 
     List<Post> findAllByWriter(Member writer);
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.styleTags s " +
+            "WHERE s.id IN :styleTags OR (s.id = :weatherId AND s.id = :seasonId) " +
+            "GROUP BY p " +
+            "HAVING COUNT(s.id) >= 1 " +
+            "ORDER BY (p.viewCount + p.likeCount) DESC")
+    Page<Post> findPostsByStyleTagsAndWeatherIdAndSeasonId(@Param("styleTags") List<Long> styleTags,
+                                                           @Param("weatherId") Long weatherId,
+                                                           @Param("seasonId") Long seasonId,
+                                                           Pageable pageable);
 }
