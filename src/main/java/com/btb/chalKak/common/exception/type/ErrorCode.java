@@ -54,6 +54,8 @@ public enum ErrorCode {
 
     // FOLLOW
     NOT_FOUND_FOLLOW_ID(HttpStatus.BAD_REQUEST, "팔로우 정보를 찾을 수 없습니다"),
+    ALREADY_FOLLOW(HttpStatus.BAD_REQUEST, "이미 팔로우가 등록되었습니다."),
+    NOT_FOLLOW_SELF(HttpStatus.BAD_REQUEST, "자신을 팔로우할 수 없습니다."),
 
     //소셜 로그인
 

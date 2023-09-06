@@ -1,6 +1,8 @@
 package com.btb.chalKak.domain.follow.service;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_FOLLOW;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOLLOW_SELF;
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
 
 import java.util.Optional;
@@ -42,9 +44,13 @@ public class FollowService {
 
         Long followerId = member.getId();
 
+        if(followingId == followerId){
+            throw new MemberException(NOT_FOLLOW_SELF);
+        }
+
         // 이미 팔로우가 있는지 확인
         if (followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
-            throw new RuntimeException("ALREADY_Followed");
+            throw new MemberException(ALREADY_FOLLOW);
         }
 
         Member follower = memberRepository.findById(followerId)

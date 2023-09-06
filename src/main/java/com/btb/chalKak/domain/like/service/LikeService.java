@@ -96,10 +96,14 @@ public class LikeService {
 
         Map<Long, Long> followed = new HashMap<>();
 
-        List<Follow> follows = followRepository.findByFollowingId(memberId);
+        List<Follow> follows = followRepository.findByFollowerId(memberId);
+
+
 
         for(Follow follow : follows){
-            followed.put(memberId,follow.getFollower().getId());
+
+            log.info(follow.getFollowing().getId().toString());
+            followed.put(follow.getFollowing().getId(),memberId);
         }
 
 // 1. Fetch Likes by postId
@@ -127,7 +131,7 @@ public class LikeService {
 
         for(Member curMember : members){
             LikerResponse likerResponse = LikerResponse.fromEntity(curMember);
-            likerResponse.updateFollowed(followed.containsValue(curMember.getId()));
+            likerResponse.updateFollowed(followed.containsKey(curMember.getId()));
             likerResponses.add(likerResponse);
         }
 
