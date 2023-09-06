@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class CheckPasswordResponse {
 
-    private boolean isPasswordMatch;
+    private Boolean isPasswordMatch;
 }
