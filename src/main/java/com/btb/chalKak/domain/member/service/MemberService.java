@@ -3,10 +3,7 @@ package com.btb.chalKak.domain.member.service;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
-import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.*;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +33,7 @@ public interface MemberService {
 
     UserInfoResponse userInfo(HttpServletRequest request, Long userId);
 
-    void checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest);
+    CheckPasswordResponse checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest);
 
     void modifyUserInfo(HttpServletRequest servletRequest, ModifyUserInfoRequest infoRequest);
 

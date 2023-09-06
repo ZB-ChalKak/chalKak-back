@@ -6,10 +6,7 @@ import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.common.util.ValidationUtils;
 import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
-import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
-import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.*;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
 import com.btb.chalKak.domain.post.entity.Post;
@@ -99,11 +96,11 @@ public class SignController {
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_USER_INFO));
     }
 
-    @PostMapping("/{userId}/check-password")
+    @PostMapping("/check-password")
     public ResponseEntity<?> checkPassword(HttpServletRequest servletRequest,
                                            @RequestBody CheckPasswordRequest passwordRequest){
-        memberService.checkPassword(servletRequest, passwordRequest);
-        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CHECK_PASSWORD));
+        CheckPasswordResponse data = memberService.checkPassword(servletRequest, passwordRequest);
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_CHECK_PASSWORD));
     }
 
     @PatchMapping("/{userId}/modify")
