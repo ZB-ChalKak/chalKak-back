@@ -203,7 +203,7 @@ public class WeatherServiceImpl {
 
     }
 
-    public LoadPublicPostsResponse getWeatherPosts(Authentication authentication, String lat, String lon) {
+    public LoadPublicPostsResponse getWeatherPosts(Authentication authentication, String lat, String lon, Pageable pageable) {
 
         // 1. lan, lon 으로 근처 시도의 당일 평균 날씨
         // lat : 37.74913611, lon : 128.8784972
@@ -223,7 +223,6 @@ public class WeatherServiceImpl {
         Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
         Long seasonId = weatherToSeasonId(weather.getDate(), weather.getTemp()); // 봄,여름,가을,겨울
 
-        Pageable pageable = Pageable.ofSize(9);
 
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
         Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,weatherId,seasonId,pageable);
