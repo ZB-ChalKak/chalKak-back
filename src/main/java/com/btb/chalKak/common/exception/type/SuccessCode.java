@@ -21,7 +21,7 @@ public enum SuccessCode {
     SUCCESS_REISSUE("토큰 재발급 성공"),
     SUCCESS_LOAD_VALIDATE_EMAIL("이메일 중복 여부 조회에 성공했습니다."),
     SUCCESS_LOAD_VALIDATE_NICKNAME("닉네임 중복 여부 조회에 성공했습니다."),
-    SUCCESS_CHECK_PASSWORD("비밀번호가 일치합니다."),
+    SUCCESS_CHECK_PASSWORD("비밀번호 일치 여부 조회에 성공했습니다."),
 
     SUCCESS_LOAD_USER_DETAILS_INFO("사용자 상세 정보입니다."),
     SUCCESS_LOAD_USER_INFO("회원 정보 조회에 성공했습니다."),
