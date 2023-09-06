@@ -90,21 +90,23 @@ public class LikeService {
     @Transactional(readOnly = true)
     public LoadPageLikeResponse loadLikers(Authentication authentication, Long postId, Pageable pageable) {
 
-        Member member = memberService.getMemberByAuthentication(authentication);
-
-        Long memberId = member.getId();
-
         Map<Long, Long> followed = new HashMap<>();
 
-        List<Follow> follows = followRepository.findByFollowerId(memberId);
+
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        if (member != null) {
+            Long memberId = member.getId();
 
 
+            List<Follow> follows = followRepository.findByFollowerId(memberId);
 
-        for(Follow follow : follows){
+            for(Follow follow : follows){
 
-            log.info(follow.getFollowing().getId().toString());
-            followed.put(follow.getFollowing().getId(),memberId);
+                followed.put(follow.getFollowing().getId(),memberId);
+            }
         }
+
 
 // 1. Fetch Likes by postId
         Page<Like> likes = likeRepository.findAllByPostId(postId, pageable);
@@ -131,7 +133,9 @@ public class LikeService {
 
         for(Member curMember : members){
             LikerResponse likerResponse = LikerResponse.fromEntity(curMember);
-            likerResponse.updateFollowed(followed.containsKey(curMember.getId()));
+            if(member != null){
+                likerResponse.updateFollowed(followed.containsKey(curMember.getId()));
+            }
             likerResponses.add(likerResponse);
         }
 
