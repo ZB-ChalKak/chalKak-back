@@ -101,7 +101,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     response.setStatus(HttpStatus.OK.value());
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json;charset=UTF-8");
-    response.getWriter().write(loginJsonMessage);
+    response.sendRedirect("https://chal-kak.vercel.app/userinfo/modify-userinfo?userId="
+        +member.getId() +
+        "&accessToken=" + token.getAccessToken() +
+        "&refreshToken=" + token.getRefreshToken() +
+        "&accessTokenExpireDate=" + token.getAccessTokenExpireDate()
+    );
+
 
 //    temporaryTokenStoreService.store(email, tokenDto);
 
