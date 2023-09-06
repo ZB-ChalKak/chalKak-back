@@ -16,5 +16,4 @@ public class ModifyUserInfoRequest {
     private Double height;
     private Double weight;
     private List<Long> styleTags;
-    private String profileImg;
 }

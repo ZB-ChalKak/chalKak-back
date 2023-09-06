@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.photo.entity.Photo;
 import com.btb.chalKak.domain.post.entity.Post;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +63,30 @@ public class PhotoService {
         }
 
         return photos;
+    }
+
+    @Transactional
+    public String upload(MultipartFile[] multipartFileList) {
+        String imagePath = null;
+
+        try {
+            for (MultipartFile multipartFile : multipartFileList) {
+                if (validMultipartFile(multipartFile)) {
+                    String originalName = getOriginalFileNameOrDefault(multipartFile);
+                    String encodingName = generateEncodedName(originalName);
+
+                    ObjectMetadata objectMetadata = generateObjectMetadata(multipartFile);
+
+                    uploadToS3Bucket(encodingName, multipartFile, objectMetadata);
+
+                    imagePath = getS3Url(encodingName);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while uploading photos: " + e.getMessage(), e);
+        }
+
+        return imagePath;
     }
 
     private boolean validMultipartFile(MultipartFile multipartFile) {
