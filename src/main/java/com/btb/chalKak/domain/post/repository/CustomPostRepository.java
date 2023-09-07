@@ -21,4 +21,6 @@ public interface CustomPostRepository {
     Page<Post> loadPublicFeaturedPostsByBodyTypeAndStyleTags(int page, int size, double height,
             double weight, List<Long> styleTagIds, Member member);
 
+    Page<Post> loadLatestPublicPostsByMemberIds(List<Long> memberIds, int page, int size);
+
 }

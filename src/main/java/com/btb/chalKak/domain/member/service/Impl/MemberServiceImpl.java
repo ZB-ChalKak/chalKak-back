@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.*;
+
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 import static com.btb.chalKak.domain.member.type.MemberStatus.*;
 
@@ -36,6 +37,8 @@ import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

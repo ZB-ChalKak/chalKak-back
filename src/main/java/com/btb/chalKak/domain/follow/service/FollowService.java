@@ -5,8 +5,6 @@ import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOLLOW_SELF;
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_ID;
 
-import java.util.Optional;
-
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.domain.follow.dto.response.FollowerResponse;
 import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowResponse;
@@ -15,6 +13,9 @@ import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,9 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -131,4 +129,5 @@ public class FollowService {
                 .followerResponses(followerResponses)
                 .build();
     }
+
 }
