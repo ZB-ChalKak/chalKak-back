@@ -223,9 +223,11 @@ public class WeatherServiceImpl {
         Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
         Long seasonId = weatherToSeasonId(weather.getDate(), weather.getTemp()); // 봄,여름,가을,겨울
 
-
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
-        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,weatherId,seasonId,pageable);
+        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
+            weatherId,
+            seasonId,pageable);
+
 
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
 

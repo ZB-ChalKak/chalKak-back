@@ -22,9 +22,11 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
     @Query("SELECT p FROM Post p " +
         "JOIN p.styleTags s " +
-        "WHERE s.id = :weatherId AND s.id = :seasonId And s.id IN :styleTags " +
+        "WHERE (s.id = :weatherId OR s.id = :seasonId OR s.id IN :styleTags) " +
         "GROUP BY p " +
-        "HAVING COUNT(s.id) = 2 OR COUNT(s.id) >= 1 " +
+        "HAVING SUM(CASE WHEN s.id = :weatherId THEN 1 ELSE 0 END) >= 1 " +
+        "AND SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
+        "AND SUM(CASE WHEN s.id IN :styleTags THEN 1 ELSE 0 END) >= 1 " +
         "ORDER BY (p.viewCount + p.likeCount) DESC")
     Page<Post> findPostsByStyleTagsAndWeatherIdAndSeasonId(@Param("styleTags") List<Long> styleTags,
                                                            @Param("weatherId") Long weatherId,
