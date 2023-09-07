@@ -241,6 +241,8 @@ public class WeatherServiceImpl {
         styleMap.put("Rain","비");
         styleMap.put("Snow","눈");
 
+        log.info(styleMap.get(weather));
+
         StyleTag styleTag =  styleTagRepository.findByKeyword(styleMap.get(weather))
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));
 
@@ -252,6 +254,7 @@ public class WeatherServiceImpl {
         String season = getSeason(localDate);
         temperature = fahrenheitToCelsius(temperature);
 
+        log.info(season);
 
         StyleTag styleTag =  styleTagRepository.findByKeyword(season)
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));

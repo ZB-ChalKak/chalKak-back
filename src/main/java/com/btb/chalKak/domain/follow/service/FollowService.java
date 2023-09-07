@@ -131,4 +131,11 @@ public class FollowService {
                 .followerResponses(followerResponses)
                 .build();
     }
+
+    public Boolean validateFollow(Authentication authentication, Long targetId) {
+
+        Member member = memberService.getMemberByAuthentication(authentication);
+
+        return followRepository.existsByFollowingIdAndFollowerId(targetId,member.getId());
+    }
 }

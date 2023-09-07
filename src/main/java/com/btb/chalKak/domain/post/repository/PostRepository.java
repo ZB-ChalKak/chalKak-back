@@ -21,11 +21,11 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
     List<Post> findAllByWriter(Member writer);
 
     @Query("SELECT p FROM Post p " +
-            "JOIN p.styleTags s " +
-            "WHERE s.id IN :styleTags OR (s.id = :weatherId AND s.id = :seasonId) " +
-            "GROUP BY p " +
-            "HAVING COUNT(s.id) >= 1 " +
-            "ORDER BY (p.viewCount + p.likeCount) DESC")
+        "JOIN p.styleTags s " +
+        "WHERE s.id = :weatherId AND s.id = :seasonId And s.id IN :styleTags " +
+        "GROUP BY p " +
+        "HAVING COUNT(s.id) = 2 OR COUNT(s.id) >= 1 " +
+        "ORDER BY (p.viewCount + p.likeCount) DESC")
     Page<Post> findPostsByStyleTagsAndWeatherIdAndSeasonId(@Param("styleTags") List<Long> styleTags,
                                                            @Param("weatherId") Long weatherId,
                                                            @Param("seasonId") Long seasonId,
