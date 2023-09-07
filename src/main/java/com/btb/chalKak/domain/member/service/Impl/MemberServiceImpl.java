@@ -1,23 +1,8 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
-import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
-import static com.btb.chalKak.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
-import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_SING_IN;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_LOGIN;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_NICKNAME;
-import static com.btb.chalKak.common.exception.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
-import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
-import static com.btb.chalKak.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
-import static com.btb.chalKak.common.exception.type.ErrorCode.WITHDRAWAL_MEMBER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.*;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
-import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
-import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
-import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
+import static com.btb.chalKak.domain.member.type.MemberStatus.*;
 
 import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.exception.MemberException;
@@ -51,7 +36,6 @@ import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -98,6 +82,7 @@ public class MemberServiceImpl implements MemberService {
                 .weight(request.getWeight())
                 .provider(CHALKAK)
                 .styleTags(styleTags)
+                .status(ACTIVE)     // TODO : 이메일 인증 구현 완료 후에 수정 -> INACTIVE
                 .build()
         );
     }
@@ -139,17 +124,9 @@ public class MemberServiceImpl implements MemberService {
                             .build());
         }
 
-        // 6. 회원을 ACTIVE 상태로 변경
-        // -> 현재는 회원 가입 시 default 값이 ACTIVE라 의미 없음. 이메일 인증 구현 시 수정.
-        memberRepository.save(member.updateStatus(ACTIVE));
-
-        // 7. response return (일반적으론 TokenDto return)
+        // 6. response return (일반적으론 TokenDto return)
         return SignInMemberResponse.builder()
-                .userId(memberId)
-                .styleTags(member.getStyleTags()
-                        .stream()
-                        .map(styleTag -> styleTag.getId())
-                        .collect(Collectors.toList()))
+                .userInfo(UserInfoResponse.fromEntity(member))
                 .token(token)
                 .build();
     }
@@ -244,6 +221,7 @@ public class MemberServiceImpl implements MemberService {
                 .postsCount(postRepository.countPostIdsByMemberId(member.getId()))
                 .followingCount(getFollowingCountByUserId(userId))
                 .followerCount(getFollowerCountByUserId(userId))
+                .profileImg(member.getProfileImg())
                 .build();
     }
 
@@ -432,11 +410,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void validateMemberStatus(MemberStatus status){
-        /* TODO : 이메일 인증 시 구현
         if(status == INACTIVE) {
             throw new MemberException(INACTIVE_MEMBER);
         }
-        */
         if(status == BLOCKED){
             throw new MemberException(BLOCKED_MEMBER);
         }
