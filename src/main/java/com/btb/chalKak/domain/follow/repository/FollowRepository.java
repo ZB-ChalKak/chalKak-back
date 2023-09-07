@@ -2,17 +2,15 @@ package com.btb.chalKak.domain.follow.repository;
 
 
 import com.btb.chalKak.domain.follow.entity.Follow;
-import com.btb.chalKak.domain.member.entity.Member;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface FollowRepository extends JpaRepository<Follow, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long>, CustomFollowRepository {
 
 
     boolean existsByFollowingIdAndFollowerId(Long followingId, Long followerId);
