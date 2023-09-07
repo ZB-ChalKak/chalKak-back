@@ -162,7 +162,7 @@ public class PostServiceImpl implements PostService {
         post.updateIsFollowingAndIsLiked(isFollowing, isLiked);
 
         // 4. 조회수 증가
-//        increasePostViewCountToRedis(postId);
+        increasePostViewCountToRedis(postId);
 
         return post;
     }
@@ -205,6 +205,18 @@ public class PostServiceImpl implements PostService {
                 postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
                         pageable.getPageNumber(), pageable.getPageSize(), request.getHeight(),
                         request.getWeight(), request.getStyleTagIds(), member);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Post> loadLatestPostsOfFollowings(Authentication authentication, int page, int size) {
+        Member member = getMemberByAuthentication(authentication);
+        validateAuthenticated(member);
+
+        Page<Long> followingIds =
+                followRepository.findFollowingIdsByFollowerId(member.getId(), page, size);
+
+        return postRepository.loadLatestPublicPostsByMemberIds(followingIds.getContent(), page, size);
     }
 
     private void validateWriterOfPost(Member member, Post post) {
