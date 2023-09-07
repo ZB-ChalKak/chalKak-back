@@ -1,16 +1,18 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.exception.type.ErrorCode.*;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
 import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
 import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
 import static com.btb.chalKak.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
 import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_SING_IN;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_LOGIN;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
 import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
 import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
 import static com.btb.chalKak.common.exception.type.ErrorCode.WITHDRAWAL_MEMBER;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
 import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
@@ -27,13 +29,20 @@ import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
-import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.*;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
+import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.response.CheckPasswordResponse;
+import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.member.type.MemberStatus;
-import com.btb.chalKak.domain.photo.repository.PhotoRepository;
 import com.btb.chalKak.domain.photo.service.PhotoService;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
@@ -41,6 +50,7 @@ import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -360,16 +370,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Page<Post> loadPublicPosts(Authentication authentication, int page, int size) {
-        if (authentication == null) {
-            return null;
-        }
-
+    public Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size) {
+        // 1. PageRequest 생성
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Member member = customUserDetails.getMember();
+        // 2. 회원 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
+        // 3. 회원이 작성한 게시물 조회
         List<Post> posts = postRepository.findAllByWriter(member);
 
         return new PageImpl<>(posts, pageRequest, posts.size());
@@ -445,14 +454,12 @@ public class MemberServiceImpl implements MemberService {
         return customUserDetails.getMember();
     }
 
-    public boolean validateMemberId (Authentication authentication, Long memberId){
+    public boolean validateMemberId(Authentication authentication, Long memberId){
         Member member = getMemberByAuthentication(authentication);
-
-        if(!member.getId().equals(memberId)){
-            throw new MemberException(INVALID_MEMBER_ID);
+        if (member == null) {
+            return false;
         }
-
-        return true;
+        return Objects.equals(member.getId(), memberId);
     }
 
     private String getDecodingUrl(String urlString){

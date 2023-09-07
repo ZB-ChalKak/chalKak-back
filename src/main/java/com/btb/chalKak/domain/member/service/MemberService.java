@@ -22,7 +22,7 @@ public interface MemberService {
 
     Member getMemberByAuthentication(Authentication authentication);
 
-    boolean validateMemberId (Authentication authentication, Long memberId);
+    boolean validateMemberId(Authentication authentication, Long memberId);
 
     void signOut(HttpServletRequest request);
 
@@ -40,7 +40,7 @@ public interface MemberService {
 
     void withdrawUser(HttpServletRequest request);
 
-    Page<Post> loadPublicPosts(Authentication authentication, int page, int size);
+    Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size);
 
     void modifyPassword(HttpServletRequest servletRequest, ModifyPasswordRequest passwordRequest);
 }
