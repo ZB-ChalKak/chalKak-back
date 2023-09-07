@@ -1,5 +1,6 @@
 package com.btb.chalKak.domain.post.controller;
 
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_FOLLOWING_POST;
 import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,18 @@ public class PostFilterController {
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
 
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<CommonResponse<LoadPublicPostsResponse>> loadLatestPostsOfFollowings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication)
+    {
+        Page<Post> posts = postService.loadLatestPostsOfFollowings(authentication, page, size);
+        LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
+
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_FOLLOWING_POST));
     }
 
 }
