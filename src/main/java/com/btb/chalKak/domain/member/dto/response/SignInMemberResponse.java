@@ -11,13 +11,6 @@ import java.util.List;
 @Builder
 public class SignInMemberResponse {
 
-    private Long userId;
-    private List<Long> styleTags;
+    private UserInfoResponse userInfo;
     private TokenDto token;
-
-    public static SignInMemberResponse fromEntity(Member member){
-        return SignInMemberResponse.builder()
-                .userId(member.getId())
-                .build();
-    }
 }

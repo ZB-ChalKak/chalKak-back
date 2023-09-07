@@ -10,4 +10,5 @@ public class UserDetailsInfoResponse {
     private Long postsCount;
     private Long followerCount;
     private Long followingCount;
+    private String profileImg;
 }

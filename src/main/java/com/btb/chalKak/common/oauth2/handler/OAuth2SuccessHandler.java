@@ -7,6 +7,7 @@ import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,9 +72,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     }
 
     SignInMemberResponse data = SignInMemberResponse.builder()
-        .userId(member.getId())
-        .token(token)
-        .build();
+            .userInfo(UserInfoResponse.fromEntity(member))
+            .token(token)
+            .build();
 
     String loginJsonMessage = objectMapper.writeValueAsString(
         CommonResponse.builder()
