@@ -72,4 +72,12 @@ public class FollowController {
         LoadPageFollowResponse data = followService.loadFollowings(memberId, pageable);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_COMMENT));
     }
+    @GetMapping("/{memberId}/validateFollow")
+    public ResponseEntity<Boolean> validateFollow(
+                        Authentication authentication,
+                        @PathVariable Long memberId)
+    {
+        return ResponseEntity.ok(followService.validateFollow(authentication, memberId));
+    }
+
 }

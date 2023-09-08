@@ -223,9 +223,11 @@ public class WeatherServiceImpl {
         Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
         Long seasonId = weatherToSeasonId(weather.getDate(), weather.getTemp()); // 봄,여름,가을,겨울
 
-
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
-        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,weatherId,seasonId,pageable);
+        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
+            weatherId,
+            seasonId,pageable);
+
 
         LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
 
@@ -241,6 +243,8 @@ public class WeatherServiceImpl {
         styleMap.put("Rain","비");
         styleMap.put("Snow","눈");
 
+        log.info(styleMap.get(weather));
+
         StyleTag styleTag =  styleTagRepository.findByKeyword(styleMap.get(weather))
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));
 
@@ -252,6 +256,7 @@ public class WeatherServiceImpl {
         String season = getSeason(localDate);
         temperature = fahrenheitToCelsius(temperature);
 
+        log.info(season);
 
         StyleTag styleTag =  styleTagRepository.findByKeyword(season)
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));
