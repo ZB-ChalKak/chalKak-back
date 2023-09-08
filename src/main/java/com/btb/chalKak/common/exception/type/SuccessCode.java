@@ -44,6 +44,7 @@ public enum SuccessCode {
     // 팔로우
     SUCCESS_FOLLOW("팔로우 등록에 성공했습니다."),
     SUCCESS_UNFOLLOW("팔로우 취소에 성공했습니다."),
+    SUCCESS_LOAD_FOLLOWING_POST("팔로잉 게시물 조회에 성공했습니다."),
 
     // 스타일 태그
     SUCCESS_LOAD_STYLE_TAG("스타일 태그 조회에 성공했습니다."),

@@ -1,6 +1,9 @@
 package com.btb.chalKak.domain.like.service;
 
-import java.util.*;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_LIKE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_POST_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_LIKE_ID;
 
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.common.exception.PostException;
@@ -16,6 +19,12 @@ import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,10 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.Collectors;
-
-import static com.btb.chalKak.common.exception.type.ErrorCode.*;
 
 @Service
 @Slf4j
@@ -43,13 +48,12 @@ public class LikeService {
 
     @Transactional
     public LikeResponse likePost( Authentication authentication, Long postId){
-
-
         Member member = memberService.getMemberByAuthentication(authentication);
-
         Long memberId = member.getId();
 
-        memberService.validateMemberId(authentication, memberId);
+        if (!memberService.validateMemberId(authentication, memberId)) {
+            throw new MemberException(INVALID_MEMBER_ID);
+        }
 
         // 이미 좋아요가 있는지 확인
         if(likeRepository.existsByMemberIdAndPostId(memberId, postId)) {

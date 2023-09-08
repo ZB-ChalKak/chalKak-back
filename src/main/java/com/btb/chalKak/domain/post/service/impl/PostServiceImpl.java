@@ -13,6 +13,7 @@ import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.photo.entity.Photo;
+import com.btb.chalKak.domain.photo.repository.PhotoRepository;
 import com.btb.chalKak.domain.photo.service.PhotoService;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
@@ -46,7 +47,9 @@ public class PostServiceImpl implements PostService {
     private final StyleTagRepository styleTagRepository;
 
     private final LikeRepository likeRepository;
+    private final PhotoRepository photoRepository;
     private final FollowRepository followRepository;
+
     private final PhotoService photoService;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -79,6 +82,7 @@ public class PostServiceImpl implements PostService {
         List<Photo> photos = photoService.upload(multipartFileList, post);
 
         post.updatePhotos(photos);
+
         // 4. 게시글 저장
         return postRepository.save(post);
     }
@@ -107,8 +111,26 @@ public class PostServiceImpl implements PostService {
         hashTagRepository.saveAll(editedHashTags);
 
         // 5.5 사진 수정
-        List<Photo> photos = photoService.upload(multipartFileList, post);
-        post.updatePhotos(photos);
+        List<Photo> editedPhotos = post.getPhotos();
+        List<Photo> addedPhotos = photoService.upload(multipartFileList, post);
+        List<Long> deletedImageIds = request.getDeletedImageIds();
+
+        // 삭제될 이미지 ID를 받아 기존 이미지에서 제거
+        editedPhotos.removeIf(photo -> deletedImageIds.contains(photo.getId()));
+        photoRepository.deleteAllById(deletedImageIds);
+
+        int editOrder = editedPhotos.stream()
+                .mapToInt(Photo::getOrder)
+                .max()
+                .orElse(0) + 1;
+
+        for (Photo photo : addedPhotos) {
+            photo.ordering(editOrder++);
+            editedPhotos.add(photo);
+        }
+
+        post.updatePhotos(editedPhotos);
+        photoRepository.saveAll(editedPhotos); // #165 - TODO 테스트 성공시 주석 삭제
 
         // 6. 게시글 저장
         return postRepository.save(post.edit(EditPost.builder()
@@ -162,7 +184,7 @@ public class PostServiceImpl implements PostService {
         post.updateIsFollowingAndIsLiked(isFollowing, isLiked);
 
         // 4. 조회수 증가
-//        increasePostViewCountToRedis(postId);
+        increasePostViewCountToRedis(postId);
 
         return post;
     }
@@ -205,6 +227,18 @@ public class PostServiceImpl implements PostService {
                 postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
                         pageable.getPageNumber(), pageable.getPageSize(), request.getHeight(),
                         request.getWeight(), request.getStyleTagIds(), member);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Post> loadLatestPostsOfFollowings(Authentication authentication, int page, int size) {
+        Member member = getMemberByAuthentication(authentication);
+        validateAuthenticated(member);
+
+        Page<Long> followingIds =
+                followRepository.findFollowingIdsByFollowerId(member.getId(), page, size);
+
+        return postRepository.loadLatestPublicPostsByMemberIds(followingIds.getContent(), page, size);
     }
 
     private void validateWriterOfPost(Member member, Post post) {

@@ -22,9 +22,9 @@ public interface MemberService {
 
     Member getMemberByAuthentication(Authentication authentication);
 
-    boolean validateMemberId (Authentication authentication, Long memberId);
+    boolean validateMemberId(Authentication authentication, Long memberId);
 
-    void signOut(HttpServletRequest request);
+    void signOut(Authentication authentication);
 
     ValidateInfoResponse validateEmail(String email);
 
@@ -32,15 +32,15 @@ public interface MemberService {
 
     UserDetailsInfoResponse userDetailsInfo(Long userId);
 
-    UserInfoResponse userInfo(HttpServletRequest request, Long userId);
+    UserInfoResponse userInfo(Authentication authentication, Long userId);
 
-    CheckPasswordResponse checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest);
+    CheckPasswordResponse checkPassword(Authentication authentication, CheckPasswordRequest passwordRequest);
 
-    void modifyUserInfo(HttpServletRequest servletRequest, Long userId, MultipartFile[] multipartFiles, ModifyUserInfoRequest infoRequest);
+    void modifyUserInfo(Authentication authentication, Long userId, MultipartFile[] multipartFiles, ModifyUserInfoRequest infoRequest);
 
-    void withdrawUser(HttpServletRequest request);
+    void withdrawUser(Authentication authentication);
 
-    Page<Post> loadPublicPosts(Authentication authentication, int page, int size);
+    Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size);
 
-    void modifyPassword(HttpServletRequest servletRequest, ModifyPasswordRequest passwordRequest);
+    void modifyPassword(Authentication authentication, ModifyPasswordRequest passwordRequest);
 }

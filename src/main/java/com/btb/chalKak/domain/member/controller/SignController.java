@@ -1,14 +1,36 @@
 package com.btb.chalKak.domain.member.controller;
 
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_CHECK_PASSWORD;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_DETAILS_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_EMAIL;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_VALIDATE_NICKNAME;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_MODIFY_USER_INFO;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_MODIFY_USER_PASSWORD;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_REISSUE;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SAVE_MEMBER;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_IN;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_SIGN_OUT;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_WITHDRAWAL;
+
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
 import com.btb.chalKak.common.security.dto.TokenDto;
 import com.btb.chalKak.common.security.request.TokenRequestDto;
 import com.btb.chalKak.common.util.ValidationUtils;
-import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.*;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
+import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.response.CheckPasswordResponse;
+import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
-import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
+import com.btb.chalKak.domain.post.dto.response.LoadUserPublicPostsResponse;
 import com.btb.chalKak.domain.post.entity.Post;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -19,10 +41,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,8 +89,8 @@ public class SignController {
     }
 
     @PutMapping("/signout")
-    public ResponseEntity<?> signOut(HttpServletRequest request) {
-        memberService.signOut(request);
+    public ResponseEntity<?> signOut(Authentication authentication) {
+        memberService.signOut(authentication);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_SIGN_OUT));
     }
 
@@ -83,48 +113,53 @@ public class SignController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> userInfo(HttpServletRequest request,
+    public ResponseEntity<?> userInfo(Authentication authentication,
                                       @PathVariable Long userId){
-        UserInfoResponse data = memberService.userInfo(request, userId);
+        UserInfoResponse data = memberService.userInfo(authentication, userId);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_USER_INFO));
     }
 
     @PostMapping("/check-password")
-    public ResponseEntity<?> checkPassword(HttpServletRequest servletRequest,
+    public ResponseEntity<?> checkPassword(Authentication authentication,
                                            @RequestBody CheckPasswordRequest passwordRequest){
-        CheckPasswordResponse data = memberService.checkPassword(servletRequest, passwordRequest);
+        CheckPasswordResponse data = memberService.checkPassword(authentication, passwordRequest);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_CHECK_PASSWORD));
     }
 
     @PatchMapping(value = "/{userId}/modify", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> modifyUserInfo(HttpServletRequest servletRequest,
+    public ResponseEntity<?> modifyUserInfo(Authentication authentication,
                                             @PathVariable Long userId,
                                             @RequestPart MultipartFile[] multipartFiles,
                                             @RequestPart ModifyUserInfoRequest infoRequest){
-        memberService.modifyUserInfo(servletRequest, userId, multipartFiles, infoRequest);
+        memberService.modifyUserInfo(authentication, userId, multipartFiles, infoRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
     }
 
     @DeleteMapping("/{userId}/withdraw")
-    public ResponseEntity<?> withdrawUser(HttpServletRequest request){
-        memberService.withdrawUser(request);
+    public ResponseEntity<?> withdrawUser(Authentication authentication){
+        memberService.withdrawUser(authentication);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_WITHDRAWAL));
     }
 
-    @GetMapping("/public/posts")
-    public ResponseEntity<CommonResponse<LoadPublicPostsResponse>> loadPublicPosts(
+    @GetMapping("/{userId}/posts")
+    public ResponseEntity<CommonResponse<LoadUserPublicPostsResponse>> loadPublicPosts(
             Authentication authentication,
+            @PathVariable Long userId,
             @RequestParam("page") int page,
             @RequestParam("size") int size)
     {
-        Page<Post> posts = memberService.loadPublicPosts(authentication, page, size);
-        LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
+        Page<Post> posts = memberService.loadPublicPosts(authentication, userId, page, size);
+        LoadUserPublicPostsResponse data = LoadUserPublicPostsResponse.fromPage(posts);
+
+        if (memberService.validateMemberId(authentication, userId)) {
+            data.updateAuthenticated();
+        }
 
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
     }
 
     @PostMapping("/modify-password")
-    public ResponseEntity<?> modifyPassword(HttpServletRequest servletRequest,
+    public ResponseEntity<?> modifyPassword(Authentication authentication,
                                             @Valid @RequestBody ModifyPasswordRequest passwordRequest,
                                             BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -132,7 +167,7 @@ public class SignController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseService.failure(errorMessage));
         }
 
-        memberService.modifyPassword(servletRequest, passwordRequest);
+        memberService.modifyPassword(authentication, passwordRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_PASSWORD));
     }
 }

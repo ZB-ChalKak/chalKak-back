@@ -137,6 +137,24 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
         return new PageImpl<>(featuredPosts, pageRequest, totalCount);
     }
 
+    @Override
+    public Page<Post> loadLatestPublicPostsByMemberIds(List<Long> memberIds, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        BooleanExpression publicPostsFilter = getPublicPostFilter();
+
+        List<Post> posts = queryFactory.selectFrom(qPost)
+                .where(qPost.writer.id.in(memberIds)
+                        .and(publicPostsFilter))
+                .orderBy(qPost.createdAt.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+        long totalCount = posts.size();
+
+        return new PageImpl<>(posts, pageRequest, totalCount);
+    }
+
     private List<Post> getFeaturedPostsByBodyTypeAndStyleTags(double height, double weight, List<Long> styleTagIds,
             PageRequest pageRequest) {
         Double minHeight = height == 0 ? 0 : height - HEIGHT_DEVIATION;

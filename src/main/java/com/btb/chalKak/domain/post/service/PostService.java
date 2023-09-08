@@ -23,4 +23,6 @@ public interface PostService {
 
     Page<Post> loadPublicFeaturedPostsByKeywords(Authentication authentication, Pageable pageable, LoadPublicFeaturedPostsRequest request);
 
+    Page<Post> loadLatestPostsOfFollowings(Authentication authentication, int page, int size);
+
 }
