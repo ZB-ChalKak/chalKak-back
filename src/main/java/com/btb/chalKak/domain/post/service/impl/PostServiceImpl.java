@@ -130,7 +130,7 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePhotos(editedPhotos);
-        photoRepository.saveAll(editedPhotos);
+        photoRepository.saveAll(editedPhotos); // #165 - TODO 테스트 성공시 주석 삭제
 
         // 6. 게시글 저장
         return postRepository.save(post.edit(EditPost.builder()
