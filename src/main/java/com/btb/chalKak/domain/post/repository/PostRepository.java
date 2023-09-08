@@ -20,6 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
     List<Post> findAllByWriter(Member writer);
 
+
     @Query("SELECT p FROM Post p " +
         "JOIN p.styleTags s " +
         "WHERE (s.id = :weatherId OR s.id = :seasonId OR s.id IN :styleTags) " +
