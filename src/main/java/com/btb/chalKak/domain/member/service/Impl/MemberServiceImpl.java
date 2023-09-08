@@ -67,6 +67,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void signUp(SignUpMemberRequest request) {
+
         // 1. 유효성 검사(이메일 및 닉네임 중복 확인)
         validateEmailDuplication(request.getEmail());
         validateNicknameDuplication(request.getNickname());
@@ -93,6 +94,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public SignInMemberResponse SignIn(SignInMemberRequest request) {
+
         // 1. 존재하는 이메일인지 확인
         Member member = getMemberByEmail(request.getEmail());
         Long memberId = member.getId();
@@ -137,6 +139,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
+
         String refreshToken = tokenRequestDto.getRefreshToken();
         String accessToken = tokenRequestDto.getAccessToken();
 
@@ -170,14 +173,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void signOut(Authentication authentication) {
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
 
         // 1. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
@@ -198,6 +193,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ValidateInfoResponse validateEmail(String email) {
+
         return ValidateInfoResponse.builder()
                 .isDuplicated(memberRepository.existsByEmail(email))
                 .build();
@@ -206,6 +202,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ValidateInfoResponse validateNickname(String nickname) {
+
         return ValidateInfoResponse.builder()
                 .isDuplicated(memberRepository.existsByNickname(getDecodingUrl(nickname)))
                 .build();
@@ -214,6 +211,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public UserDetailsInfoResponse userDetailsInfo(Long userId) {
+
         // 1. 유효한 userId인지 검사
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
@@ -222,6 +220,7 @@ public class MemberServiceImpl implements MemberService {
         validateMemberStatus(member.getStatus());
 
         return UserDetailsInfoResponse.builder()
+                .nickname(member.getNickname())
                 .postsCount(postRepository.countPostIdsByMemberId(member.getId()))
                 .followingCount(getFollowingCountByUserId(userId))
                 .followerCount(getFollowerCountByUserId(userId))
@@ -232,30 +231,22 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public UserInfoResponse userInfo(Authentication authentication, Long userId) {
+
         // 1. 유효한 이용자 id인지 검사
         validateMemberId(userId);
 
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
-
-        // 1. authentication에서 member 추출
+        // 2. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
 
-        // 2. member의 status 검증
+        // 3. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 3. 토큰의 id와 전달된 id가 같은지 검사
+        // 4. 토큰의 id와 전달된 id가 같은지 검사
         if(userId != member.getId()) {
             throw new MemberException(FORBIDDEN_RESPONSE);
         }
 
-        // 4. 1에서 id를 검증했기 떄문에 굳이 elseThrow 할 필요 없긴 하다. 추후 리팩토링
+        // 5. 1에서 id를 검증했기 떄문에 굳이 elseThrow 할 필요 없긴 하다. 추후 리팩토링
         return UserInfoResponse.fromEntity(
                 memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)));
@@ -264,14 +255,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public CheckPasswordResponse checkPassword(Authentication authentication, CheckPasswordRequest passwordRequest) {
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
 
         // 1. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
@@ -299,14 +282,6 @@ public class MemberServiceImpl implements MemberService {
                                Long userId,
                                MultipartFile[] multipartFiles,
                                ModifyUserInfoRequest infoRequest) {
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
 
         // 1. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
@@ -335,14 +310,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void withdrawUser(Authentication authentication) {
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
 
         // 1. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
@@ -356,6 +323,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size) {
+
         // 1. PageRequest 생성
         PageRequest pageRequest = PageRequest.of(page, size);
 
@@ -372,14 +340,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void modifyPassword(Authentication authentication, ModifyPasswordRequest passwordRequest) {
-        /*
-        // 1. 토큰 추출 + accesToken 검증
-        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
-
-        if(!jwtProvider.validateToken(accessToken)) {
-            throw new JwtException(EXPIRED_JWT_EXCEPTION);
-        }
-         */
 
         // 1. authentication에서 member 추출
         Member member = getMemberByAuthentication(authentication);
