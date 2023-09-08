@@ -13,6 +13,7 @@ import com.btb.chalKak.domain.hashTag.repository.HashTagRepository;
 import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.photo.entity.Photo;
+import com.btb.chalKak.domain.photo.repository.PhotoRepository;
 import com.btb.chalKak.domain.photo.service.PhotoService;
 import com.btb.chalKak.domain.post.dto.EditPost;
 import com.btb.chalKak.domain.post.dto.request.EditPostRequest;
@@ -46,7 +47,9 @@ public class PostServiceImpl implements PostService {
     private final StyleTagRepository styleTagRepository;
 
     private final LikeRepository likeRepository;
+    private final PhotoRepository photoRepository;
     private final FollowRepository followRepository;
+
     private final PhotoService photoService;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -111,9 +114,10 @@ public class PostServiceImpl implements PostService {
         List<Photo> editedPhotos = post.getPhotos();
         List<Photo> addedPhotos = photoService.upload(multipartFileList, post);
         List<Long> deletedImageIds = request.getDeletedImageIds();
-        
+
         // 삭제될 이미지 ID를 받아 기존 이미지에서 제거
         editedPhotos.removeIf(photo -> deletedImageIds.contains(photo.getId()));
+        photoRepository.deleteAllById(deletedImageIds);
 
         int editOrder = editedPhotos.stream()
                 .mapToInt(Photo::getOrder)
