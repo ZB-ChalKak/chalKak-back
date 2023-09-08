@@ -169,22 +169,23 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void signOut(HttpServletRequest servletRequest) {
-        // 1. 토큰 추출
+    public void signOut(Authentication authentication) {
+        /*
+        // 1. 토큰 추출 + accesToken 검증
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 2. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
+         */
 
-        // 3. accessToken에서 memberId 추출
-        Member member = getMemberByAccessToken(accessToken);
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
 
-        // 4. member의 status 검증
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 5. userId에 해당하는 user의 refreshToken을 확인하고, 있다면 삭제
+        // 3. userId에 해당하는 user의 refreshToken을 확인하고, 있다면 삭제
         RefreshToken refreshTokenStoredInDB =
                 refreshTokenRepository.findByMemberId(member.getId())
                         .orElse(null);
@@ -230,30 +231,31 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public UserInfoResponse userInfo(HttpServletRequest request, Long userId) {
+    public UserInfoResponse userInfo(Authentication authentication, Long userId) {
         // 1. 유효한 이용자 id인지 검사
         validateMemberId(userId);
 
-        // 2. 토큰 추출
-        String accessToken = jwtProvider.resolveTokenFromRequest(request);
+        /*
+        // 1. 토큰 추출 + accesToken 검증
+        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 3. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
-        
-        // 4. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
+         */
 
-        // 5. member의 status 검증
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
+
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 6. 토큰의 id와 전달된 id가 같은지 검사
+        // 3. 토큰의 id와 전달된 id가 같은지 검사
         if(userId != member.getId()) {
             throw new MemberException(FORBIDDEN_RESPONSE);
         }
 
-        // 7. 1에서 id를 검증했기 떄문에 굳이 elseThrow 할 필요 없긴 하다. 추후 리팩토링
+        // 4. 1에서 id를 검증했기 떄문에 굳이 elseThrow 할 필요 없긴 하다. 추후 리팩토링
         return UserInfoResponse.fromEntity(
                 memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID)));
@@ -261,30 +263,31 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public CheckPasswordResponse checkPassword(HttpServletRequest servletRequest, CheckPasswordRequest passwordRequest) {
-        // 1. 토큰 추출
+    public CheckPasswordResponse checkPassword(Authentication authentication, CheckPasswordRequest passwordRequest) {
+        /*
+        // 1. 토큰 추출 + accesToken 검증
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 2. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
+         */
 
-        // 3. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
 
-        // 4. member의 status 검증
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 5. 유효한 이용자 id인지 검사
+        // 3. 유효한 이용자 id인지 검사
         validateMemberId(passwordRequest.getUserId());
 
-        // 6. 토큰의 id와 전달된 id가 같은지 검사
+        // 4. 토큰의 id와 전달된 id가 같은지 검사
         if(passwordRequest.getUserId() != member.getId()) {
             throw new MemberException(FORBIDDEN_RESPONSE);
         }
 
-        // 7. 비밀번호 일치 여부 검사
+        // 5. 비밀번호 일치 여부 검사
         return CheckPasswordResponse.builder()
                 .isPasswordMatch(validatePasswordWithDB(passwordRequest.getPassword(), member.getPassword()))
                 .build();
@@ -292,31 +295,31 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void modifyUserInfo(HttpServletRequest servletRequest,
+    public void modifyUserInfo(Authentication authentication,
                                Long userId,
                                MultipartFile[] multipartFiles,
                                ModifyUserInfoRequest infoRequest) {
-        // 1. 토큰 추출
+        /*
+        // 1. 토큰 추출 + accesToken 검증
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 2. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
+         */
 
-        // 3. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
 
-        // 4. member의 status 검증
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 5. 닉네임 중복 검사
-        // 현재 닉네임과 같으면 검사 할 필요 없고, 같지 않다면 검사
+        // 3. 닉네임 중복 검사 -> 현재 닉네임과 같으면 검사 할 필요 없고, 같지 않다면 검사
         if(!member.getNickname().equals(infoRequest.getNickname())){
             validateNicknameDuplication(infoRequest.getNickname());
         }
 
-        // 6. 수정 부
+        // 4. 수정 부
         List<StyleTag> styleTags = styleTagRepository.findAllById(infoRequest.getStyleTags());
 
         member.update(infoRequest.getNickname(),
@@ -331,22 +334,23 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void withdrawUser(HttpServletRequest request) {
-        // 1. 토큰 추출
-        String accessToken = jwtProvider.resolveTokenFromRequest(request);
+    public void withdrawUser(Authentication authentication) {
+        /*
+        // 1. 토큰 추출 + accesToken 검증
+        String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 2. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
+         */
 
-        // 3. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
 
-        // 4. member의 status 검증
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
 
-        // 5. 회원을 WITHDRAWAL 상태로 변경
+        // 3. 회원을 WITHDRAWAL 상태로 변경
         memberRepository.save(member.updateStatus(WITHDRAWAL));
     }
 
@@ -367,22 +371,23 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void modifyPassword(HttpServletRequest servletRequest, ModifyPasswordRequest passwordRequest) {
-        // 1. 토큰 추출
+    public void modifyPassword(Authentication authentication, ModifyPasswordRequest passwordRequest) {
+        /*
+        // 1. 토큰 추출 + accesToken 검증
         String accessToken = jwtProvider.resolveTokenFromRequest(servletRequest);
 
-        // 2. accessToken 검증
         if(!jwtProvider.validateToken(accessToken)) {
             throw new JwtException(EXPIRED_JWT_EXCEPTION);
         }
+         */
 
-        // 3. 토큰으로 이용자 추출
-        Member member = getMemberByAccessToken(accessToken);
+        // 1. authentication에서 member 추출
+        Member member = getMemberByAuthentication(authentication);
 
-        // 4. member의 status 검증
+        // 2. member의 status 검증
         validateMemberStatus(member.getStatus());
         
-        // 5. password 변경
+        // 3. password 변경
         memberRepository.save(member.updatePassword(
                 passwordEncoder.encode(passwordRequest.getPassword())));
     }
@@ -450,12 +455,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private Long getFollowingCountByUserId(Long userId){
-        return followRepository.countByFollowingId(userId)
+        return followRepository.countByFollowerId(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
     }
 
     private Long getFollowerCountByUserId(Long userId){
-        return followRepository.countByFollowerId(userId)
+        return followRepository.countByFollowingId(userId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
     }
 
