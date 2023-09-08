@@ -79,6 +79,7 @@ public class PostServiceImpl implements PostService {
         List<Photo> photos = photoService.upload(multipartFileList, post);
 
         post.updatePhotos(photos);
+
         // 4. 게시글 저장
         return postRepository.save(post);
     }
@@ -107,8 +108,24 @@ public class PostServiceImpl implements PostService {
         hashTagRepository.saveAll(editedHashTags);
 
         // 5.5 사진 수정
-        List<Photo> photos = photoService.upload(multipartFileList, post);
-        post.updatePhotos(photos);
+        List<Photo> editedPhotos = post.getPhotos();
+        List<Photo> addedPhotos = photoService.upload(multipartFileList, post);
+        List<Long> deletedImageIds = request.getDeletedImageIds();
+        
+        // 삭제될 이미지 ID를 받아 기존 이미지에서 제거
+        editedPhotos.removeIf(photo -> deletedImageIds.contains(photo.getId()));
+
+        int editOrder = editedPhotos.stream()
+                .mapToInt(Photo::getOrder)
+                .max()
+                .orElse(0) + 1;
+
+        for (Photo photo : addedPhotos) {
+            photo.ordering(editOrder++);
+            editedPhotos.add(photo);
+        }
+
+        post.updatePhotos(editedPhotos);
 
         // 6. 게시글 저장
         return postRepository.save(post.edit(EditPost.builder()
