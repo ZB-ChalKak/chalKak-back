@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class UserDetailsInfoResponse {
 
+    private String nickname;
     private Long postsCount;
     private Long followerCount;
     private Long followingCount;
