@@ -89,8 +89,8 @@ public class SignController {
     }
 
     @PutMapping("/signout")
-    public ResponseEntity<?> signOut(HttpServletRequest request) {
-        memberService.signOut(request);
+    public ResponseEntity<?> signOut(Authentication authentication) {
+        memberService.signOut(authentication);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_SIGN_OUT));
     }
 
@@ -113,31 +113,31 @@ public class SignController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> userInfo(HttpServletRequest request,
+    public ResponseEntity<?> userInfo(Authentication authentication,
                                       @PathVariable Long userId){
-        UserInfoResponse data = memberService.userInfo(request, userId);
+        UserInfoResponse data = memberService.userInfo(authentication, userId);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_USER_INFO));
     }
 
     @PostMapping("/check-password")
-    public ResponseEntity<?> checkPassword(HttpServletRequest servletRequest,
+    public ResponseEntity<?> checkPassword(Authentication authentication,
                                            @RequestBody CheckPasswordRequest passwordRequest){
-        CheckPasswordResponse data = memberService.checkPassword(servletRequest, passwordRequest);
+        CheckPasswordResponse data = memberService.checkPassword(authentication, passwordRequest);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_CHECK_PASSWORD));
     }
 
     @PatchMapping(value = "/{userId}/modify", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> modifyUserInfo(HttpServletRequest servletRequest,
+    public ResponseEntity<?> modifyUserInfo(Authentication authentication,
                                             @PathVariable Long userId,
                                             @RequestPart MultipartFile[] multipartFiles,
                                             @RequestPart ModifyUserInfoRequest infoRequest){
-        memberService.modifyUserInfo(servletRequest, userId, multipartFiles, infoRequest);
+        memberService.modifyUserInfo(authentication, userId, multipartFiles, infoRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
     }
 
     @DeleteMapping("/{userId}/withdraw")
-    public ResponseEntity<?> withdrawUser(HttpServletRequest request){
-        memberService.withdrawUser(request);
+    public ResponseEntity<?> withdrawUser(Authentication authentication){
+        memberService.withdrawUser(authentication);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_WITHDRAWAL));
     }
 
@@ -159,7 +159,7 @@ public class SignController {
     }
 
     @PostMapping("/modify-password")
-    public ResponseEntity<?> modifyPassword(HttpServletRequest servletRequest,
+    public ResponseEntity<?> modifyPassword(Authentication authentication,
                                             @Valid @RequestBody ModifyPasswordRequest passwordRequest,
                                             BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -167,7 +167,7 @@ public class SignController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseService.failure(errorMessage));
         }
 
-        memberService.modifyPassword(servletRequest, passwordRequest);
+        memberService.modifyPassword(authentication, passwordRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_PASSWORD));
     }
 }
