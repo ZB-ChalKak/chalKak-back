@@ -45,4 +45,7 @@ public class Photo extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    public void ordering(Integer order) {
+        this.order = order;
+    }
 }
