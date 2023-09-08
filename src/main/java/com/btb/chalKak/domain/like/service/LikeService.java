@@ -48,13 +48,10 @@ public class LikeService {
 
     @Transactional
     public LikeResponse likePost( Authentication authentication, Long postId){
-
-
         Member member = memberService.getMemberByAuthentication(authentication);
-
         Long memberId = member.getId();
 
-        if (memberService.validateMemberId(authentication, memberId)) {
+        if (!memberService.validateMemberId(authentication, memberId)) {
             throw new MemberException(INVALID_MEMBER_ID);
         }
 
