@@ -59,7 +59,7 @@ public class PostController {
     public ResponseEntity<?> edit(
             Authentication authentication,
             @PathVariable Long postId,
-            @RequestPart MultipartFile[] multipartFileList,
+            @RequestPart(value = "multipartFileList", required = false) MultipartFile[] multipartFileList,
             @RequestPart EditPostRequest request)
     {
         Post post = postService.edit(authentication, postId, request , multipartFileList);
