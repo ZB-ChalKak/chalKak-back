@@ -3,6 +3,7 @@ package com.btb.chalKak.domain.post.repository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,4 +34,14 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
                                                            @Param("weatherId") Long weatherId,
                                                            @Param("seasonId") Long seasonId,
                                                            Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.styleTags s " +
+            "WHERE ( s.id = :seasonId ) " +
+            "GROUP BY p " +
+            "HAVING SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
+            "AND (p.viewCount + p.likeCount) > :count " +
+            "ORDER BY (p.viewCount + p.likeCount) DESC")
+    List<Post> findPostsAndSeasonId(@Param("seasonId") Long seasonId, @Param("count") Long count);
+
 }
