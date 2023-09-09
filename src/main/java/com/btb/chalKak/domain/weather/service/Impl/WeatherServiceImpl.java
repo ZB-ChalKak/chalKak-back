@@ -221,7 +221,7 @@ public class WeatherServiceImpl {
 
         // 3. 평균 날씨의 Date, 온도로 봄, 여름 , 가을, 겨울 구분
         Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
-        Long seasonId = weatherToSeasonId(weather.getDate(), weather.getTemp()); // 봄,여름,가을,겨울
+        Long seasonId = weatherToSeasonId(weather.getDate()); // 봄,여름,가을,겨울
 
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
         Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
@@ -251,10 +251,10 @@ public class WeatherServiceImpl {
         return styleTag.getId();
     }
 
-    private Long weatherToSeasonId (LocalDate localDate, double temperature){
+    public Long weatherToSeasonId (LocalDate localDate){
 
         String season = getSeason(localDate);
-        temperature = fahrenheitToCelsius(temperature);
+//        temperature = fahrenheitToCelsius(temperature);
 
         log.info(season);
 

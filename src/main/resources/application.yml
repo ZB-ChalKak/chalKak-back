@@ -38,4 +38,4 @@ scheduler:
     cron: "0 0/1 * * * ?"
   cron: "0 */5 * * * *"
   weather:
-    cron: "0 * 6 * * ?"
+    cron: "0 0 6 * * ?"

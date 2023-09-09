@@ -1,17 +1,20 @@
 package com.btb.chalKak.batch;
 
+import com.btb.chalKak.batch.listener.TableClearingListener;
+import com.btb.chalKak.batch.processor.PostItemProcessor;
+import com.btb.chalKak.batch.reader.PostItemReader;
+import com.btb.chalKak.batch.writer.RecommendPostItemWriter;
+import com.btb.chalKak.domain.batchpost.entity.RecommendPostBatch;
+import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.weather.entity.Weather;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -21,32 +24,18 @@ import javax.sql.DataSource;
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
-public class exampleBatch {
+public class BatchConfiguration {
 
   private final JobBuilderFactory jobBuilderFactory;
   private final StepBuilderFactory stepBuilderFactory;
+  private final RecommendPostItemWriter recommendPostItemWriter;
+  private final TableClearingListener tableClearingListener;
 
-//  @Bean
-//  public Job sampleDb2FileChunkJob(SampleJobListener jobListener, Step sampleDb2FileChunkStep) {
-//    return jobBuilderFactory.get("sampleDb2FileChunkJob")
-//            .incrementer(new RunIdIncrementer())
-//            .listener(jobListener)
-//            .flow(sampleDb2FileChunkStep)
-//            .end()
-//            .build();
-//  }
+  private final PostItemReader postItemReader;
 
+  private final PostItemProcessor postItemProcessor;
 
-  @Bean
-  public JdbcCursorItemReader<Weather> jdbcCursorItemReader(DataSource dataSource) {
-    return new JdbcCursorItemReaderBuilder<Weather>()
-            .name("jdbcCursorItemReader")
-            .fetchSize(100)
-            .dataSource(dataSource)
-            .rowMapper(new BeanPropertyRowMapper<>(Weather.class))
-            .sql("SELECT weather_id, temp, weather, weather_icon, max_temp, min_temp, Date FROM WEATHER_TO_MEMBER")
-            .build();
-  }
+  private static final int chunkSize = 10;
 
   @Bean
   public Job tutorialJob() {
@@ -60,6 +49,25 @@ public class exampleBatch {
     return stepBuilderFactory.get("tutorialStep")
         .tasklet(new TutorialTasklet()) // Tasklet 설정
         .build();
+  }
+
+  @Bean
+  public Job processJob() {
+    return jobBuilderFactory.get("processJob")
+            .listener(tableClearingListener)
+            .flow(orderStep1())
+            .end()
+            .build();
+  }
+
+  @Bean
+  public Step orderStep1() {
+    return stepBuilderFactory.get("orderStep1")
+            .<Post, RecommendPostBatch>chunk(chunkSize)
+            .reader(postItemReader)
+            .processor(postItemProcessor)
+            .writer(recommendPostItemWriter)
+            .build();
   }
 
 }

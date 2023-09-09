@@ -47,7 +47,4 @@ public class StyleTag {
     @ManyToMany(mappedBy = "styleTags")
     private List<Post> posts;
 
-    public void updateKeyword(String keyword) {
-        this.keyword = keyword;
-    }
 }
