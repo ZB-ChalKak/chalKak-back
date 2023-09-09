@@ -18,7 +18,7 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
             "ST_Distance_Sphere(point(a.longitude, a.latitude), point(:longitude, :latitude)) " +
             "LIMIT 1",
             nativeQuery = true)
-    Weather findClosestWeatherByLatLonAndDate(@Param("latitude") double latitude,
+    Optional<Weather> findClosestWeatherByLatLonAndDate(@Param("latitude") double latitude,
                                               @Param("longitude") double longitude,
                                               @Param("date") LocalDate date);
 }
