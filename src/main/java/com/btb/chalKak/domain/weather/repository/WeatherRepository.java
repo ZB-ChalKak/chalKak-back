@@ -12,7 +12,7 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
     Optional<Weather> findByAdministrativeGeoInfo_IdAndDate(Long geoId, LocalDate date);
 
     @Query(value = "SELECT w.* FROM weather_to_member w " +
-            "JOIN administrative_geo_info a ON w.geo_id = a.Geo_id " +
+            "JOIN administrative_geo_info a ON w.geo_id = a.geo_id " +
             "WHERE w.date = :date " +
             "ORDER BY " +
             "ST_Distance_Sphere(point(a.longitude, a.latitude), point(:longitude, :latitude)) " +
