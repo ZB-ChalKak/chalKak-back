@@ -242,6 +242,7 @@ public class WeatherServiceImpl {
         styleMap.put("Clouds","흐림");
         styleMap.put("Rain","비");
         styleMap.put("Snow","눈");
+        log.info(weather);
 
         log.info(styleMap.get(weather));
 

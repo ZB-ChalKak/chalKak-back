@@ -45,9 +45,11 @@ public class RecommendPostBatch {
     @Column(name = "season_id", nullable = false)
     private Long seasonId;
     @Column(name = "view_count", nullable = false)
+    @Builder.Default
     private Long viewCount = 0L;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private Long likeCount = 0L;
 
     @Column(name = "style_tag_ids")
