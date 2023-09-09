@@ -209,9 +209,6 @@ public class WeatherServiceImpl {
         // 1. lan, lon 으로 근처 시도의 당일 평균 날씨
         // lat : 37.74913611, lon : 128.8784972
         LocalDate today = LocalDate.now();
-        log.info(today.toString());
-        log.info(lat);
-        log.info(lon);
 
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
                 .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
@@ -243,16 +240,12 @@ public class WeatherServiceImpl {
     private Long weatherToStyleTagId (String weather){
         Map<String, String> styleMap = new HashMap<>();
 
-        log.info("test log 1");
         styleMap.put("Clear","맑음");
         styleMap.put("Clouds","흐림");
         styleMap.put("Rain","비");
         styleMap.put("Snow","눈");
-        log.info("test log 2");
-        log.info(weather);
 
         log.info(styleMap.get(weather));
-        log.info("test log 3");
 
         StyleTag styleTag =  styleTagRepository.findByKeyword(styleMap.get(weather))
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));
