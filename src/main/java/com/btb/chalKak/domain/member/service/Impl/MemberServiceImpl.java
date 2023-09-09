@@ -9,11 +9,11 @@ import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.common.security.customUser.CustomUserDetails;
 import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
-import com.btb.chalKak.common.security.dto.TokenDto;
+import com.btb.chalKak.common.security.dto.TokenReissueResponse;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
-import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.common.security.request.TokenReissueRequest;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
@@ -37,9 +37,7 @@ import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -112,7 +110,7 @@ public class MemberServiceImpl implements MemberService {
         };
 
         // 4. 토큰 생성
-        TokenDto token = jwtProvider.createToken(member.getEmail(), member.getRole());
+        TokenReissueResponse token = jwtProvider.createToken(member.getEmail(), member.getRole());
         String refreshToken = token.getRefreshToken();
 
         // 5. refresh 토큰 저장
@@ -138,36 +136,41 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public TokenDto reissue(TokenRequestDto tokenRequestDto) {
+    public TokenReissueResponse reissue(TokenReissueRequest tokenReissueRequest) {
 
-        String refreshToken = tokenRequestDto.getRefreshToken();
-        String accessToken = tokenRequestDto.getAccessToken();
+        String refreshToken = tokenReissueRequest.getRefreshToken();
+        //String accessToken = tokenRequestDto.getAccessToken();
 
         // 1. 만료된 refresh 토큰은 에러 발생
         if(!jwtProvider.validateToken(refreshToken)){
             throw new MemberException(INACTIVE_SING_IN);
         }
 
+        /*
         // 2. accessToken에서 name 가져오기
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
         // 3. user pk로 유저 검색
         Member member = getMemberByEmail(authentication.getName());
+         */
 
-        // 4. repository에 refresh token이 있는지 검사
+        // 2. userId로 member 가져오기
+        Member member = memberRepository.findById(tokenReissueRequest.getUserId())
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
+
+        // 3. refresh token repository에 해당 userId의 refresh token이 있는지 검사
         RefreshToken refreshTokenStoredInDB = refreshTokenRepository.findByMemberId(member.getId())
                 .orElseThrow(() -> new JwtException(UNSUPPORTED_JWT_EXCEPTION));
         
-        // 5. refresh 토큰 일치 검사
-        if(!refreshTokenStoredInDB.getToken().equals(tokenRequestDto.getRefreshToken())){
+        // 4. refresh 토큰 일치 검사
+        if(!refreshTokenStoredInDB.getToken().equals(tokenReissueRequest.getRefreshToken())){
             throw new JwtException(MALFORMED_JWT_EXCEPTION);
         }
 
-        TokenDto newToken = jwtProvider.createToken(member.getEmail(), member.getRole());
-        RefreshToken newRefreshToken = refreshTokenStoredInDB.updateToken(newToken.getRefreshToken());
-        refreshTokenRepository.save(newRefreshToken);
+        TokenReissueResponse newTokenResponse = jwtProvider.createToken(member.getEmail(), member.getRole());
+        refreshTokenRepository.save(refreshTokenStoredInDB.updateToken(newTokenResponse.getRefreshToken()));
 
-        return newToken;
+        return newTokenResponse;
     }
 
     @Override

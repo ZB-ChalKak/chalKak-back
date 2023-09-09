@@ -1,19 +1,14 @@
 package com.btb.chalKak.common.oauth2.handler;
 
-import com.btb.chalKak.common.exception.type.SuccessCode;
-import com.btb.chalKak.common.response.dto.CommonResponse;
-import com.btb.chalKak.common.security.dto.TokenDto;
+import com.btb.chalKak.common.security.dto.TokenReissueResponse;
 import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
-import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
-import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +49,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     log.info("User email: " + email);
     log.info("User Id : " + member.getId());
 
-    TokenDto token = jwtProvider.createToken(member.getEmail(), member.getRole());
+    TokenReissueResponse token = jwtProvider.createToken(member.getEmail(), member.getRole());
     String refreshToken = token.getRefreshToken();
 
     // 4. refresh 토큰 저장

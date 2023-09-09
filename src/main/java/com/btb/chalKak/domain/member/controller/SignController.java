@@ -16,8 +16,8 @@ import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_WITHDRAW
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.common.security.dto.TokenDto;
-import com.btb.chalKak.common.security.request.TokenRequestDto;
+import com.btb.chalKak.common.security.dto.TokenReissueResponse;
+import com.btb.chalKak.common.security.request.TokenReissueRequest;
 import com.btb.chalKak.common.util.ValidationUtils;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
@@ -32,7 +32,7 @@ import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.post.dto.response.LoadUserPublicPostsResponse;
 import com.btb.chalKak.domain.post.entity.Post;
-import javax.servlet.http.HttpServletRequest;
+
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -83,8 +83,8 @@ public class SignController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody TokenRequestDto tokenRequestDto){
-        TokenDto data = memberService.reissue(tokenRequestDto);
+    public ResponseEntity<?> reissue(@RequestBody TokenReissueRequest tokenReissueRequest){
+        TokenReissueResponse data = memberService.reissue(tokenReissueRequest);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_REISSUE));
     }
 

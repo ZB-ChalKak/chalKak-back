@@ -21,6 +21,7 @@ public class UserInfoResponse {
     private Double height;
     private Double weight;
     private List<Long> styleTags;
+    private String profileImg;
 
     public static UserInfoResponse fromEntity(Member member){
         return UserInfoResponse.builder()
@@ -30,6 +31,7 @@ public class UserInfoResponse {
                 .height(member.getHeight())
                 .weight(member.getWeight())
                 .styleTags(member.getStyleTags().stream().map(StyleTag :: getId).collect(Collectors.toList()))
+                .profileImg(member.getProfileImg())
                 .build();
     }
 }
