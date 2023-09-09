@@ -210,6 +210,8 @@ public class WeatherServiceImpl {
         // lat : 37.74913611, lon : 128.8784972
         LocalDate today = LocalDate.now();
         log.info(today.toString());
+        log.info(lat);
+        log.info(lon);
 
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon), today)
                 .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
