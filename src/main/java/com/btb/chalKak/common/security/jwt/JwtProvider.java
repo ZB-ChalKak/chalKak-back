@@ -8,7 +8,7 @@ import static com.btb.chalKak.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EX
 
 import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.security.customUser.CustomUserDetailsService;
-import com.btb.chalKak.common.security.dto.TokenDto;
+import com.btb.chalKak.common.security.dto.TokenReissueResponse;
 import com.btb.chalKak.domain.member.type.MemberRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -56,7 +56,7 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto createToken(String email, MemberRole role) {
+    public TokenReissueResponse createToken(String email, MemberRole role) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put(KEY_ROLE, role);
 
@@ -77,7 +77,7 @@ public class JwtProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenDto.builder()
+        return TokenReissueResponse.builder()
                 .grantType(TOKEN_PREFIX.substring(0, TOKEN_PREFIX.length() - 1))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
