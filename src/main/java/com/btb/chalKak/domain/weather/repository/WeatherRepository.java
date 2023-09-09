@@ -20,5 +20,5 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
             nativeQuery = true)
     Optional<Weather> findClosestWeatherByLatLonAndDate(@Param("latitude") double latitude,
                                               @Param("longitude") double longitude,
-                                              @Param("date") LocalDate date);
+                                              @Param("date") String date);
 }
