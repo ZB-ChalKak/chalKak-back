@@ -213,7 +213,7 @@ public class WeatherServiceImpl {
         log.info(lat);
         log.info(lon);
 
-        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon), today)
+        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
                 .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
 
         // 2. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
