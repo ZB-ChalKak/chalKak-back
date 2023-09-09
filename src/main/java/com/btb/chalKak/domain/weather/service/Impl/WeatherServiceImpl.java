@@ -238,13 +238,16 @@ public class WeatherServiceImpl {
     private Long weatherToStyleTagId (String weather){
         Map<String, String> styleMap = new HashMap<>();
 
+        log.info("test log 1");
         styleMap.put("Clear","맑음");
         styleMap.put("Clouds","흐림");
         styleMap.put("Rain","비");
         styleMap.put("Snow","눈");
+        log.info("test log 2");
         log.info(weather);
 
         log.info(styleMap.get(weather));
+        log.info("test log 3");
 
         StyleTag styleTag =  styleTagRepository.findByKeyword(styleMap.get(weather))
                 .orElseThrow(()->new PostException(NOT_FOUND_STYLETAG_KEYWORD));
