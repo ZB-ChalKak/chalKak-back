@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_STYLETAG_KEYWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_WEATHER;
 
 @Service
 @Slf4j
@@ -209,7 +210,8 @@ public class WeatherServiceImpl {
         // lat : 37.74913611, lon : 128.8784972
         LocalDate today = LocalDate.now();
 
-        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon), today);
+        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon), today)
+                .orElseThrow(()->new PostException(NOT_FOUND_WEATHER));
 
         // 2. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
         Member member = memberService.getMemberByAuthentication(authentication);
