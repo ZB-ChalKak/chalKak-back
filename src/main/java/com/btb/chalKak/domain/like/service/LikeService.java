@@ -63,6 +63,8 @@ public class LikeService {
         Post post  = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(INVALID_POST_ID));
 
+        post.increaseLikeCount();
+
         Like like = likeRepository.save(Like.builder()
             .member(member)
             .post(post)
@@ -81,6 +83,11 @@ public class LikeService {
         Member member = memberService.getMemberByAuthentication(authentication);
 
         Long memberId = member.getId();
+
+        Post post  = postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(INVALID_POST_ID));
+
+        post.decreaseLikeCount();
 
         int deletedCount = likeRepository.deleteByMemberIdAndPostId(memberId, postId);
 

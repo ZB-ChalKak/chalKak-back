@@ -147,4 +147,12 @@ public class Post extends BaseTimeEntity {
     public String getThumbnail() {
         return photos.isEmpty() ? null : photos.get(0).getUrl();
     }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
 }
