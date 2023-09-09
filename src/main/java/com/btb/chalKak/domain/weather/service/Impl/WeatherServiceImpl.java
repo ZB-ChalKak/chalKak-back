@@ -209,9 +209,10 @@ public class WeatherServiceImpl {
         // 1. lan, lon 으로 근처 시도의 당일 평균 날씨
         // lat : 37.74913611, lon : 128.8784972
         LocalDate today = LocalDate.now();
+        log.info(today.toString());
 
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon), today)
-                .orElseThrow(()->new PostException(NOT_FOUND_WEATHER));
+                .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
 
         // 2. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
         Member member = memberService.getMemberByAuthentication(authentication);

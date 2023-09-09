@@ -1,10 +1,8 @@
 package com.btb.chalKak.domain.comment.service.impl;
 
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_COMMENT_ID;
-import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
-
 import com.btb.chalKak.common.exception.CommentException;
 import com.btb.chalKak.common.exception.MemberException;
+import com.btb.chalKak.common.exception.PostException;
 import com.btb.chalKak.domain.comment.dto.request.CreateCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.DeleteCommentRequest;
 import com.btb.chalKak.domain.comment.dto.request.ModifyCommentRequest;
@@ -25,6 +23,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 //            .orElseThrow(()-> new RuntimeException("NOT_FOUND_MEMBER")); // TODO: 2023-08-19 Exception 제어 필요
 
         Post post = postRepository.findById(request.getPostId())
-            .orElseThrow(()-> new RuntimeException("NOT_FOUND_POST"));  // TODO: 2023-08-19 Exception 제어 필요
+            .orElseThrow(()-> new PostException(INVALID_POST_ID));  // TODO: 2023-08-19 Exception 제어 필요
 
         Comment comment = Comment.builder()
             .comment(request.getContent())
