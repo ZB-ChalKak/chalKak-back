@@ -155,10 +155,7 @@ public class PostServiceImpl implements PostService {
         }
 
         // 3. 로그인시 좋아요 여부 업데이트
-        for (Post post : posts) {
-            boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
-            post.updateIsLiked(isLiked);
-        }
+        updateIsLikedByMemberAndPost(posts, member);
 
         return posts;
     }
@@ -219,7 +216,7 @@ public class PostServiceImpl implements PostService {
         }
 
         // 2. 키워드를 통한 추천
-        return request.getStyleTagIds().size() == 0 ?
+        Page<Post> posts = request.getStyleTagIds().size() == 0 ?
                 // 2-1. 키워드가 선택되지 않았을 때 회원 스타일 키워드로 추천 + 체형
                 postRepository.loadPublicFeaturedPostsByMember(
                         pageable.getPageNumber(), pageable.getPageSize(), member) :
@@ -227,6 +224,11 @@ public class PostServiceImpl implements PostService {
                 postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
                         pageable.getPageNumber(), pageable.getPageSize(), request.getHeight(),
                         request.getWeight(), request.getStyleTagIds(), member);
+
+        // 3. 로그인시 좋아요 여부 업데이트
+        updateIsLikedByMemberAndPost(posts, member);
+
+        return posts;
     }
 
     @Override
@@ -238,7 +240,12 @@ public class PostServiceImpl implements PostService {
         Page<Long> followingIds =
                 followRepository.findFollowingIdsByFollowerId(member.getId(), page, size);
 
-        return postRepository.loadLatestPublicPostsByMemberIds(followingIds.getContent(), page, size);
+        Page<Post> posts =
+                postRepository.loadLatestPublicPostsByMemberIds(followingIds.getContent(), page, size);
+
+        updateIsLikedByMemberAndPost(posts, member);
+
+        return posts;
     }
 
     private void validateWriterOfPost(Member member, Post post) {
@@ -297,6 +304,13 @@ public class PostServiceImpl implements PostService {
             hashTags.add(hashTag);
         }
         return hashTags;
+    }
+
+    private void updateIsLikedByMemberAndPost(Page<Post> posts, Member member) {
+        for (Post post : posts) {
+            boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
+            post.updateIsLiked(isLiked);
+        }
     }
 
 }
