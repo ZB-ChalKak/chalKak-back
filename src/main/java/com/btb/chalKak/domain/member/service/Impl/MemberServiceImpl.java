@@ -99,15 +99,15 @@ public class MemberServiceImpl implements MemberService {
 
         // 2. 멤버의 상태 확인
         if(member.getProvider() != CHALKAK){
-            new MemberException(INVALID_EMAIL_LOGIN);
+            throw new MemberException(INVALID_EMAIL_LOGIN);
         }
 
         validateMemberStatus(member.getStatus());
       
         // 3. 비밀번호 일치 여부 확인
         if(!validatePasswordWithDB(request.getPassword(), member.getPassword())){
-            new MemberException(MISMATCH_PASSWORD);
-        };
+            throw new MemberException(MISMATCH_PASSWORD);
+        }
 
         // 4. 토큰 생성
         TokenReissueResponse token = jwtProvider.createToken(member.getEmail(), member.getRole());
