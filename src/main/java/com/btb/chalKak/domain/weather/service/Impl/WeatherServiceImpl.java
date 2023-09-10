@@ -209,32 +209,39 @@ public class WeatherServiceImpl {
         // 1. lan, lon 으로 근처 시도의 당일 평균 날씨
         // lat : 37.74913611, lon : 128.8784972
         LocalDate today = LocalDate.now();
+        List<Long> styleTagIds = new ArrayList<>();
 
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
                 .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
 
-        // 2. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
+        // 2. 평균 날씨의 Date, 온도로 봄, 여름 , 가을, 겨울 구분
+        // 봄,여름,가을,겨울
+
+        Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
+        Long seasonId = weatherToSeasonId(weather.getDate());
+
+        // 3. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
         Member member = memberService.getMemberByAuthentication(authentication);
 
-        List<Long> styleTagIds = Optional.ofNullable(member.getStyleTags())
-                .orElse(Collections.emptyList())
-                .stream().map(x -> x.getId())
-                .collect(Collectors.toList()); // member의 style 태그
+        if (member == null) {
+            Page<Post> posts = postRepository.findPostsAndWeatherIdAndSeasonId(weatherId,
+                seasonId,pageable);
 
-        // 3. 평균 날씨의 Date, 온도로 봄, 여름 , 가을, 겨울 구분
-        Long weatherId = weatherToStyleTagId(weather.getWeather());  // 맑음(Clear), 비(Rainy) , 흐림(Clouds) , 눈
-        Long seasonId = weatherToSeasonId(weather.getDate()); // 봄,여름,가을,겨울
+            return LoadPublicPostsResponse.fromPage(posts);
+        }
+
+
+        styleTagIds = Optional.ofNullable(member.getStyleTags())
+            .orElse(Collections.emptyList())
+            .stream().map(x -> x.getId())
+            .collect(Collectors.toList()); // member의 style 태그
 
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
         Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
             weatherId,
             seasonId,pageable);
 
-
-        LoadPublicPostsResponse data = LoadPublicPostsResponse.fromPage(posts);
-
-
-        return data;
+        return LoadPublicPostsResponse.fromPage(posts);
     }
 
     private Long weatherToStyleTagId (String weather){
