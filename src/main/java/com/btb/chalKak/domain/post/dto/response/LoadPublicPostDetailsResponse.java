@@ -27,11 +27,10 @@ public class LoadPublicPostDetailsResponse {
     private boolean privacyHeight;
     private boolean privacyWeight;
 
-    private List<String> styleTags;
+    private List<String> styleTags; // Category -> "STYLE" + "TPO"
     private List<String> seasonTags;
     private List<String> weatherTags;
 
-//    private List<String> styleTags;
     private List<String> hashTags;
     private List<PostPhoto> postPhotos;
 
@@ -53,7 +52,9 @@ public class LoadPublicPostDetailsResponse {
                 .privacyHeight(post.isPrivacyHeight())
                 .privacyWeight(post.isPrivacyWeight())
                 .styleTags(post.getStyleTags().stream()
-                        .filter(styleTag -> styleTag.getCategory() == StyleCategory.STYLE)
+                        .filter(styleTag ->
+                                styleTag.getCategory() == StyleCategory.STYLE
+                                        || styleTag.getCategory() == StyleCategory.TPO)
                         .map(StyleTag::getKeyword)
                         .collect(Collectors.toList()))
                 .seasonTags(post.getStyleTags().stream()
