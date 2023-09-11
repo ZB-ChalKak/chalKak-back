@@ -211,19 +211,32 @@ public class PostServiceImpl implements PostService {
     ) {
         // 1. 회원 조회
         Member member = getMemberByAuthentication(authentication);
+        
+        // 2-1. 비로그인
         if (member == null) {
-            return loadPublicPostsOrderByDesc(authentication, pageable);
+            List<Long> styleTagIds = request.getStyleTagIds();
+            // 2-1-1. 키워드 선택되지 않았을 경우, 최신순 조회
+            if ((styleTagIds == null) || styleTagIds.isEmpty()) {
+                return loadPublicPostsOrderByDesc(authentication, pageable);
+            }
+            
+            // 2-1-2. 키워드 선택될 경우, 키워드 조회
+            return postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
+                    pageable.getPageNumber(), pageable.getPageSize(),
+                    request.getHeight(), request.getWeight(),
+                    request.getStyleTagIds()
+            );
+
         }
 
-        // 2. 키워드를 통한 추천
+        // 2-2. 로그인
         Page<Post> posts = request.getStyleTagIds().size() == 0 ?
-                // 2-1. 키워드가 선택되지 않았을 때 회원 스타일 키워드로 추천 + 체형
-                postRepository.loadPublicFeaturedPostsByMember(
-                        pageable.getPageNumber(), pageable.getPageSize(), member) :
-                // 2-2. 키워드가 선택되었을 때 선택된 키워드로 추천 + 체형
+                // 2-2-1. 키워드가 선택되지 않았을 때 회원 스타일 키워드로 추천 + 체형
+                loadPublicPostsOrderByDesc(authentication, pageable) :
+                // 2-2-2. 키워드가 선택되었을 때 선택된 키워드로 추천 + 체형
                 postRepository.loadPublicFeaturedPostsByBodyTypeAndStyleTags(
                         pageable.getPageNumber(), pageable.getPageSize(), request.getHeight(),
-                        request.getWeight(), request.getStyleTagIds(), member);
+                        request.getWeight(), request.getStyleTagIds());
 
         // 3. 로그인시 좋아요 여부 업데이트
         updateIsLikedByMemberAndPost(posts, member);
