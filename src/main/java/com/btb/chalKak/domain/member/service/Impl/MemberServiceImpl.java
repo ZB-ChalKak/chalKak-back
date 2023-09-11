@@ -1,9 +1,25 @@
 package com.btb.chalKak.domain.member.service.Impl;
 
-import static com.btb.chalKak.common.exception.type.ErrorCode.*;
-
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.ALREADY_EXISTS_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.BLOCKED_MEMBER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.FORBIDDEN_RESPONSE;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_MEMBER;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INACTIVE_SING_IN;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_AUTH_TOKEN;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_EMAIL_LOGIN;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_MEMBER_ID;
+import static com.btb.chalKak.common.exception.type.ErrorCode.INVALID_NICKNAME;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
+import static com.btb.chalKak.common.exception.type.ErrorCode.WITHDRAWAL_MEMBER;
 import static com.btb.chalKak.domain.member.type.MemberProvider.CHALKAK;
-import static com.btb.chalKak.domain.member.type.MemberStatus.*;
+import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.BLOCKED;
+import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
+import static com.btb.chalKak.domain.member.type.MemberStatus.WITHDRAWAL;
 
 import com.btb.chalKak.common.exception.JwtException;
 import com.btb.chalKak.common.exception.MemberException;
@@ -14,6 +30,9 @@ import com.btb.chalKak.common.security.entity.RefreshToken;
 import com.btb.chalKak.common.security.jwt.JwtProvider;
 import com.btb.chalKak.common.security.repository.RefreshTokenRepository;
 import com.btb.chalKak.common.security.request.TokenReissueRequest;
+import com.btb.chalKak.common.smtp.MailComponents;
+import com.btb.chalKak.domain.emailAuth.entity.EmailAuth;
+import com.btb.chalKak.domain.emailAuth.repository.EmailAuthRepository;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
@@ -35,9 +54,9 @@ import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -61,11 +80,12 @@ public class MemberServiceImpl implements MemberService {
     private final CustomUserDetailsService customUserDetailsService;
     private final FollowRepository followRepository;
     private final PhotoService photoService;
+    private final EmailAuthRepository emailAuthRepository;
+    private final MailComponents mailComponents;
 
     @Override
     @Transactional
     public void signUp(SignUpMemberRequest request) {
-
         // 1. 유효성 검사(이메일 및 닉네임 중복 확인)
         validateEmailDuplication(request.getEmail());
         validateNicknameDuplication(request.getNickname());
@@ -74,7 +94,7 @@ public class MemberServiceImpl implements MemberService {
         List<StyleTag> styleTags = styleTagRepository.findAllById(request.getStyleTags());
 
         // 3. 멤버 저장
-        memberRepository.save(Member.builder()
+        Member member = memberRepository.save(Member.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
@@ -84,9 +104,13 @@ public class MemberServiceImpl implements MemberService {
                 .weight(request.getWeight())
                 .provider(CHALKAK)
                 .styleTags(styleTags)
-                .status(ACTIVE)     // TODO : 이메일 인증 구현 완료 후에 수정 -> INACTIVE
+                .status(INACTIVE)     // TODO : 이메일 인증 구현 완료 후에 수정 -> INACTIVE
                 .build()
         );
+
+        // TODO 회원 가입의 문제가 있을 시 로직을 Controller에서 따로 호출하도록 분리
+        EmailAuth emailAuth = emailAuthRepository.save(EmailAuth.generateEmailAuth(member));
+        sendConfirmEmail(member, emailAuth);
     }
 
     @Override
@@ -336,8 +360,9 @@ public class MemberServiceImpl implements MemberService {
 
         // 3. 회원이 작성한 게시물 조회
         List<Post> posts = postRepository.findAllByWriter(member);
+        long totalCount = posts.size();
 
-        return new PageImpl<>(posts, pageRequest, posts.size());
+        return new PageImpl<>(posts, pageRequest, totalCount);
     }
 
     @Override
@@ -353,6 +378,69 @@ public class MemberServiceImpl implements MemberService {
         // 3. password 변경
         memberRepository.save(member.updatePassword(
                 passwordEncoder.encode(passwordRequest.getPassword())));
+    }
+
+    @Override
+    public void sendConfirmEmail(Member member, EmailAuth emailAuth) {
+//        String urlPrefix = "https://chal-kak.vercel.app/emailAuthPage";
+        String urlPrefix = "http://localhost:3000/emailAuthPage";
+        String title = "#찰칵 인증 안내";
+        String text = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "</head>" +
+                "<body>" +
+                " <div" +
+                "	style=\"font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 400px; height: 600px; border-top: 4px solid #02b875; margin: 100px auto; padding: 30px 0; box-sizing: border-box;\">"
+                +
+                "    <h1 style=\"margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400; color: #000;\">"
+                +
+                "      <span style=\"font-size: 15px; margin: 0 0 10px 3px;\">#찰칵</span><br />" +
+                "      <span style=\"color: #02b875\">이메일 인증</span> 안내입니다." +
+                "    </h1>\n" +
+                "    <p style=\"font-size: 16px; line-height: 26px; margin-top: 30px; padding: 0 5px; color: #000;\">"
+                +
+                member.getNickname() +
+                "        님 안녕하세요.<br />" +
+                "		아래 <b style=\"color: #02b875\">'메일 인증'</b> 버튼을 클릭하여 회원가입을 완료해 주세요.<br />" +
+                "		감사합니다." +
+                "	</p>" +
+                "	<a style=\"color: #FFF; text-decoration: none; text-align: center;\"" +
+                "	href=\"" + urlPrefix + "/" + emailAuth.getId() + "?authToken=" + emailAuth.getEmailAuthToken() + "\" target=\"_blank\">" +
+                "		<p" +
+                "			style=\"display: inline-block; width: 210px; height: 45px; margin: 30px 5px 40px; background: #02b875; line-height: 45px; vertical-align: middle; font-size: 16px;\">"
+                +
+                "			메일 인증</p>" +
+                "	</a>" +
+                "	<div style=\"border-top: 1px solid #DDD; padding: 5px;\"></div>" +
+                " </div>"
+                + "</body>"
+                + "</html>";
+
+        mailComponents.sendMail(member.getEmail(), title, text);
+    }
+
+    @Override
+    public void confirmAuth(Long id, String authToken) {
+        EmailAuth emailAuth = getEmailAuthById(id);
+        validateEmailAuthTokenMatch(emailAuth, authToken);
+
+        emailAuthRepository.save(emailAuth.confirmAuth());
+
+        Member member = emailAuth.getMember();
+        member.updateStatus(ACTIVE);
+        memberRepository.save(member);
+    }
+
+    private EmailAuth getEmailAuthById(Long id) {
+        return emailAuthRepository.findById(id)
+                .orElseThrow(() -> new MemberException(INVALID_EMAIL));
+    }
+
+    private void validateEmailAuthTokenMatch(EmailAuth emailAuth, String authToken) {
+        if (!emailAuth.getEmailAuthToken().equals(authToken)) {
+            throw new MemberException(INVALID_EMAIL_AUTH_TOKEN);
+        }
     }
 
     private void validateEmailDuplication(String email) {
@@ -411,7 +499,7 @@ public class MemberServiceImpl implements MemberService {
 
     private String getDecodingUrl(String urlString){
         try {
-            return URLDecoder.decode(urlString, "UTF-8");
+            return URLDecoder.decode(urlString, StandardCharsets.UTF_8);
         }catch(Exception e) {
             throw new MemberException(INVALID_NICKNAME);
         }
