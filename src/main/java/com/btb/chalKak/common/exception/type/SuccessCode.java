@@ -30,6 +30,7 @@ public enum SuccessCode {
 
     SUCCESS_LOAD_WEATHER("날씨 조회에 성공했습니다."),
 
+    SUCCESS_CONFIRM_AUTH("이메일 인증에 성공했습니다."),
 
     // 댓글
     SUCCESS_SAVE_COMMENT("댓글 등록에 성공했습니다."),
