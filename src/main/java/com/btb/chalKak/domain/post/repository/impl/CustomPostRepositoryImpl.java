@@ -73,65 +73,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     }
 
     @Override
-    public Page<Post> loadPublicFeaturedPostsByMemberStyleTags(int page, int size, Member member) {
+    public Page<Post> loadPublicFeaturedPostsByBodyTypeAndStyleTags(
+            int page, int size, double height, double weight, List<Long> styleTagIds) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        List<Long> styleTagIds = getStyleTagIdsByMember(member);
-
-        BooleanExpression publicPostsFilter = getPublicPostFilter();
-        BooleanExpression similarStyleTags = QPost.post.styleTags.any().id.in(styleTagIds);
-
-        List<Post> featuredPosts = queryFactory
-                .select(QPost.post)
-                .from(QPost.post)
-                .where(similarStyleTags.and(publicPostsFilter))
-                .orderBy(QPost.post.likeCount.multiply(LIKE_WEIGHT)
-                        .add(QPost.post.viewCount.multiply(VIEW_WEIGHT))
-                        .desc(),
-                        QPost.post.createdAt.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .fetch();
+        List<Post> featuredPosts =
+                getFeaturedPostsByBodyTypeAndStyleTags(height, weight, styleTagIds, pageRequest);
 
         long totalCount = featuredPosts.size();
 
-        // 추천 게시물이 존재하지 않을 경우 최신 게시물 조회
-        if (totalCount < 1) {
+        // 최신순 응답
+        if (page == 0 && totalCount < 1) {
             return loadPublicPostsOrderByDesc(page, size);
-        }
-
-        return new PageImpl<>(featuredPosts, pageRequest, totalCount);
-    }
-
-    @Override
-    public Page<Post> loadPublicFeaturedPostsByMember(int page, int size, Member member) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        List<Long> styleTagIds = getStyleTagIdsByMember(member);
-        List<Post> featuredPosts = getFeaturedPostsByBodyTypeAndStyleTags(member.getHeight(), member.getWeight(), styleTagIds, pageRequest);
-
-        long totalCount = featuredPosts.size();
-        
-        // 추천 게시물이 존재하지 않을 경우 회원 스타일 태그를 통한 추천 게시물 응답
-        if (totalCount < 1) {
-            return loadPublicFeaturedPostsByMemberStyleTags(page, size, member);
-        }
-
-        return new PageImpl<>(featuredPosts, pageRequest, totalCount);
-    }
-
-    @Override
-    public Page<Post> loadPublicFeaturedPostsByBodyTypeAndStyleTags(int page, int size, double height,
-            double weight, List<Long> styleTagIds, Member member) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        List<Post> featuredPosts = getFeaturedPostsByBodyTypeAndStyleTags(height, weight, styleTagIds, pageRequest);
-
-        long totalCount = featuredPosts.size();
-
-        // 추천 게시물이 존재하지 않을 경우 회원 스타일 태그를 통한 추천 게시물 응답
-        if (totalCount < 1) {
-            return loadPublicFeaturedPostsByMember(page, size, member);
         }
 
         return new PageImpl<>(featuredPosts, pageRequest, totalCount);
@@ -157,10 +110,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
     private List<Post> getFeaturedPostsByBodyTypeAndStyleTags(double height, double weight, List<Long> styleTagIds,
             PageRequest pageRequest) {
-        Double minHeight = height == 0 ? 0 : height - HEIGHT_DEVIATION;
-        Double maxHeight = height == 0 ? Double.MAX_VALUE : height + HEIGHT_DEVIATION;
-        Double minWeight = weight == 0 ? 0 : weight - WEIGHT_DEVIATION;
-        Double maxWeight = weight == 0 ? Double.MAX_VALUE : weight + WEIGHT_DEVIATION;
+        Double minHeight = (height == 0) ? 0 : height - HEIGHT_DEVIATION;
+        Double maxHeight = (height == 0) ? Double.MAX_VALUE : height + HEIGHT_DEVIATION;
+        Double minWeight = (weight == 0) ? 0 : weight - WEIGHT_DEVIATION;
+        Double maxWeight = (weight == 0) ? Double.MAX_VALUE : weight + WEIGHT_DEVIATION;
 
         BooleanExpression publicPostsFilter = getPublicPostFilter();
         BooleanExpression styleTagsFilter = QPost.post.styleTags.any().id.in(styleTagIds);
