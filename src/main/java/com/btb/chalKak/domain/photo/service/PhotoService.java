@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.photo.entity.Photo;
 import com.btb.chalKak.domain.post.entity.Post;
 import java.io.IOException;
@@ -16,8 +15,8 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class PhotoService {
 
-    private final static String S3_BUCKET = "spring-photo-bucket"; // Bucket 이름
+    @Value("${bucket}")
+    private String S3_BUCKET; // Bucket 이름
 
     private final AmazonS3Client amazonS3Client;
 
