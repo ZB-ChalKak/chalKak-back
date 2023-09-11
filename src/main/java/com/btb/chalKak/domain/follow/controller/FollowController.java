@@ -1,9 +1,6 @@
 package com.btb.chalKak.domain.follow.controller;
 
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_FOLLOW;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_COMMENT;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_FOLLOWERS;
-import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_UNFOLLOW;
+import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
@@ -70,7 +67,7 @@ public class FollowController {
             @PathVariable Long memberId, Pageable pageable)
     {
         LoadPageFollowResponse data = followService.loadFollowings(memberId, pageable);
-        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_COMMENT));
+        return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
     }
     @GetMapping("/{memberId}/validateFollow")
     public ResponseEntity<Boolean> validateFollow(
