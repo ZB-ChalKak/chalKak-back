@@ -25,6 +25,9 @@ public enum ErrorCode {
     SIGNATURE_EXCEPTION(HttpStatus.BAD_REQUEST, "토큰 서명이 올바르지 않습니다."),
     ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 인자가 전달되었습니다."),
 
+    // EMAIL
+    INVALID_EMAIL_AUTH_TOKEN(HttpStatus.BAD_REQUEST, "이메일 인증 토큰이 유효하지 않습니다."),
+
     // MEMBER
     ALREADY_EXISTS_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다."),
     ALREADY_EXISTS_NICKNAME(HttpStatus.BAD_REQUEST, "이미 사용중인 닉네임입니다."),
