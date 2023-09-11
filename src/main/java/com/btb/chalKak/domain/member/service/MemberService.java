@@ -16,6 +16,7 @@ import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,7 +49,7 @@ public interface MemberService {
 
     void withdrawUser(Authentication authentication);
 
-    Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size);
+    Page<Post> loadPublicPosts(Authentication authentication, Long memberId, PageRequest pageRequest);
 
     void modifyPassword(Authentication authentication, ModifyPasswordRequest passwordRequest);
 

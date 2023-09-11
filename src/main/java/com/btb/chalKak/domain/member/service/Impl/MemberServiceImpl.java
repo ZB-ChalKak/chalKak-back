@@ -349,16 +349,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size) {
-
-        // 1. PageRequest 생성
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        // 2. 회원 조회
+    public Page<Post> loadPublicPosts(Authentication authentication, Long memberId, PageRequest pageRequest) {
+        // 1. 회원 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
-        // 3. 회원이 작성한 게시물 조회
+        // 2. 회원이 작성한 게시물 조회
         List<Post> posts = postRepository.findAllByWriter(member);
         long totalCount = posts.size();
 

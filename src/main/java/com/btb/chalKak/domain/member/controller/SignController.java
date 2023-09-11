@@ -37,6 +37,7 @@ import com.btb.chalKak.domain.post.entity.Post;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -149,7 +150,8 @@ public class SignController {
             @RequestParam("page") int page,
             @RequestParam("size") int size)
     {
-        Page<Post> posts = memberService.loadPublicPosts(authentication, userId, page, size);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Post> posts = memberService.loadPublicPosts(authentication, userId, pageRequest);
         LoadUserPublicPostsResponse data = LoadUserPublicPostsResponse.fromPage(posts);
 
         if (memberService.validateMemberId(authentication, userId)) {
