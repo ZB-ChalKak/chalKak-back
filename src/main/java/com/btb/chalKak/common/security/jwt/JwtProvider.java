@@ -41,7 +41,8 @@ public class JwtProvider {
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String KEY_ROLE = "role";
 
-    private static final Long ACCESS_TOKEN_EXPIRE_TIME = 3 * 60 * 60 * 1000L; // 3 hour
+//    private static final Long ACCESS_TOKEN_EXPIRE_TIME = 3 * 60 * 60 * 1000L; // 3 hour
+    private static final Long ACCESS_TOKEN_EXPIRE_TIME = 60 * 1000L; // 1 hour
     private static final Long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7 day
 
     private final CustomUserDetailsService userDetailsService;
