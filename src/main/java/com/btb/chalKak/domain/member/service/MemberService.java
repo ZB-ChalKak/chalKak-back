@@ -2,8 +2,17 @@ package com.btb.chalKak.domain.member.service;
 
 import com.btb.chalKak.common.security.dto.TokenReissueResponse;
 import com.btb.chalKak.common.security.request.TokenReissueRequest;
-import com.btb.chalKak.domain.member.dto.request.*;
-import com.btb.chalKak.domain.member.dto.response.*;
+import com.btb.chalKak.domain.emailAuth.entity.EmailAuth;
+import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
+import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
+import com.btb.chalKak.domain.member.dto.request.SignUpMemberRequest;
+import com.btb.chalKak.domain.member.dto.response.CheckPasswordResponse;
+import com.btb.chalKak.domain.member.dto.response.SignInMemberResponse;
+import com.btb.chalKak.domain.member.dto.response.UserDetailsInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.UserInfoResponse;
+import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
@@ -42,4 +51,9 @@ public interface MemberService {
     Page<Post> loadPublicPosts(Authentication authentication, Long memberId, int page, int size);
 
     void modifyPassword(Authentication authentication, ModifyPasswordRequest passwordRequest);
+
+    void sendConfirmEmail(Member member, EmailAuth emailAuth);
+
+    void confirmAuth(Long id, String authToken);
+
 }
