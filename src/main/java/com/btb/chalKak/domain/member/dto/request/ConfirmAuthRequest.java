@@ -8,7 +8,6 @@ import lombok.Getter;
 public class ConfirmAuthRequest {
 
     private Long id;
-
     private String authToken;
 
 }
