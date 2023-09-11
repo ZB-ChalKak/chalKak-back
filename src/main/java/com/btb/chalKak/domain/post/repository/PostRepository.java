@@ -24,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
   @Query("SELECT p FROM Post p " +
       "JOIN p.styleTags s " +
-      "WHERE (s.id = :weatherId OR s.id = :seasonId OR s.id IN :styleTags) " +
+      "WHERE (s.id = :weatherId OR s.id = :seasonId OR s.id IN :styleTags) and p.status = 'PUBLIC'" +
       "GROUP BY p " +
       "HAVING SUM(CASE WHEN s.id = :weatherId THEN 1 ELSE 0 END) >= 1 " +
       "AND SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
@@ -37,7 +37,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
   @Query("SELECT p FROM Post p " +
       "JOIN p.styleTags s " +
-      "WHERE (s.id = :weatherId OR s.id = :seasonId) " +
+      "WHERE (s.id = :weatherId OR s.id = :seasonId) and p.status = 'PUBLIC' " +
       "GROUP BY p " +
       "HAVING SUM(CASE WHEN s.id = :weatherId THEN 1 ELSE 0 END) >= 1 " +
       "AND SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
@@ -49,7 +49,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
   @Query("SELECT p FROM Post p " +
       "JOIN p.styleTags s " +
-      "WHERE ( s.id = :seasonId ) " +
+      "WHERE ( s.id = :seasonId ) and p.status = 'PUBLIC' " +
       "GROUP BY p " +
       "HAVING SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
       "AND (p.viewCount + p.likeCount) > :count " +
