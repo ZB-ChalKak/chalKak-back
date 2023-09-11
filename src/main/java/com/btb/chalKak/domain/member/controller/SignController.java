@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.member.controller;
 
 import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_CHECK_PASSWORD;
+import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_CONFIRM_AUTH;
 import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_POST;
 import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_DETAILS_INFO;
 import static com.btb.chalKak.common.exception.type.SuccessCode.SUCCESS_LOAD_USER_INFO;
@@ -20,6 +21,7 @@ import com.btb.chalKak.common.security.dto.TokenReissueResponse;
 import com.btb.chalKak.common.security.request.TokenReissueRequest;
 import com.btb.chalKak.common.util.ValidationUtils;
 import com.btb.chalKak.domain.member.dto.request.CheckPasswordRequest;
+import com.btb.chalKak.domain.member.dto.request.ConfirmAuthRequest;
 import com.btb.chalKak.domain.member.dto.request.ModifyPasswordRequest;
 import com.btb.chalKak.domain.member.dto.request.ModifyUserInfoRequest;
 import com.btb.chalKak.domain.member.dto.request.SignInMemberRequest;
@@ -32,7 +34,6 @@ import com.btb.chalKak.domain.member.dto.response.ValidateInfoResponse;
 import com.btb.chalKak.domain.member.service.MemberService;
 import com.btb.chalKak.domain.post.dto.response.LoadUserPublicPostsResponse;
 import com.btb.chalKak.domain.post.entity.Post;
-
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -169,5 +170,13 @@ public class SignController {
 
         memberService.modifyPassword(authentication, passwordRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_PASSWORD));
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<CommonResponse<?>> authConfirm(
+            @RequestBody ConfirmAuthRequest confirmAuthRequest)
+    {
+        memberService.confirmAuth(confirmAuthRequest.getUserId(), confirmAuthRequest.getAuthToken());
+        return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CONFIRM_AUTH));
     }
 }
