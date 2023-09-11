@@ -2,9 +2,9 @@ package com.btb.chalKak.domain.member.entity;
 
 import static com.btb.chalKak.domain.member.type.MemberRole.USER;
 import static com.btb.chalKak.domain.member.type.MemberStatus.ACTIVE;
-import static com.btb.chalKak.domain.member.type.MemberStatus.INACTIVE;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
+import com.btb.chalKak.domain.emailAuth.entity.EmailAuth;
 import com.btb.chalKak.domain.follow.entity.Follow;
 import com.btb.chalKak.domain.like.entity.Like;
 import com.btb.chalKak.domain.member.type.Gender;
@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -91,6 +92,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Like> likes;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    private EmailAuth emailAuth;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
