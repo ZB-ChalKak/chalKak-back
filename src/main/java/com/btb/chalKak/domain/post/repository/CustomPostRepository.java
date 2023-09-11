@@ -1,6 +1,5 @@
 package com.btb.chalKak.domain.post.repository;
 
-import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +13,8 @@ public interface CustomPostRepository {
 
     Optional<Post> loadPublicPostDetails(Long postId);
 
-    Page<Post> loadPublicFeaturedPostsByMemberStyleTags(int page, int size, Member member);
-
-    Page<Post> loadPublicFeaturedPostsByMember(int page, int size, Member member);
-
     Page<Post> loadPublicFeaturedPostsByBodyTypeAndStyleTags(int page, int size, double height,
-            double weight, List<Long> styleTagIds, Member member);
+            double weight, List<Long> styleTagIds);
 
     Page<Post> loadLatestPublicPostsByMemberIds(List<Long> memberIds, int page, int size);
 
