@@ -176,7 +176,7 @@ public class SignController {
     public ResponseEntity<CommonResponse<?>> authConfirm(
             @RequestBody ConfirmAuthRequest confirmAuthRequest)
     {
-        memberService.confirmAuth(confirmAuthRequest.getUserId(), confirmAuthRequest.getAuthToken());
+        memberService.confirmAuth(confirmAuthRequest.getId(), confirmAuthRequest.getAuthToken());
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_CONFIRM_AUTH));
     }
 }
