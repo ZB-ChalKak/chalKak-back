@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class ConfirmAuthRequest {
 
-    private Long userId;
+    private Long id;
     private String authToken;
 
 }
