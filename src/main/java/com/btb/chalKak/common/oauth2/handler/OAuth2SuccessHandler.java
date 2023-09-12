@@ -24,13 +24,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-//  private final TokenServiceImpl tokenService;
   private final MemberRepository memberRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
   private final JwtProvider jwtProvider;
-
-//  private final ResponseService responseService;
   private final ObjectMapper objectMapper;
 
 
@@ -42,7 +39,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
     String email = oAuth2User.getAttribute("email");  // Google의 경우 "email" 키를 사용합니다.
-//    Long memberId = memberService.findMemberId(email);
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(()->new RuntimeException("NOT_FOUND_MEMBER"));
     // 이메일 주소를 로깅 또는 다른 로직에 사용
@@ -69,20 +65,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     response.setStatus(HttpStatus.OK.value());
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json;charset=UTF-8");
-    response.sendRedirect("https://chal-kak.vercel.app/userinfo/modify-userinfo?userId="
-        +member.getId() +
-        "&accessToken=" + token.getAccessToken() +
+    response.sendRedirect("https://chal-kak.vercel.app/modify-userinfo/"
+        +member.getId() + "?" +
+        "accessToken=" + token.getAccessToken() +
         "&refreshToken=" + token.getRefreshToken() +
-        "&accessTokenExpireDate=" + token.getAccessTokenExpireDate()
+        "&profileImg=" + member.getProfileImg()
 
     );
-
-
-//    temporaryTokenStoreService.store(email, tokenDto);
-
-    log.info(token.toString());
-
-//    response.sendRedirect("/fetch-token"+"/"+ email);
-
   }
 }
