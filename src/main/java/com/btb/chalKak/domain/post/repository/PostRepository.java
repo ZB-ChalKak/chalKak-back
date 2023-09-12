@@ -56,4 +56,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
       "ORDER BY (p.viewCount + p.likeCount) DESC")
   List<Post> findPostsAndSeasonId(@Param("seasonId") Long seasonId, @Param("count") Long count);
 
+  @Query("SELECT p.writer FROM Post p WHERE p.id = :postId")
+  Member findWriterByPostId(@Param("postId") Long postId);
 }

@@ -217,6 +217,7 @@ public class WeatherServiceImpl {
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
                 .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
 
+
         // 2. 평균 날씨의 Date, 온도로 봄, 여름 , 가을, 겨울 구분
         // 봄,여름,가을,겨울
 

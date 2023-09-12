@@ -5,7 +5,6 @@ import com.btb.chalKak.domain.batchpost.repository.RecommendPostBatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component

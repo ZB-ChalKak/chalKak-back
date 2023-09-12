@@ -35,7 +35,7 @@ public class RecommendPostBatch {
     @Column(name = "post_id", nullable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @MapsId
     @JoinColumn(name = "post_id")
     private Post post;
