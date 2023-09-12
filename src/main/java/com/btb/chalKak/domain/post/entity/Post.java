@@ -82,8 +82,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member writer;
 
-    @OneToOne(mappedBy = "post")
-    private RecommendPostBatch recommendPostBatch;
+//    @OneToOne(mappedBy = "post")
+//    private RecommendPostBatch recommendPostBatch;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("order ASC")
