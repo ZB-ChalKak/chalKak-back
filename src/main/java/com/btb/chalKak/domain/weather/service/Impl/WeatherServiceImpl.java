@@ -226,27 +226,24 @@ public class WeatherServiceImpl {
         // 3. 평균 날씨의 쾌창함 정도(sunny, rainy, snow 등) AND member의 style_tag로 post 구분
         Member member = memberService.getMemberByAuthentication(authentication);
 
-        if (member == null) {
-            Page<Post> posts = postRepository.findPostsAndWeatherIdAndSeasonId(weatherId,
-                seasonId,pageable);
-
-            return LoadPublicPostsResponse.fromPage(posts);
-        }
-
-
-        styleTagIds = Optional.ofNullable(member.getStyleTags())
-            .orElse(Collections.emptyList())
-            .stream().map(x -> x.getId())
-            .collect(Collectors.toList()); // member의 style 태그
+//        styleTagIds = Optional.ofNullable(member.getStyleTags())
+//            .orElse(Collections.emptyList())
+//            .stream().map(x -> x.getId())
+//            .collect(Collectors.toList()); // member의 style 태그
 
         // 4. post에서 pageable 처리 ( view count  + like count 높은 순)
-        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
-            weatherId,
+//        Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
+//            weatherId,
+//            seasonId,pageable);
+
+        Page<Post> posts = postRepository.findPostsAndWeatherIdAndSeasonId(weatherId,
             seasonId,pageable);
 
-        for (Post post : posts) {
-            boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
-            post.updateIsLiked(isLiked);
+        if(member != null) {
+            for (Post post : posts) {
+                boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
+                post.updateIsLiked(isLiked);
+            }
         }
 
         return LoadPublicPostsResponse.fromPage(posts);
