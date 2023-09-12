@@ -1,6 +1,7 @@
 package com.btb.chalKak.scheduler;
 
 import java.time.LocalDateTime;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionException;
@@ -34,6 +35,10 @@ public class BatchScheduler {
 //    }
 //  }
 
+  @PostConstruct
+  public void init() {
+      runProcessJob();
+  }
   @Scheduled(cron = "0 30 6 * * ?")
   public void runTutorialJob() {
     try {
