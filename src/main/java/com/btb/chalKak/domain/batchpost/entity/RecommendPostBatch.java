@@ -31,14 +31,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "recommend_post")
 public class RecommendPostBatch {
 
+
     @Id
+    @Column(name = "recommend_post_id",nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long recommendPostId;
+
     @Column(name = "post_id", nullable = false)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @MapsId
-    @JoinColumn(name = "post_id")
-    private Post post;
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    @MapsId
+//    @JoinColumn(name = "post_id")
+//    private Post post;
 
     @Column(name = "weather_id", nullable = false)
     private Long weatherId;
@@ -54,7 +59,6 @@ public class RecommendPostBatch {
 
     @Column(name = "style_tag_ids")
     private String styleTagIds;
-
 
     @Transient
     public List<Long> getStyleTagIdsList() {

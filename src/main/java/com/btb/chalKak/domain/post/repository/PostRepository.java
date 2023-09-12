@@ -47,15 +47,25 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
       @Param("seasonId") Long seasonId,
       Pageable pageable);
 
+
   @Query("SELECT p FROM Post p " +
+//      "JOIN FETCH p.writer w " +  // writer 필드를 Eager 로딩
       "JOIN p.styleTags s " +
       "WHERE ( s.id = :seasonId ) and p.status = 'PUBLIC' " +
       "GROUP BY p " +
       "HAVING SUM(CASE WHEN s.id = :seasonId THEN 1 ELSE 0 END) >= 1 " +
-      "AND (p.viewCount + p.likeCount) > :count " +
-      "ORDER BY (p.viewCount + p.likeCount) DESC")
-  List<Post> findPostsAndSeasonId(@Param("seasonId") Long seasonId, @Param("count") Long count);
+      "AND (p.viewCount + p.likeCount) > :count ")
+  List<Post> findPostsAndSeasonIdAndFetch(@Param("seasonId") Long seasonId, @Param("count") Long count);
 
-  @Query("SELECT p.writer FROM Post p WHERE p.id = :postId")
-  Member findWriterByPostId(@Param("postId") Long postId);
+  @Query("SELECT p FROM Post p " +
+      "JOIN FETCH p.writer w " +
+      "WHERE p.id IN :postIds " +
+      "ORDER BY (p.viewCount + p.likeCount) DESC")
+  List<Post> findPostsWithWritersByIds(@Param("postIds") List<Long> postIds);
+
+  @Query("SELECT p FROM Post p " +
+      "WHERE p.id IN :postIds AND p.status = 'PUBLIC' " +
+      "ORDER BY (p.viewCount + p.likeCount) DESC")
+  Page<Post> findPostsByIdsAndStatus(@Param("postIds") List<Long> postIds,Pageable pageable);
+
 }

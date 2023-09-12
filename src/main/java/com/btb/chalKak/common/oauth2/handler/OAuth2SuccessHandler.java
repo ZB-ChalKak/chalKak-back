@@ -8,6 +8,8 @@ import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +30,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final RefreshTokenRepository refreshTokenRepository;
 
   private final JwtProvider jwtProvider;
-  private final ObjectMapper objectMapper;
 
 
   @Override
@@ -70,7 +71,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         "accessToken=" + token.getAccessToken() +
         "&refreshToken=" + token.getRefreshToken() +
         "&profileImg=" + member.getProfileImg()
-
     );
   }
 }
