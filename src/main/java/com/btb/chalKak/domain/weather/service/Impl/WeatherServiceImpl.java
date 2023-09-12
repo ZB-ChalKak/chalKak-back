@@ -3,6 +3,7 @@ package com.btb.chalKak.domain.weather.service.Impl;
 import com.btb.chalKak.common.exception.PostException;
 import com.btb.chalKak.domain.like.dto.LikerResponse;
 import com.btb.chalKak.domain.like.dto.LoadPageLikeResponse;
+import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
@@ -53,6 +54,8 @@ public class WeatherServiceImpl {
     private final PostRepository postRepository;
 
     private final MemberServiceImpl memberService;
+
+    private final LikeRepository likeRepository;
 
 
     /**
@@ -240,6 +243,11 @@ public class WeatherServiceImpl {
         Page<Post> posts = postRepository.findPostsByStyleTagsAndWeatherIdAndSeasonId(styleTagIds,
             weatherId,
             seasonId,pageable);
+
+        for (Post post : posts) {
+            boolean isLiked = likeRepository.existsByMemberIdAndPostId(member.getId(), post.getId());
+            post.updateIsLiked(isLiked);
+        }
 
         return LoadPublicPostsResponse.fromPage(posts);
     }
