@@ -131,7 +131,7 @@ public class SignController {
     @PatchMapping(value = "/{userId}/modify", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> modifyUserInfo(Authentication authentication,
                                             @PathVariable Long userId,
-                                            @RequestPart MultipartFile[] multipartFiles,
+                                            @RequestPart(required = false) MultipartFile[] multipartFiles,
                                             @RequestPart ModifyUserInfoRequest infoRequest){
         memberService.modifyUserInfo(authentication, userId, multipartFiles, infoRequest);
         return ResponseEntity.ok(responseService.successWithNoContent(SUCCESS_MODIFY_USER_INFO));
