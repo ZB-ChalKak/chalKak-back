@@ -378,8 +378,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void sendConfirmEmail(Member member, EmailAuth emailAuth) {
-//        String urlPrefix = "https://chal-kak.vercel.app/emailAuthPage";
-        String urlPrefix = "http://localhost:3000/emailAuthPage";
+        String urlPrefix = "https://chal-kak.vercel.app/emailAuthPage";
+//        String urlPrefix = "http://localhost:3000/emailAuthPage";
         String title = "#찰칵 인증 안내";
         String text = "<!DOCTYPE html>" +
                 "<html>" +
