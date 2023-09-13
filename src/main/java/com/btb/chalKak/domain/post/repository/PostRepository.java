@@ -15,7 +15,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
   Page<Post> findAllByContentContaining(String keyword, Pageable pageable);
 
-  @Query("SELECT COUNT(p.id) FROM Post p WHERE p.writer.id = :memberId")
+  @Query("SELECT COUNT(p.id) FROM Post p WHERE p.writer.id = :memberId AND p.status = 'PUBLIC'")
   Long countPostIdsByMemberId(Long memberId);
 
 //  List<Post> findAllByWriterAndStatus(Member writer, PostStatus status, Pageable pageable);
