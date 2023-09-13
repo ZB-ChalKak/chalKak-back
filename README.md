@@ -45,7 +45,7 @@
 
 # 📄 아키텍쳐
 
-![아키텍쳐(전체)](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/3b3d2f8e-4116-4dce-8376-08bdc8d3bc8c)
+![아키텍쳐(전체)](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/c26f3f7f-5483-46a8-b1a1-5b6086a2de62)
 
 # 📄 기술 스택
 
@@ -53,7 +53,7 @@
 
 <div align="center">
 
-  ![프론트기술스택](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/c6ee53f6-77cf-4934-8410-a059c96cb575)
+  ![프론트기술스택_2](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/e91721ae-b707-4cca-939f-829af2a2f750)
 
 </div>
 
