@@ -1,3 +1,9 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.14'
@@ -11,6 +17,10 @@ java {
 	sourceCompatibility = '11'
 }
 
+jar{
+	enabled=false
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -22,10 +32,37 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	compileOnly('org.springframework.boot:spring-boot-starter-mustache')
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	annotationProcessor "org.mapstruct:mapstruct-processor:1.4.1.Final"
+	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor(
+			"javax.persistence:javax.persistence-api",
+			"javax.annotation:javax.annotation-api",
+			"com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
+
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'

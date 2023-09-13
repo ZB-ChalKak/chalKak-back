@@ -1,0 +1,41 @@
+spring:
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: embedded
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
+#  sql:
+#    init:
+#      mode: always
+#      encoding: utf-8
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  profiles:
+    include: oauth, google
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+
+  # swagger
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+scheduler:
+  test:
+    cron: "0 0/1 * * * ?"
+  cron: "0 */5 * * * *"
+  weather:
+    cron: "0 0 6 * * ?"
