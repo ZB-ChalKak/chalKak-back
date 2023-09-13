@@ -71,6 +71,12 @@
 
 # [API 명세서](https://www.notion.so/API-6313b986df324028b451dc107a9d0a2c)
 
+`참조`
+
+![image](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/33b66217-8aa1-4371-bae0-3aae9ba2248f)
+
+![image](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/8d0358ca-adcd-420f-99bf-9dad882b65ec)
+
 # 📄 주요 기능 
 
 # 🚨 트러블 슈팅
