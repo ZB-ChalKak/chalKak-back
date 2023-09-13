@@ -38,7 +38,7 @@ public class RecommendPostBatchService {
 
     return  RecommendPostBatch.builder()
         .id(post.getId())
-        .post(post)
+//        .post(post)
         .weatherId(post.getStyleTags().stream()
             .filter(styleTag -> styleTag.getCategory() == StyleCategory.WEATHER)
             .map(StyleTag::getId)

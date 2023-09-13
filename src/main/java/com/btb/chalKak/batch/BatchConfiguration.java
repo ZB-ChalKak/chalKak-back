@@ -4,6 +4,7 @@ import com.btb.chalKak.batch.listener.TableClearingListener;
 import com.btb.chalKak.batch.processor.PostItemProcessor;
 import com.btb.chalKak.batch.reader.PostItemReader;
 import com.btb.chalKak.batch.writer.RecommendPostItemWriter;
+import com.btb.chalKak.domain.batchpost.dto.RecommendPostBatchDTO;
 import com.btb.chalKak.domain.batchpost.entity.RecommendPostBatch;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.weather.entity.Weather;
@@ -35,7 +36,7 @@ public class BatchConfiguration {
 
   private final PostItemProcessor postItemProcessor;
 
-  private static final int chunkSize = 10;
+  private static final int chunkSize = 10000;
 
   @Bean
   public Job tutorialJob() {
@@ -63,7 +64,7 @@ public class BatchConfiguration {
   @Bean
   public Step orderStep1() {
     return stepBuilderFactory.get("orderStep1")
-            .<Post, RecommendPostBatch>chunk(chunkSize)
+            .<Post, RecommendPostBatchDTO>chunk(chunkSize)
             .reader(postItemReader)
             .processor(postItemProcessor)
             .writer(recommendPostItemWriter)

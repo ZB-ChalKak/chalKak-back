@@ -4,6 +4,7 @@ import static com.btb.chalKak.domain.post.type.PostStatus.DELETED;
 import static com.btb.chalKak.domain.post.type.PostStatus.PUBLIC;
 
 import com.btb.chalKak.common.entity.BaseTimeEntity;
+import com.btb.chalKak.domain.batchpost.entity.RecommendPostBatch;
 import com.btb.chalKak.domain.hashTag.entity.HashTag;
 import com.btb.chalKak.domain.like.entity.Like;
 import com.btb.chalKak.domain.member.entity.Member;
@@ -28,6 +29,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -79,6 +81,9 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writer;
+
+//    @OneToOne(mappedBy = "post")
+//    private RecommendPostBatch recommendPostBatch;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("order ASC")
@@ -159,5 +164,9 @@ public class Post extends BaseTimeEntity {
         if(this.likeCount < 0){
             this.likeCount = 0L;
         }
+    }
+
+    public void updateWriter(Member writer) {
+        this.writer = writer;
     }
 }

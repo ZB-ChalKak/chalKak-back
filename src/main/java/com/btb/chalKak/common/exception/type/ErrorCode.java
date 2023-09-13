@@ -46,8 +46,8 @@ public enum ErrorCode {
     // POST
     INVALID_POST_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글 번호입니다."),
     MISMATCH_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
-    NOT_FOUND_STYLETAG_KEYWORD(HttpStatus.BAD_REQUEST, "해당 날씨가 없습니다."),
-    NOT_FOUND_WEATHER(HttpStatus.BAD_REQUEST, "해당 날씨가 없습니다."),
+    NOT_FOUND_STYLETAG_KEYWORD(HttpStatus.BAD_REQUEST, "키워드로 해당 날씨가 없습니다."),
+    NOT_FOUND_WEATHER(HttpStatus.BAD_REQUEST, "가까운 지역의 해당 날씨가 없습니다."),
 
     // COMMENT
     INVALID_COMMENT_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 댓글 번호입니다."),

@@ -20,7 +20,7 @@ public class TableClearingListener implements JobExecutionListener {
     public void beforeJob(JobExecution jobExecution) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate("DELETE FROM weather_to_member");
+            statement.executeUpdate("DELETE FROM recommend_post");
         } catch (Exception e) {
             throw new RuntimeException(e.toString());
         }
