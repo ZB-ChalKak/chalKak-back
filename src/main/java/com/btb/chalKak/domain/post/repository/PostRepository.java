@@ -2,9 +2,8 @@ package com.btb.chalKak.domain.post.repository;
 
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.post.entity.Post;
+import com.btb.chalKak.domain.post.type.PostStatus;
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +18,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
   @Query("SELECT COUNT(p.id) FROM Post p WHERE p.writer.id = :memberId")
   Long countPostIdsByMemberId(Long memberId);
 
-  List<Post> findAllByWriter(Member writer);
+//  List<Post> findAllByWriterAndStatus(Member writer, PostStatus status, Pageable pageable);
+  List<Post> findAllByWriterAndStatus(Member writer, PostStatus status);
 
 
   @Query("SELECT p FROM Post p " +
