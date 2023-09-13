@@ -39,12 +39,6 @@ public class RecommendPostBatch {
 
     @Column(name = "post_id", nullable = false)
     private Long id;
-
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-//    @MapsId
-//    @JoinColumn(name = "post_id")
-//    private Post post;
-
     @Column(name = "weather_id", nullable = false)
     private Long weatherId;
     @Column(name = "season_id", nullable = false)

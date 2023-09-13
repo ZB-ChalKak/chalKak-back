@@ -1,6 +1,7 @@
 package com.btb.chalKak.domain.weather.service.Impl;
 
 import com.btb.chalKak.common.exception.PostException;
+import com.btb.chalKak.domain.batchpost.repository.RecommendPostBatchRepository;
 import com.btb.chalKak.domain.like.dto.LikerResponse;
 import com.btb.chalKak.domain.like.dto.LoadPageLikeResponse;
 import com.btb.chalKak.domain.like.repository.LikeRepository;
@@ -50,6 +51,7 @@ public class WeatherServiceImpl {
 
     private final WeatherRepository weatherRepository;
     private final StyleTagRepository styleTagRepository;
+    private final RecommendPostBatchRepository recommendPostBatchRepository;
 
     private final PostRepository postRepository;
 
@@ -237,8 +239,11 @@ public class WeatherServiceImpl {
 //            weatherId,
 //            seasonId,pageable);
 
-        Page<Post> posts = postRepository.findPostsAndWeatherIdAndSeasonId(weatherId,
-            seasonId,pageable);
+        Page<Post> posts = recommendPostBatchRepository.findPostsByWeatherId(weatherId,
+                pageable);
+
+//        Page<Post> posts = postRepository.findPostsAndWeatherIdAndSeasonId(weatherId,
+//            seasonId,pageable);
 
         if(member != null) {
             for (Post post : posts) {
