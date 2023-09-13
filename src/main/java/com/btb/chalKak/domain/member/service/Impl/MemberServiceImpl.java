@@ -51,6 +51,7 @@ import com.btb.chalKak.domain.member.type.MemberStatus;
 import com.btb.chalKak.domain.photo.service.PhotoService;
 import com.btb.chalKak.domain.post.entity.Post;
 import com.btb.chalKak.domain.post.repository.PostRepository;
+import com.btb.chalKak.domain.post.type.PostStatus;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import java.net.URLDecoder;
@@ -355,7 +356,8 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER_ID));
 
         // 2. 회원이 작성한 게시물 조회
-        List<Post> posts = postRepository.findAllByWriter(member);
+//        List<Post> posts = postRepository.findAllByWriterAndStatus(member, PostStatus.PUBLIC, pageRequest);
+        List<Post> posts = postRepository.findAllByWriterAndStatus(member, PostStatus.PUBLIC);
         long totalCount = posts.size();
 
         return new PageImpl<>(posts, pageRequest, totalCount);
