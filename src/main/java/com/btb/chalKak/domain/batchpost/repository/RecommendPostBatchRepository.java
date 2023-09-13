@@ -20,6 +20,7 @@ public interface RecommendPostBatchRepository extends JpaRepository<RecommendPos
   List<Long> findPostsByWeatherId(@Param("seasonId") Long weatherId);
 
   @Query("SELECT p FROM Post p WHERE p.id IN " +
-          "(SELECT r.id FROM RecommendPostBatch r WHERE r.weatherId = :weatherId)")
+          "(SELECT r.id FROM RecommendPostBatch r WHERE r.weatherId = :weatherId) " +
+          "ORDER BY (p.viewCount * 0.4 + p.likeCount * 0.6) DESC")
   Page<Post> findPostsByWeatherId(Long weatherId, Pageable pageable);
 }
