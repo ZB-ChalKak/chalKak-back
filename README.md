@@ -69,7 +69,7 @@
 
 ![ERD](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/7be68179-f1c2-44d3-a302-2cd678273f27)
 
-# [API 명세서](https://www.notion.so/API-6313b986df324028b451dc107a9d0a2c)
+# 📄 [API 명세서](https://www.notion.so/API-6313b986df324028b451dc107a9d0a2c)
 
 `참조`
 
