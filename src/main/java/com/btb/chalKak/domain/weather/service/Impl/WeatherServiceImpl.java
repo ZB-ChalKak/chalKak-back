@@ -66,9 +66,9 @@ public class WeatherServiceImpl {
 
         LocalDate today = LocalDate.now();
         // open weather map에서 날씨 데이터 가져오기
-        String weatherDate = getWeatherString(lat, lon);
+//        String weatherDate = getWeatherString(lat, lon);
         // 받아온 날씨 json 파싱
-        Map<String, String> parsedWeather = parseWeather(weatherDate);
+//        Map<String, String> parsedWeather = parseWeather(weatherDate);
 
         Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
             .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
