@@ -6,13 +6,18 @@ import com.btb.chalKak.domain.weather.entity.Weather;
 import com.btb.chalKak.domain.weather.repository.WeatherRepository;
 import com.btb.chalKak.domain.weather.service.AdministrativeGeoService;
 import com.btb.chalKak.domain.weather.service.Impl.WeatherServiceImpl;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class WeatherScheduler {
+
+    private final DataSource dataSource;
 
     private final WeatherRepository weatherRepository;
     private final WeatherServiceImpl weatherService;
@@ -37,7 +44,17 @@ public class WeatherScheduler {
     public void init() {
         log.debug("weather 스프링");
         administrativeGeoInfos = administrativeGeoService.getAllDistricts();
+        deleteDataFromTable();
 //        processGetWeather(); // 스프링이 올라오면서 저장함
+    }
+
+    public void deleteDataFromTable() {
+        try (Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM weather_to_member");
+        } catch (Exception e) {
+            // 예외 처리
+        }
     }
 
     @Transactional
@@ -47,13 +64,9 @@ public class WeatherScheduler {
     // 현재 중요 거점 위도 경도가 300개 이하임
     public void processGetWeather() {
         log.info("06:00 weather 스케쥴 시작");
-        if (runCount >= 10) {
-            return;
-        }
 
-        int endIndex = Math.min(currentIndex + 30, administrativeGeoInfos.size());
 
-        for (int i = currentIndex; i < endIndex; i++) {
+        for (int i = currentIndex; i < administrativeGeoInfos.size(); i++) {
             AdministrativeGeoInfo administrativeGeoInfo = administrativeGeoInfos.get(i);
 
 
@@ -67,7 +80,7 @@ public class WeatherScheduler {
             // 3-1. 평균 기온 , 최고 기온, 최저 기온,
             List<Weather> weathers = convertDtosToWeathers(weatherDto, administrativeGeoInfo);
 
-            saveOrUpdate(weathers);
+            weatherRepository.saveAll(weathers);
 
         }
         log.info("06:00 weather 스케쥴 종료");
@@ -127,31 +140,4 @@ public class WeatherScheduler {
 
         return weathers;
     }
-    @Transactional
-    public void saveOrUpdate(List<Weather> weathers){
-        for(Weather weather : weathers) {
-
-            // 4. 5일치의 칼럼을 만들어 repository 저장한다. -> 하루치만 있어도 충분할지도? 아니면 5일까지 추천해줄 수 있도록하는 것도 괜찮을듯
-            Optional<Weather> existingWeatherOpt = weatherRepository.findByAdministrativeGeoInfo_IdAndDate(weather.getAdministrativeGeoInfo().getId(), weather.getDate());
-
-            if (existingWeatherOpt.isPresent()) {
-                Weather existingWeather = existingWeatherOpt.get();
-
-                // Update existingWeather fields with newWeather fields
-                existingWeather.updateTemp(weather.getTemp());
-                existingWeather.updateWeather(weather.getWeather());
-                existingWeather.updateWeatherIcon(weather.getWeatherIcon());
-                existingWeather.updateMaxTemp(weather.getMaxTemp());
-                existingWeather.updateMinTemp(weather.getMinTemp());
-
-                // The save method will update because the entity already exists
-                weatherRepository.save(existingWeather);
-
-            } else {
-                // Save as a new record
-                weatherRepository.save(weather);
-            }
-        }
-    }
-
 }
