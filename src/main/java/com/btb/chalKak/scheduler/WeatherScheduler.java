@@ -44,7 +44,6 @@ public class WeatherScheduler {
     public void init() {
         log.debug("weather 스프링");
         administrativeGeoInfos = administrativeGeoService.getAllDistricts();
-        deleteDataFromTable();
 //        processGetWeather(); // 스프링이 올라오면서 저장함
     }
 
@@ -53,6 +52,7 @@ public class WeatherScheduler {
             Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM weather_to_member");
         } catch (Exception e) {
+            log.debug(e.getMessage());
             // 예외 처리
         }
     }
@@ -64,7 +64,7 @@ public class WeatherScheduler {
     // 현재 중요 거점 위도 경도가 300개 이하임
     public void processGetWeather() {
         log.info("06:00 weather 스케쥴 시작");
-
+        deleteDataFromTable();
 
         for (int i = currentIndex; i < administrativeGeoInfos.size(); i++) {
             AdministrativeGeoInfo administrativeGeoInfo = administrativeGeoInfos.get(i);
