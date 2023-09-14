@@ -1,20 +1,32 @@
 package com.btb.chalKak.domain.weather.service.Impl;
 
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_STYLETAG_KEYWORD;
+import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_WEATHER;
+
 import com.btb.chalKak.common.exception.PostException;
 import com.btb.chalKak.domain.batchpost.repository.RecommendPostBatchRepository;
-import com.btb.chalKak.domain.like.dto.LikerResponse;
-import com.btb.chalKak.domain.like.dto.LoadPageLikeResponse;
 import com.btb.chalKak.domain.like.repository.LikeRepository;
 import com.btb.chalKak.domain.member.entity.Member;
 import com.btb.chalKak.domain.member.service.Impl.MemberServiceImpl;
 import com.btb.chalKak.domain.post.dto.response.LoadPublicPostsResponse;
 import com.btb.chalKak.domain.post.entity.Post;
-import com.btb.chalKak.domain.post.repository.PostRepository;
 import com.btb.chalKak.domain.styleTag.entity.StyleTag;
 import com.btb.chalKak.domain.styleTag.repository.StyleTagRepository;
 import com.btb.chalKak.domain.weather.dto.WeatherDto;
 import com.btb.chalKak.domain.weather.entity.Weather;
 import com.btb.chalKak.domain.weather.repository.WeatherRepository;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -27,20 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_STYLETAG_KEYWORD;
-import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_WEATHER;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -52,8 +50,6 @@ public class WeatherServiceImpl {
     private final WeatherRepository weatherRepository;
     private final StyleTagRepository styleTagRepository;
     private final RecommendPostBatchRepository recommendPostBatchRepository;
-
-    private final PostRepository postRepository;
 
     private final MemberServiceImpl memberService;
 
@@ -68,16 +64,20 @@ public class WeatherServiceImpl {
      */
     public WeatherDto getWeather(String lat, String lon) {
 
+        LocalDate today = LocalDate.now();
         // open weather map에서 날씨 데이터 가져오기
         String weatherDate = getWeatherString(lat, lon);
         // 받아온 날씨 json 파싱
         Map<String, String> parsedWeather = parseWeather(weatherDate);
 
+        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
+            .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
+
         WeatherDto dateWeather = WeatherDto.builder()
-                .date(LocalDate.ofInstant(Instant.ofEpochSecond(Long.parseLong(parsedWeather.get("date"))), ZoneId.of("Asia/Seoul")))
-                .weather(parsedWeather.get("main").toString())
-                .temperature(Double.parseDouble(parsedWeather.get("temp")))
-                .icon(parsedWeather.get("icon").toString())
+                .date(weather.getDate())
+                .weather(weather.getWeather())
+                .temperature(weather.getTemp())
+                .icon(weather.getWeatherIcon())
                 .build();
 
         return dateWeather;
