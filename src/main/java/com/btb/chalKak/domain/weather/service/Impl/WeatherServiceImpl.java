@@ -70,17 +70,32 @@ public class WeatherServiceImpl {
         // 받아온 날씨 json 파싱
 //        Map<String, String> parsedWeather = parseWeather(weatherDate);
 
-        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
-            .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
+//        Weather weather = weatherRepository.findClosestWeatherByLatLonAndDate(Double.parseDouble(lat),Double.parseDouble(lon),today.toString())
+//            .orElseThrow(()-> new PostException(NOT_FOUND_WEATHER));
+//
+//        WeatherDto dateWeather = WeatherDto.builder()
+//                .date(weather.getDate())
+//                .weather(weather.getWeather())
+//                .temperature(weather.getTemp())
+//                .icon(weather.getWeatherIcon())
+//                .build();
+//
+//        return dateWeather;
+
+        // open weather map에서 날씨 데이터 가져오기
+        String weatherDate = getWeatherString(lat, lon);
+        // 받아온 날씨 json 파싱
+        Map<String, String> parsedWeather = parseWeather(weatherDate);
 
         WeatherDto dateWeather = WeatherDto.builder()
-                .date(weather.getDate())
-                .weather(weather.getWeather())
-                .temperature(weather.getTemp())
-                .icon(weather.getWeatherIcon())
-                .build();
+            .date(LocalDate.ofInstant(Instant.ofEpochSecond(Long.parseLong(parsedWeather.get("date"))), ZoneId.of("Asia/Seoul")))
+            .weather(parsedWeather.get("main").toString())
+            .temperature(Double.parseDouble(parsedWeather.get("temp")))
+            .icon(parsedWeather.get("icon").toString())
+            .build();
 
         return dateWeather;
+
     }
 
     private String getWeatherString(String lat, String lon) {
