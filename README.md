@@ -33,7 +33,7 @@
 |![](https://avatars.githubusercontent.com/u/91720916?v=4)|![](https://avatars.githubusercontent.com/u/127920561?v=4)|![](https://avatars.githubusercontent.com/u/81418954?v=4)|
 |:---:|:---:|:---:|
 |[김종진](https://github.com/khakisage)|[조소현](https://github.com/cho-sohyun)|[최은석](https://github.com/xnelb013)|
-|내용1|내용2|내용3|
+|구글 로그인</br>MSW & FIREBASE</br>마이페이지, 팔로잉 페이지|로그인</br>메인 페이지</br>검색 페이지|회원 가입</br>게시글 작성 & 수정</br>게시글 리스트 & 상세 조회|
 
 
 ## 📑 백엔드
@@ -41,7 +41,7 @@
 |![](https://avatars.githubusercontent.com/u/122536664?v=4)|![](https://avatars.githubusercontent.com/u/96164211?v=4)|![](https://avatars.githubusercontent.com/u/56953934?v=4)|
 |:---:|:---:|:---:|
 |[김명종](https://github.com/myu7769)|[장진영](https://github.com/jinyngg)|[조형준](https://github.com/JoHyungJun)|
-|내용1|내용2|내용3|
+|시스템 구성 및 CI/CD</br>날씨와 위치에 따른 게시글 추천|게시글 작성 & 수정 & 조회</br>체형 및 키워드별 게시글 추천|JWT & SECURITY 작성</br>회원가입 및 로그인 & 회원 기능 구현|
 
 # 📄 아키텍쳐
 
@@ -79,4 +79,42 @@
 
 # 📄 주요 기능 
 
+|회원가입|로그인|
+|:---:|:---:|
+|![1_회원가입](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/e8c0f5f2-e035-44ef-b5c0-26edfd730137)|![2_로그인](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/68f94ecc-1f6b-4fc4-a1ae-2aafed6cec39)|
+
+</br>
+
+|구글 로그인|
+|:---:|
+|![3_구글로그인](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/28990e3e-228d-45c8-b8c0-090ff0957ba4)|
+
+</br>
+
+|마이 페이지|팔로잉 페이지|
+|:---:|:---:|
+|![6_마이페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/e774b26b-298e-4ac5-a2ef-1e5ea354535d)|![7_팔로잉페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/4c710664-0976-48d7-8f12-16162c0dd4dc)|
+
+</br>
+
+|메인(로그인)|메인(비로그인)|
+|:---:|:---:|
+|![4_찰칵_메인(로그인)_zip](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/1e3298ee-14ef-43df-bf95-0fc09d16bb85)|![5_찰칵_메인(비로그인)_zip](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/33410204-8dff-45e3-bca0-1370b243de03)|
+
+</br>
+
+|게시글 작성|좋아요/팔로우|
+|:---:|:---:|
+|![8_게시글작성](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/637e091d-08b0-44d4-9f62-86901a425434)|![9_좋아요팔로우](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/4f2a51bd-c475-4b44-9ea5-be7059cf1d67)|
+
+</br>
+  
+|댓글 작성|검색 페이지|
+|:---:|:---:|
+|![10_댓글-작성](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/16cafde4-6a39-46c8-a3ad-5b0222ca666c)|![11_찰칵_검색페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/fb92f592-3f86-4ea9-ba9b-4cedf44eae49)|
+  
+</br>
+
 # 🚨 트러블 슈팅
+
+<!-- 추가작성 -->
