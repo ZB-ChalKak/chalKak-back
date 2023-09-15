@@ -7,6 +7,7 @@
 # 📸 프로젝트 (2023. 08. 04 ~ 2023. 09. 13)
 
 사용자 맞춤형 게시글 추천 패션 SNS
+배포 링크: [찰칵](https://chal-kak.vercel.app/main)
 
 ## 1️⃣ 기획 배경 
 
@@ -117,7 +118,7 @@
 |메인(로그인)|메인(비로그인)|
 |:---:|:---:|
 |![4_찰칵_메인(로그인)_zip](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/1e3298ee-14ef-43df-bf95-0fc09d16bb85)|![5_찰칵_메인(비로그인)_zip](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/33410204-8dff-45e3-bca0-1370b243de03)|
-|1. 위치 정보를 바탕으로 게시글 추천</br>2. 회원의 체중, 키워드를 통한 검색</br>3. 체형 및 키워드 선택 검색(좋아요 60%, 조회수 40% 가중치)|1. 위치 정보를 바탕으로 게시글 추천</br>2. 최신순 검색</br>3. 체형 및 키워드 선택 검색(좋아요 60%, 조회수 40% 가중치)|
+|1. 위치 정보를 날씨 정보를 가져와 게시글 추천</br>2. 회원의 체중, 키워드를 통한 검색</br>3. 체형 및 키워드 선택 검색(좋아요 60%, 조회수 40% 가중치)|1.위치 정보를 날씨 정보를 가져와 게시글 추천</br>2. 최신순 검색</br>3. 체형 및 키워드 선택 검색(좋아요 60%, 조회수 40% 가중치)|
 
 </br>
 
@@ -131,24 +132,28 @@
 |구글 로그인|
 |:---:|
 |![3_구글로그인](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/28990e3e-228d-45c8-b8c0-090ff0957ba4)|
+|구글계정을 통한 회원가입 후 프로필 업데이트 진행|
 
 </br>
 
 |마이 페이지|팔로잉 페이지|
 |:---:|:---:|
 |![6_마이페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/e774b26b-298e-4ac5-a2ef-1e5ea354535d)|![7_팔로잉페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/4c710664-0976-48d7-8f12-16162c0dd4dc)|
+|개인 정보 및 태그 정보 수정 가능|팔로잉하고 있는 계정의 게시물을 조회|
 
 </br>
 
 |게시글 작성|좋아요/팔로우|
 |:---:|:---:|
 |![8_게시글작성](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/637e091d-08b0-44d4-9f62-86901a425434)|![9_좋아요팔로우](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/4f2a51bd-c475-4b44-9ea5-be7059cf1d67)|
+|이미지, 위치 정보, 태그, 컨텐트 작성|좋아요 및 팔로우 가능|
 
 </br>
   
 |댓글 작성|검색 페이지|
 |:---:|:---:|
 |![10_댓글-작성](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/16cafde4-6a39-46c8-a3ad-5b0222ca666c)|![11_찰칵_검색페이지](https://github.com/ZB-ChalKak/chalKak-back/assets/96164211/fb92f592-3f86-4ea9-ba9b-4cedf44eae49)|
+|"depth 0"의 댓글 작성 및 조회|계정, 피드, 태그를 통한 검색|
   
 </br>
 
