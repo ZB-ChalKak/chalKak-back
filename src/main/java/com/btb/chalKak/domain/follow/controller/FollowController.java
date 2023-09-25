@@ -4,7 +4,8 @@ import static com.btb.chalKak.common.exception.type.SuccessCode.*;
 
 import com.btb.chalKak.common.response.dto.CommonResponse;
 import com.btb.chalKak.common.response.service.ResponseService;
-import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowResponse;
+import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowerResponse;
+import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowingResponse;
 import com.btb.chalKak.domain.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +59,7 @@ public class FollowController {
     public ResponseEntity<?> loadFollowers(
             @PathVariable Long memberId, Pageable pageable)
     {
-        LoadPageFollowResponse data = followService.loadFollowers(memberId, pageable);
+        LoadPageFollowerResponse data = followService.loadFollowers(memberId, pageable);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_FOLLOWERS));
     }
 
@@ -66,7 +67,7 @@ public class FollowController {
     public ResponseEntity<?> loadFollowings(
             @PathVariable Long memberId, Pageable pageable)
     {
-        LoadPageFollowResponse data = followService.loadFollowings(memberId, pageable);
+        LoadPageFollowingResponse data = followService.loadFollowings(memberId, pageable);
         return ResponseEntity.ok(responseService.success(data, SUCCESS_LOAD_POST));
     }
     @GetMapping("/{memberId}/validateFollow")

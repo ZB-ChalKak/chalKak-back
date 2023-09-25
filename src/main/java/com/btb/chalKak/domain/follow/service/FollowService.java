@@ -7,7 +7,8 @@ import static com.btb.chalKak.common.exception.type.ErrorCode.NOT_FOUND_FOLLOW_I
 
 import com.btb.chalKak.common.exception.MemberException;
 import com.btb.chalKak.domain.follow.dto.response.FollowerResponse;
-import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowResponse;
+import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowerResponse;
+import com.btb.chalKak.domain.follow.dto.response.LoadPageFollowingResponse;
 import com.btb.chalKak.domain.follow.entity.Follow;
 import com.btb.chalKak.domain.follow.repository.FollowRepository;
 import com.btb.chalKak.domain.member.entity.Member;
@@ -83,7 +84,7 @@ public class FollowService {
     }
 
     @Transactional(readOnly = true)
-    public LoadPageFollowResponse loadFollowers(Long memberId, Pageable pageable) {
+    public LoadPageFollowerResponse loadFollowers(Long memberId, Pageable pageable) {
 
         Page<Long> membersId = followRepository.findFollowerIdsByFollowingId(memberId, pageable);
 
@@ -98,7 +99,7 @@ public class FollowService {
                         .map(FollowerResponse::fromEntity)
                         .collect(Collectors.toList());
 
-        return LoadPageFollowResponse.builder()
+        return LoadPageFollowerResponse.builder()
                 .totalPages(membersId.getTotalPages())
                 .currentPage(membersId.getNumber())
                 .totalElements(membersId.getTotalElements())
@@ -107,7 +108,7 @@ public class FollowService {
     }
 
     @Transactional(readOnly = true)
-    public LoadPageFollowResponse loadFollowings(Long memberId, Pageable pageable) {
+    public LoadPageFollowingResponse loadFollowings(Long memberId, Pageable pageable) {
 
         Page<Long> membersId = followRepository.findFollowingIdsByFollowerId(memberId, pageable);
 
@@ -122,11 +123,11 @@ public class FollowService {
                         .map(FollowerResponse::fromEntity)
                         .collect(Collectors.toList());
 
-        return LoadPageFollowResponse.builder()
+        return LoadPageFollowingResponse.builder()
                 .totalPages(membersId.getTotalPages())
                 .currentPage(membersId.getNumber())
                 .totalElements(membersId.getTotalElements())
-                .followerResponses(followerResponses)
+                .followingResponses(followerResponses)
                 .build();
     }
     public Boolean validateFollow(Authentication authentication, Long targetId) {
