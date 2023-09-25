@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class LoadPageFollowResponse {
+public class LoadPageFollowerResponse {
 
     private int currentPage;
     private int totalPages;
