@@ -325,12 +325,19 @@ public class MemberServiceImpl implements MemberService {
         // 4. 수정 부
         List<StyleTag> styleTags = styleTagRepository.findAllById(infoRequest.getStyleTags());
 
+        String profileImg;
+        if(multipartFiles == null) {    // multipartFiles[0].isEmpty()로 내부 null도 체크 가능
+            profileImg = member.getProfileImg();
+        }else {
+            profileImg = photoService.upload(multipartFiles);
+        }
+
         member.update(infoRequest.getNickname(),
                 infoRequest.getGender(),
                 infoRequest.getHeight(),
                 infoRequest.getWeight(),
                 styleTags,
-                photoService.upload(multipartFiles));
+                profileImg);
 
         memberRepository.save(member);
     }
