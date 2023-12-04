@@ -105,7 +105,7 @@ public class MemberServiceImpl implements MemberService {
                 .weight(request.getWeight())
                 .provider(CHALKAK)
                 .styleTags(styleTags)
-                .status(INACTIVE)     // TODO : 이메일 인증 구현 완료 후에 수정 -> INACTIVE
+                .status(ACTIVE)     // TODO : 이메일 인증 구현 완료 후에 수정 -> INACTIVE
                 .build()
         );
 
